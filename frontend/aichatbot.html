@@ -14,7 +14,6 @@
     --light-bg: #fff;
 }
 
-
 #sidebar {
     width: 260px;
     height: 100vh;
@@ -37,10 +36,8 @@
     background:var(--primary-orange); color:#000; transform:translateX(5px);
 }
 
-
 .content { margin-left:260px; padding:30px; min-height:100vh; background: var(--light-bg); }
 .section-title { font-size:26px; font-weight:800; margin-bottom:25px; }
-
 
 #chatBox {
     border: 1px solid #ccc;
@@ -58,14 +55,12 @@
 .user { background: var(--primary-orange); color: #000; align-self: flex-end; }
 .ai { background: #fff; color: #333; align-self: flex-start; border:1px solid #ccc; }
 
-
 #inputArea { display:flex; gap:10px; }
 #chatInput { flex-grow:1; padding:8px 10px; border-radius:8px; border:1px solid #ccc; }
 #sendBtn { padding:8px 16px; border:none; border-radius:8px; background:var(--primary-orange); color:#000; cursor:pointer; }
 
 #helpPanel { display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border:1px solid #e6e6e6; max-width:720px; font-size:14px; }
 #helpPanel ul { margin:6px 0 0 18px; }
-
 
 @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
 .message { animation: fadeIn 0.3s ease-in-out; }
@@ -108,8 +103,8 @@
         <div id="helpIntro" style="margin-bottom:8px;">
             <strong>Chat Bot — Quick Guide</strong>
             <div style="margin-top:6px;font-size:14px;line-height:1.4;">
-                <div><strong>What it does:</strong> Helps you find pending work, list tasks/projects/courses, search research papers, and get past-paper links for supported subjects.</div>
-                <div style="margin-top:6px;"><strong>How to use:</strong> Type a natural request. For example, ask about your tasks, ask for priorities, or request past papers using a subject name or code and a year (2015–2025).</div>
+                <div><strong>What it does:</strong> Helps you manage tasks, find resources, get study tips, search research papers, access past papers, and answer educational questions.</div>
+                <div style="margin-top:6px;"><strong>How to use:</strong> Ask naturally! Request priorities, study tips, time management advice, motivation, or search for past papers (include year 2015–2025).</div>
             </div>
         </div>
         <strong>Supported past-paper subjects:</strong>
@@ -117,11 +112,13 @@
         <div style="margin-top:8px;">
             <strong>Example queries:</strong>
             <ul style="margin:6px 0 0 18px;">
-                <li><code>what should I do first?</code> — Suggest highest priority items from tasks and projects.</li>
-                <li><code>show my tasks</code> — List your pending tasks.</li>
-                <li><code>show my projects</code> — List your projects.</li>
-                <li><code>past paper accounting 9706 2020</code> — Get a Google site-search link to that year's past papers.</li>
-                <li><code>research climate change</code> — Search Google Scholar for research on a topic.</li>
+                <li><code>what should I do first?</code> — Get priority suggestions</li>
+                <li><code>show my tasks</code> — List pending tasks</li>
+                <li><code>study tips for exams</code> — Get study advice</li>
+                <li><code>how to stay motivated</code> — Motivation tips</li>
+                <li><code>past paper accounting 9706 2020</code> — Access past papers</li>
+                <li><code>research climate change</code> — Search Google Scholar</li>
+                <li><code>time management tips</code> — Productivity advice</li>
             </ul>
         </div>
     </div>
@@ -147,7 +144,7 @@ function openDB() {
 function get(store,key){
     return new Promise((resolve,reject)=>{
         try{
-            if(!db){ // fallback to localStorage
+            if(!db){
                 const raw = localStorage.getItem('edumate_'+store) || '[]';
                 const arr = JSON.parse(raw);
                 const res = arr.find(i=>i.id === key) || null;
@@ -163,7 +160,7 @@ function get(store,key){
 function getAll(store){
     return new Promise((resolve,reject)=>{
         try{
-            if(!db){ // fallback to localStorage
+            if(!db){
                 const raw = localStorage.getItem('edumate_'+store) || '[]';
                 const arr = JSON.parse(raw);
                 return resolve(arr || []);
@@ -181,7 +178,6 @@ function add(store,obj){
             if(!db){ 
                 const raw = localStorage.getItem('edumate_'+store) || '[]';
                 const arr = JSON.parse(raw);
-                
                 const id = (arr.length ? Math.max(...arr.map(x=>x.id||0)) : 0) + 1;
                 const item = Object.assign({id}, obj);
                 arr.push(item);
@@ -258,11 +254,9 @@ function escapeHtml(str){
 }
 
 function formatMessageToHtml(text){
-
     const t = String(text || '');
     const lines = t.split(/\r?\n/).map(l => l.trim()).filter(l => l.length>0);
     if(lines.length === 0) return '';
-
 
     const isList = lines.every(l => l.startsWith('- ')) && lines.length>0;
     if(isList){
@@ -270,13 +264,11 @@ function formatMessageToHtml(text){
         return `<ul style="margin:4px 0 4px 18px;padding:0;">${items}</ul>`;
     }
 
-
     const joined = t;
     return linkifyRaw(joined).replace(/\n/g, '<br>');
 }
 
 function linkifyRaw(raw){
-
     if(!raw) return '';
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     let out = '';
@@ -313,39 +305,30 @@ const SUBJECT_MAP = {
 async function logSearch(query){
     try{
         const item = {query: query, time: new Date().toISOString()};
-
-        try{ await add('searches', item); }catch(e){  }
-
+        try{ await add('searches', item); }catch(e){}
         try{
             const raw = localStorage.getItem('edumate_searches') || '[]';
             const arr = JSON.parse(raw);
             arr.push(item);
             localStorage.setItem('edumate_searches', JSON.stringify(arr));
         }catch(e){}
-
         try{ if(document.getElementById('searchHistory') && document.getElementById('searchHistory').style.display==='block') loadSearchHistory(); }catch(e){}
-    }catch(e){  }
+    }catch(e){}
 }
-
 
 async function loadSearchHistory(){
     const listEl = document.getElementById('searchHistoryList');
     listEl.innerHTML = 'Loading...';
     try{
-        
         let items = await getAll('searches');
         if(!items || !items.length){
-        
             const raw = localStorage.getItem('edumate_searches') || '[]';
             items = JSON.parse(raw);
         } else {
-        
             try{
                 const raw = localStorage.getItem('edumate_searches') || '[]';
                 const ls = JSON.parse(raw);
-        
                 ls.forEach(s => { if(!items.find(i=>i.time === s.time && i.query === s.query)) items.push(s); });
-        
                 items = items.sort((a,b)=> new Date(b.time) - new Date(a.time));
             }catch(e){}
         }
@@ -380,18 +363,15 @@ function openScholarQuery(topic){
 
 async function deleteSearchEntry(entry){
     try{
-        
         if(entry && entry.id){ await del('searches', entry.id); }
     }catch(e){}
     try{
-        
         const raw = localStorage.getItem('edumate_searches') || '[]';
         let arr = JSON.parse(raw);
         arr = arr.filter(s => !(s.time === entry.time && s.query === entry.query));
         localStorage.setItem('edumate_searches', JSON.stringify(arr));
     }catch(e){}
 }
-
 
 async function clearChats(){
     try{
@@ -410,7 +390,7 @@ async function clearChats(){
         } else {
             localStorage.setItem('edumate_chats','[]');
         }
-    }catch(e){  }
+    }catch(e){}
 }
 
 async function sendMessage() {
@@ -429,7 +409,6 @@ async function sendMessage() {
         await loadChat();
     }catch(err){
         console.error("Send failed", err);
-        
         try{ await add("chats",{sender:"ai", text: "Sorry, something went wrong while sending your message.", time:new Date().toISOString()}); await loadChat(); }catch(e){}
     }finally{
         sendBtn.disabled = false;
@@ -437,7 +416,7 @@ async function sendMessage() {
     }
 }
 
-
+// ============ ENHANCED AI RESPONSE LOGIC ============
 async function getAIResponse(userText){
     const tasks = await getAll("tasks");
     const projects = await getAll("projects");
@@ -446,18 +425,11 @@ async function getAIResponse(userText){
     
     const text = (userText || "").toLowerCase();
 
-    
-
-    
+    // ===== PAST PAPERS (ORIGINAL LOGIC) =====
     if(/past paper|past papers|pastpaper|pastpapers/.test(text)){
-    
         const yearMatch = text.match(/\b(20(?:1[5-9]|2[0-5]))\b/);
         const year = yearMatch ? yearMatch[0] : null;
-
-      
         const nums = (text.match(/\b(\d{4})\b/g) || []).slice();
-
-      
         let code = null;
         if(nums.length){
             for(const n of nums){
@@ -465,109 +437,188 @@ async function getAIResponse(userText){
                 code = n; break;
             }
         }
-
-      
         let foundSubject = null;
         for(const key of Object.keys(SUBJECT_MAP)){
             if(text.includes(key)) { foundSubject = key; break; }
         }
-
-      
         if(foundSubject && !code){ code = SUBJECT_MAP[foundSubject]; }
-
-      
         if(code && !foundSubject){
             const inv = Object.entries(SUBJECT_MAP).find(([k,v])=>v===code);
             if(inv) foundSubject = inv[0];
         }
-
-      
         if(!year){
             return 'Please include the year (2015–2025) with your request, e.g. "past paper accounting 9706 2020".';
         }
         if(!code || !/^[0-9]{4}$/.test(code)){
             return 'Subject or subject code not recognized. Please provide a supported subject name or a valid subject code.';
         }
-
-      
         const y = parseInt(year,10);
         if(isNaN(y) || y < 2015 || y > 2025){
             return 'Year not available. Please request a year between 2015 and 2025.';
         }
-
-      
         if(foundSubject && SUBJECT_MAP[foundSubject] && SUBJECT_MAP[foundSubject] !== code){
             return `The provided code (${code}) does not match the subject '${foundSubject}'. Please check the subject name and code.`;
         }
-
-      
         const query = encodeURIComponent(code + ' ' + year);
         const googleLink = `https://www.google.com/search?q=site:pastpapers.papacambridge.com+${query}`;
         try{ await logSearch(`pastpaper:${foundSubject||code} ${year}`); }catch(e){}
         return `Here are past papers for ${foundSubject? (foundSubject + ' ('+code+')') : ('code '+code)} for ${year}:\n- ${googleLink}`;
     }
 
-
-    if(/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(text)){
-        return "Hello — how can I help you? You can ask me things like:\n- \"What should I do first?\"\n- \"Show my tasks\"\n- \"How to add notes?\"\n- \"Show FAQ\"";
+    // ===== GREETINGS =====
+    if(/\b(hi|hello|hey|good morning|good afternoon|good evening|greetings|howdy)\b/.test(text)){
+        const greetings = [
+            "Hello! 👋 How can I assist you today?",
+            "Hi there! I'm here to help with your studies, tasks, and questions.",
+            "Hey! Ready to help you succeed. What do you need?"
+        ];
+        return greetings[Math.floor(Math.random() * greetings.length)] + 
+            "\n\nYou can ask me:\n- \"What should I do first?\"\n- \"Show my tasks\"\n- \"Study tips for exams\"\n- \"How to stay motivated\"\n- \"Time management tips\"";
     }
 
-    if(text === 'help' || text === 'commands' || text.includes('show faq')){
-        return "I can help with:\n- Suggesting what to work on next (ask \"what should I do first\")\n- Listing pending tasks/projects/courses (ask \"show my tasks\")\n- FAQ about using Edumate (ask e.g. \"how to add notes\")\n- Simple chat replies (say hello)\n\nQuick commands:\n- show my tasks\n- show my projects\n- show my courses\n- what should i do first\n- clear chat";
+    // ===== FAREWELL =====
+    if(/\b(bye|goodbye|see you|exit|quit|thanks|thank you)\b/.test(text)){
+        const farewells = [
+            "Goodbye! Keep up the great work! 🌟",
+            "See you later! Stay focused and motivated! 💪",
+            "Take care! Remember to take breaks while studying! 😊"
+        ];
+        return farewells[Math.floor(Math.random() * farewells.length)];
     }
 
+    // ===== HELP & FAQ =====
+    if(text === 'help' || text === 'commands' || text.includes('show faq') || text.includes('what can you do')){
+        return `I can help you with:\n\n📚 **Learning & Resources:**\n- Search research papers (try "research [topic]")\n- Find past papers (include subject & year 2015-2025)\n- Study tips and exam strategies\n\n✅ **Task Management:**\n- Show your tasks/projects/courses\n- Suggest what to work on first\n- Time management advice\n\n💡 **Motivation & Productivity:**\n- Motivational quotes\n- Focus and productivity tips\n- Stress management advice\n\n❓ **Platform Help:**\n- How to use Notes, Planner, Projects\n- FAQ about features\n\nTry: "study tips", "motivate me", "show my tasks", or "how to add notes"`;
+    }
 
-    if(text.includes('show my tasks') || text.includes('list tasks') || text.includes('my tasks')){
+    // ===== STUDY TIPS =====
+    if(/(study|revision|exam|test|learning) tip|how to study|study better|improve learning|study technique|study method|study habit/i.test(text)){
+        const tips = [
+            "**Effective Study Tips:**\n- Use active recall: Test yourself instead of re-reading\n- Try spaced repetition: Review material over increasing intervals\n- Use the Pomodoro Technique: 25 min focus + 5 min break\n- Teach concepts to others to reinforce understanding\n- Create mind maps to visualize connections\n- Study in different locations to improve retention\n- Get enough sleep—consolidates memory!",
+            
+            "**Study Strategy for Exams:**\n- Start early: Don't cram last minute\n- Break material into manageable chunks\n- Practice with past papers (I can help you find them!)\n- Focus on understanding, not memorizing\n- Use multiple resources: videos, textbooks, notes\n- Join study groups for different perspectives\n- Review mistakes to learn from them",
+            
+            "**Memory & Retention Tips:**\n- Use mnemonics and acronyms\n- Create associations with familiar concepts\n- Write summaries in your own words\n- Use flashcards for quick reviews\n- Study before sleep for better retention\n- Mix subjects (interleaving) to improve learning\n- Stay hydrated and take regular breaks"
+        ];
+        return tips[Math.floor(Math.random() * tips.length)];
+    }
+
+    // ===== TIME MANAGEMENT =====
+    if(/time management|manage time|organize time|schedule|planning|productivity|procrastination|avoid distraction/i.test(text)){
+        return "**Time Management Tips:**\n- Prioritize tasks using the Eisenhower Matrix (urgent/important)\n- Use the 2-minute rule: If it takes <2 min, do it now\n- Block time for deep work without distractions\n- Set specific, achievable daily goals\n- Use your Planner to track deadlines\n- Batch similar tasks together\n- Say no to non-essential commitments\n- Review your week every Sunday\n- Track how you spend time to identify time-wasters\n\n💡 Tip: Ask me \"what should I do first\" to get started!";
+    }
+
+    // ===== MOTIVATION & MINDSET =====
+    if(/motivat|inspire|encourage|keep going|give up|feel down|stress|anxiety|overwhelm|burnout/i.test(text)){
+        const motivational = [
+            "💪 **Stay Strong!**\n\"Success is the sum of small efforts repeated day in and day out.\" — Robert Collier\n\nRemember:\n- Progress over perfection\n- Small steps lead to big achievements\n- You've overcome challenges before—you can do it again!\n- Take breaks when needed—rest is productive too",
+            
+            "🌟 **You've Got This!**\n\"Believe you can and you're halfway there.\" — Theodore Roosevelt\n\nTips to stay motivated:\n- Set small, achievable goals\n- Celebrate small wins\n- Remember WHY you started\n- Surround yourself with positive people\n- Visualize your success",
+            
+            "🚀 **Keep Pushing Forward!**\n\"The expert in anything was once a beginner.\" — Helen Hayes\n\nWhen feeling overwhelmed:\n- Break tasks into tiny steps\n- Focus on one thing at a time\n- Practice self-compassion\n- Talk to someone you trust\n- Remember: This feeling is temporary",
+            
+            "✨ **Believe in Yourself!**\n\"Don't watch the clock; do what it does. Keep going.\" — Sam Levenson\n\nYour effort matters:\n- Every study session counts\n- Mistakes are learning opportunities\n- Consistency beats intensity\n- You're capable of more than you think!"
+        ];
+        return motivational[Math.floor(Math.random() * motivational.length)];
+    }
+
+    // ===== FOCUS & CONCENTRATION =====
+    if(/focus|concentration|concentrate|attention|distract/i.test(text)){
+        return "**Tips to Improve Focus:**\n- Remove distractions: Turn off notifications, use website blockers\n- Try the Pomodoro Technique (25 min work / 5 min break)\n- Create a dedicated study space\n- Use background music or white noise (if it helps)\n- Take regular breaks—your brain needs rest!\n- Stay hydrated and eat brain-healthy snacks\n- Get enough sleep (7-9 hours)\n- Exercise regularly to boost cognitive function\n- Meditate for 5-10 minutes before studying\n\n🎯 Pro tip: Start with your hardest task when your energy is highest!";
+    }
+
+    // ===== NOTE-TAKING TIPS =====
+    if(/note.taking|take notes|better notes|how to.*notes/i.test(text)){
+        return "**Effective Note-Taking Methods:**\n\n📝 **Cornell Method:**\n- Divide page: Notes | Cues | Summary\n- Great for lectures and textbooks\n\n🗺️ **Mind Mapping:**\n- Visual representation of concepts\n- Shows relationships between ideas\n\n📊 **Outline Method:**\n- Hierarchical structure with bullets\n- Good for organized content\n\n📋 **Chart Method:**\n- Columns for comparing information\n- Perfect for categorizing data\n\n💡 **General Tips:**\n- Write in your own words\n- Use abbreviations consistently\n- Review notes within 24 hours\n- Add colors and highlights\n- Include examples\n\nUse the Notes section in Edumate to organize your study materials!";
+    }
+
+    // ===== EXAM PREPARATION =====
+    if(/exam prep|prepare for exam|exam strateg|test prep|before exam|exam anxiety/i.test(text)){
+        return "**Exam Preparation Guide:**\n\n📅 **Before the Exam:**\n- Start reviewing 2-3 weeks early\n- Create a study schedule\n- Practice with past papers (I can find them for you!)\n- Identify weak areas and focus on them\n- Form study groups for discussion\n\n📚 **Study Strategies:**\n- Active recall over passive reading\n- Teach concepts to others\n- Use flashcards for memorization\n- Take practice tests under time pressure\n\n😌 **Day Before:**\n- Light review only—don't cram\n- Prepare materials (pens, calculator, ID)\n- Get 8 hours of sleep\n- Eat a healthy meal\n\n🎯 **During Exam:**\n- Read instructions carefully\n- Budget your time per question\n- Answer easy questions first\n- Review answers if time permits\n\nAsk me for past papers for specific subjects!";
+    }
+
+    // ===== MEMORY IMPROVEMENT =====
+    if(/improve memory|remember better|retention|forget|memorize|memorization/i.test(text)){
+        return "**Improve Your Memory:**\n\n🧠 **Techniques:**\n- Spaced Repetition: Review at increasing intervals\n- Active Recall: Test yourself regularly\n- Mnemonics: Create memorable acronyms\n- Chunking: Group information into smaller units\n- Method of Loci: Visualize a familiar place\n- Association: Link new info to what you know\n\n💪 **Lifestyle Factors:**\n- Sleep 7-9 hours (memory consolidation happens during sleep)\n- Exercise regularly (increases brain oxygen)\n- Eat brain foods (omega-3, berries, nuts)\n- Stay hydrated (even mild dehydration affects cognition)\n- Reduce stress through meditation\n- Avoid multitasking\n\n📝 **Study Habits:**\n- Review notes within 24 hours\n- Teach material to others\n- Use multiple senses (read aloud, write, draw)\n- Practice retrieval, not re-reading";
+    }
+
+    // ===== READING COMPREHENSION =====
+    if(/reading comprehension|read better|reading speed|understand reading|reading technique/i.test(text)){
+        return "**Reading Comprehension Tips:**\n\n📖 **SQ3R Method:**\n- Survey: Skim headings and summaries\n- Question: Turn headings into questions\n- Read: Read actively to find answers\n- Recite: Summarize in your own words\n- Review: Go over key points\n\n💡 **Active Reading:**\n- Preview the material first\n- Ask questions while reading\n- Highlight key concepts (sparingly)\n- Take notes in margins\n- Summarize each section\n- Connect to prior knowledge\n\n⚡ **Improve Speed:**\n- Minimize subvocalization\n- Use a pointer (finger/pen) to guide eyes\n- Read in phrases, not words\n- Don't re-read unless necessary\n- Practice regularly\n\n✅ Check comprehension by summarizing without looking!";
+    }
+
+    // ===== TASKS DISPLAY =====
+    if(text.includes('show my tasks') || text.includes('list tasks') || text.includes('my tasks') || text.includes('pending tasks')){
         const pending = (tasks||[]).filter(t=>!t.done).sort((a,b)=> (b.priority||0)-(a.priority||0));
-        if(!pending.length) return "You have no pending tasks ";
+        if(!pending.length) return "You have no pending tasks! 🎉 Great job staying on top of things!\n\nWant to:\n- Add new tasks in the Planner?\n- Work on projects?\n- Review course materials?";
         const top = pending.slice(0,10).map(t=>`- ${t.title || 'Untitled'} (priority: ${t.priority||'Medium'}${t.deadline?(' — due '+t.deadline):''})`).join('\n');
-        return `Here are your pending tasks:\n${top}`;
+        return `Here are your pending tasks:\n${top}\n\n💡 Tip: Focus on high-priority items first. Ask "what should I do first" for suggestions!`;
     }
-    if(text.includes('show my projects') || text.includes('list projects') || text.includes('my projects')){
+
+    // ===== PROJECTS DISPLAY =====
+    if(text.includes('show my projects') || text.includes('list projects') || text.includes('my projects') || text.includes('pending projects')){
         const pending = (projects||[]).filter(p=>!p.done).sort((a,b)=> (b.priority||0)-(a.priority||0));
-        if(!pending.length) return "You have no pending projects ";
+        if(!pending.length) return "You have no pending projects! 🎉 Excellent work!\n\nConsider:\n- Starting a new project\n- Reviewing completed projects\n- Setting new learning goals";
         const top = pending.slice(0,10).map(p=>`- ${p.title || 'Untitled'} (priority: ${p.priority||'Medium'}${p.deadline?(' — due '+p.deadline):''})`).join('\n');
-        return `Here are your pending projects:\n${top}`;
+        return `Here are your pending projects:\n${top}\n\n💡 Break large projects into smaller tasks for better progress tracking!`;
     }
-    if(text.includes('show my courses') || text.includes('list courses') || text.includes('my courses')){
+
+    // ===== COURSES DISPLAY =====
+    if(text.includes('show my courses') || text.includes('list courses') || text.includes('my courses') || text.includes('pending courses')){
         const pending = (courses||[]).filter(c=>!c.done).sort((a,b)=> (b.priority||0)-(a.priority||0));
-        if(!pending.length) return "You have no pending course lessons ";
+        if(!pending.length) return "You have no pending course lessons! 🎓 Amazing progress!\n\nNext steps:\n- Enroll in new courses\n- Review completed materials\n- Practice what you've learned";
         const top = pending.slice(0,10).map(c=>`- ${c.title || 'Untitled'} (priority: ${c.priority||'Medium'}${c.endDate?(' — ends '+c.endDate):''})`).join('\n');
-        return `Here are your pending course items:\n${top}`;
+        return `Here are your pending course items:\n${top}\n\n📚 Stay consistent with your learning schedule!`;
     }
 
-        if(text.includes('clear chat') || text.includes('clear chats') || text.includes('reset chat')){
+    // ===== NOTES DISPLAY =====
+    if(text.includes('show my notes') || text.includes('list notes') || text.includes('my notes')){
+        if(!notes || notes.length === 0) return "You haven't created any notes yet.\n\n📝 Go to the Notes page to start organizing your study materials!";
+        const recent = notes.slice(-5).reverse().map(n=>`- ${n.title || 'Untitled note'}`).join('\n');
+        return `Here are your recent notes:\n${recent}\n\n💡 Keep your notes organized by subject or topic for easy review!`;
+    }
+
+    // ===== STATISTICS =====
+    if(/statistics|stats|my progress|how am i doing|show progress/i.test(text)){
+        const totalTasks = (tasks||[]).length;
+        const doneTasks = (tasks||[]).filter(t=>t.done).length;
+        const totalProjects = (projects||[]).length;
+        const doneProjects = (projects||[]).filter(p=>p.done).length;
+        const totalCourses = (courses||[]).length;
+        const doneCourses = (courses||[]).filter(c=>c.done).length;
+        
+        return `**Your Progress:**\n\n📊 **Tasks:** ${doneTasks}/${totalTasks} completed\n📁 **Projects:** ${doneProjects}/${totalProjects} completed\n🎓 **Courses:** ${doneCourses}/${totalCourses} completed\n📝 **Notes:** ${notes.length} total\n\n${doneTasks + doneProjects + doneCourses > 0 ? "🌟 Keep up the great work!" : "💪 Let's start making progress together!"}\n\nCheck your Dashboard for detailed analytics!`;
+    }
+
+    // ===== CLEAR CHAT =====
+    if(text.includes('clear chat') || text.includes('clear chats') || text.includes('reset chat') || text.includes('delete chat')){
         await clearChats();
-        return 'All chat messages cleared.';
+        return 'All chat messages cleared. ✨ Fresh start!';
     }
 
-    
+    // ===== RESEARCH PAPERS (ORIGINAL LOGIC) =====
     if(text.includes('research') || text.includes('research paper') || text.includes('research papers') || text.includes('papers on') || text.includes('find papers') || text.includes('scholar')){
-       
         let topic = userText;
         const onMatch = userText.toLowerCase().lastIndexOf(' on ');
         const aboutMatch = userText.toLowerCase().lastIndexOf(' about ');
         if(onMatch !== -1) topic = userText.substring(onMatch + 4).trim();
         else if(aboutMatch !== -1) topic = userText.substring(aboutMatch + 7).trim();
         else {
-            
             topic = userText.replace(/(find|search|show|give|results|of|research|papers|paper|scholar)/gi, '').trim();
         }
         if(!topic) topic = userText;
         const qs = encodeURIComponent(topic);
         const url = `https://scholar.google.com/scholar?q=${qs}`;
-       
         try{ await logSearch(topic); }catch(e){}
-        return `I found results on Google Scholar for "${topic}":\n- ${url}`;
+        return `I found research results on Google Scholar for "${topic}":\n- ${url}\n\n📚 Pro tip: Look for recent papers (last 5 years) for current information!`;
     }
 
-    
-    if(text.includes("what should i do") || text.includes("priority") || text.includes("finish first") || text.includes('what to do')){
+    // ===== PRIORITY SUGGESTIONS (ORIGINAL LOGIC) =====
+    if(text.includes("what should i do") || text.includes("priority") || text.includes("finish first") || text.includes('what to do') || text.includes('where to start') || text.includes('start with')){
         const pendingTasks = (tasks || []).filter(t => !t.done);
         const pendingProjects = (projects || []).filter(p => !p.done);
         const pendingCourses = (courses || []).filter(c => !c.done);
 
-       
         const parseDate = d => {
             try{ return d ? new Date(d) : null; }catch(e){return null}
         };
@@ -587,52 +638,126 @@ async function getAIResponse(userText){
         const suggestions = [];
         if(sortedTasks.length){
             const t = sortedTasks[0];
-            suggestions.push(`Task: "${t.title || 'Untitled'}" — priority: ${t.priority||'medium'}${t.dueDate?(' — due: '+t.dueDate):''}`);
+            suggestions.push(`📌 Task: "${t.title || 'Untitled'}" — priority: ${t.priority||'medium'}${t.dueDate?(' — due: '+t.dueDate):''}`);
         }
         if(sortedProjects.length){
             const p = sortedProjects[0];
-            suggestions.push(`Project: "${p.title || 'Untitled'}" — priority: ${p.priority||'medium'}${p.dueDate?(' — due: '+p.dueDate):''}`);
+            suggestions.push(`📁 Project: "${p.title || 'Untitled'}" — priority: ${p.priority||'medium'}${p.dueDate?(' — due: '+p.dueDate):''}`);
         }
         if(pendingCourses.length){
             const c = pendingCourses[0];
-            suggestions.push(`Course lesson: "${c.title || 'Untitled'}"`);
+            suggestions.push(`🎓 Course lesson: "${c.title || 'Untitled'}"`);
         }
-        if(suggestions.length) return "Here are the highest priority items:\n" + suggestions.join("\n") + "\n\nQuick tips:\n- To mark items done, use the Planner or Projects pages.\n- Ask \"show my tasks\" to view more items.\n- Ask \"show FAQ\" for help using features.";
-        return "All tasks, projects, and courses look complete — great job!";
+        if(suggestions.length) return "**Here are your highest priority items:**\n" + suggestions.join("\n") + "\n\n💡 **Quick Tips:**\n- Start with the most urgent/important task\n- Break large tasks into smaller steps\n- Use the Pomodoro Technique (25 min focus)\n- Mark items done as you complete them\n\nYou've got this! 💪";
+        return "All tasks, projects, and courses look complete—great job! 🎉\n\n**What's next?**\n- Set new goals\n- Review what you've learned\n- Plan upcoming projects\n- Take a well-deserved break! 😊";
     }
 
-   
+    // ===== EXPANDED FAQ =====
     const faq = [
-        {q:"how to add notes", a:"Go to Notes page, click 'Add Note', enter content and save."},
-        {q:"how to create a project", a:"Go to Projects page, click 'Add Project', fill details and save."},
-        {q:"how to track progress", a:"Check Dashboard for graphs and completion stats; mark tasks/projects done to update progress."},
-        {q:"how to upload certificates", a:"Go to Profile page, select 'Upload Certificate', choose file, and save."},
-        {q:"how to add task", a:"Open Planner, click '+', enter title/description/priority and save. Use the checkbox to mark Done."},
-        {q:"how to use planner", a:"Planner is your to-do list: filter by priority, search tasks, pin important items, and set deadlines."},
-        {q:"how to use projects", a:"Projects group related tasks. Add subtasks and deadlines. Mark completed subtasks to track progress."},
-        {q:"how to use courses", a:"Courses store lessons; mark lessons done as you finish them and track end dates."}
+        {q:"how to add notes", a:"**Adding Notes:**\n1. Go to the Notes page\n2. Click 'Add Note' button\n3. Enter your content (supports formatting)\n4. Save your note\n\n💡 Organize notes by subject or topic for easy retrieval!"},
+        {q:"how to create a project", a:"**Creating Projects:**\n1. Navigate to Projects page\n2. Click 'Add Project'\n3. Fill in title, description, deadline, priority\n4. Add subtasks if needed\n5. Save project\n\n💡 Break large projects into manageable subtasks!"},
+        {q:"how to track progress", a:"**Tracking Progress:**\n- Check Dashboard for visual graphs and stats\n- Mark tasks/projects as 'done' to update completion\n- View completion percentages\n- Review activity timeline\n\n💡 Check your progress weekly to stay motivated!"},
+        {q:"how to upload certificates", a:"**Uploading Certificates:**\n1. Go to Profile page\n2. Find 'Certificates' section\n3. Click 'Upload Certificate'\n4. Select file from your device\n5. Save\n\n💡 Keep track of your achievements and credentials!"},
+        {q:"how to add task", a:"**Adding Tasks:**\n1. Open Planner page\n2. Click '+' or 'Add Task'\n3. Enter title, description, deadline\n4. Set priority (Low/Medium/High)\n5. Save task\n6. Use checkbox to mark as done\n\n💡 Add deadlines to stay on schedule!"},
+        {q:"how to use planner", a:"**Using Planner:**\n- Your central to-do list\n- Filter by priority (Low/Medium/High)\n- Search tasks by keyword\n- Pin important items\n- Set deadlines to track due dates\n- Mark tasks done when completed\n\n💡 Review your planner daily for best results!"},
+        {q:"how to use projects", a:"**Using Projects:**\n- Group related tasks together\n- Add subtasks for complex projects\n- Set project deadlines\n- Track overall progress\n- Mark subtasks complete individually\n\n💡 Use projects for multi-step assignments!"},
+        {q:"how to use courses", a:"**Using Courses:**\n- Store online course materials\n- Track lessons and modules\n- Mark lessons as done when finished\n- Set course end dates\n- Monitor learning progress\n\n💡 Set a study schedule for each course!"},
+        {q:"how to delete", a:"**Deleting Items:**\n- Each item has a delete button (usually trash icon)\n- Confirm deletion when prompted\n- Deleted items cannot be recovered\n\n⚠️ Be careful—deletions are permanent!"},
+        {q:"how to edit", a:"**Editing Items:**\n- Click edit button (pencil icon) on any item\n- Modify the information\n- Save changes\n\n💡 Keep information up-to-date for accurate tracking!"},
+        {q:"dashboard", a:"**Dashboard Features:**\n- Overview of all activities\n- Completion statistics\n- Progress graphs and charts\n- Recent activity timeline\n- Quick access to pending items\n\n💡 Your command center for productivity!"},
+        {q:"organize", a:"**Organization Tips:**\n- Use consistent naming for tasks/projects\n- Tag or categorize by subject\n- Set realistic deadlines\n- Review and update regularly\n- Archive completed items\n\n💡 A few minutes of organization saves hours later!"},
+        {q:"deadline", a:"**Managing Deadlines:**\n- Set realistic due dates\n- Add buffer time for unexpected delays\n- Review upcoming deadlines weekly\n- Prioritize by urgency and importance\n- Use notifications/reminders\n\n⏰ Plan backward from deadlines!"},
+        {q:"priorit", a:"**Setting Priorities:**\n- High: Urgent and important (do first)\n- Medium: Important but not urgent (schedule)\n- Low: Neither urgent nor important (do later)\n\n💡 Use the Eisenhower Matrix to decide priorities!"}
     ];
-    for(const f of faq){ if(text.includes(f.q.toLowerCase().replace('?',''))) return f.a; }
-
     
+    for(const f of faq){ 
+        if(text.includes(f.q.toLowerCase().replace('?',''))){ 
+            return f.a; 
+        } 
+    }
 
+    // ===== SUBJECT-SPECIFIC HELP =====
+    if(/help.*math|math.*help|mathematics/i.test(text)){
+        return "**Mathematics Study Tips:**\n- Practice problems daily (consistency is key)\n- Understand concepts, don't just memorize formulas\n- Show all your work—helps catch errors\n- Review mistakes to understand where you went wrong\n- Use visual aids (graphs, diagrams)\n- Form study groups to discuss problems\n- Try Khan Academy or Wolfram Alpha for extra help\n\n💡 Ask me for past papers: \"past paper mathematics 9709 2023\"";
+    }
+
+    if(/help.*science|chemistry|physics|biology/i.test(text)){
+        return "**Science Study Tips:**\n- Understand underlying principles, not just facts\n- Draw diagrams and label them\n- Do lab experiments when possible\n- Use flashcards for terms and definitions\n- Watch educational videos (animations help!)\n- Relate concepts to real-world examples\n- Practice past papers for exam format\n\n💡 I can find research papers on specific topics—just ask!";
+    }
+
+    if(/help.*english|writing|essay/i.test(text)){
+        return "**English & Writing Tips:**\n- Read widely and regularly\n- Practice writing daily (journal, essays)\n- Plan before you write (outline structure)\n- Use varied sentence structures\n- Proofread and edit multiple times\n- Read work aloud to catch errors\n- Build vocabulary gradually\n- Analyze good writing to learn techniques\n\n📝 Use the Notes section to store vocabulary and quotes!";
+    }
+
+    // ===== LEARNING STYLES =====
+    if(/learning style|how do i learn|learn best|visual learner|auditory/i.test(text)){
+        return "**Understanding Learning Styles:**\n\n👁️ **Visual Learners:**\n- Use diagrams, charts, mind maps\n- Color-code notes\n- Watch video tutorials\n- Draw concepts\n\n👂 **Auditory Learners:**\n- Record lectures and listen back\n- Explain concepts aloud\n- Join discussion groups\n- Use mnemonic rhymes\n\n✋ **Kinesthetic Learners:**\n- Take frequent breaks to move\n- Use hands-on activities\n- Walk while reviewing\n- Use physical objects to understand concepts\n\n📚 **Reading/Writing Learners:**\n- Take detailed notes\n- Rewrite information\n- Read extensively\n- Make lists and summaries\n\n💡 Most people use a mix—experiment to find what works!";
+    }
+
+    // ===== GOAL SETTING =====
+    if(/set goal|goals|target|objective|aim/i.test(text)){
+        return "**Effective Goal Setting (SMART):**\n\n✅ **Specific:** Define exactly what you want\n✅ **Measurable:** Track your progress\n✅ **Achievable:** Set realistic goals\n✅ **Relevant:** Align with your priorities\n✅ **Time-bound:** Set deadlines\n\n**Examples:**\n❌ \"Study more\" (vague)\n✅ \"Complete 2 math practice papers this week\" (SMART)\n\n💡 **Tips:**\n- Break big goals into smaller milestones\n- Write goals down\n- Review progress weekly\n- Celebrate achievements\n- Adjust as needed\n\nUse your Planner to track goal progress!";
+    }
+
+    // ===== BREAK & WELLNESS =====
+    if(/break|rest|tired|exhausted|burn.*out|wellness|health/i.test(text)){
+        return "**Taking Care of Yourself:**\n\n🧘 **When to Take Breaks:**\n- Every 25-50 minutes during study\n- When you feel mentally tired\n- After completing a task\n- When you're stuck on a problem\n\n😴 **Rest & Recovery:**\n- Get 7-9 hours of sleep\n- Take one full day off per week\n- Do activities you enjoy\n- Practice relaxation techniques\n\n🏃 **Physical Wellness:**\n- Exercise 20-30 min daily\n- Stretch between study sessions\n- Stay hydrated\n- Eat nutritious meals\n\n🧠 **Mental Health:**\n- Talk to friends/family\n- Practice mindfulness or meditation\n- Limit social media\n- Seek help when needed\n\n⚠️ Productivity without rest leads to burnout!";
+    }
+
+    // ===== GROUP STUDY =====
+    if(/group study|study group|study.*together|collaborative/i.test(text)){
+        return "**Making Group Study Effective:**\n\n✅ **Best Practices:**\n- Keep groups small (3-5 people)\n- Set clear goals for each session\n- Assign topics to each person to teach\n- Use group to discuss difficult concepts\n- Quiz each other\n- Stay on topic\n\n⚠️ **Avoid:**\n- Socializing instead of studying\n- Groups that are too large\n- Covering too many topics at once\n- Relying only on group study\n\n💡 **Hybrid Approach:**\n- Study alone first\n- Meet group to clarify doubts\n- Teach each other\n- Practice together\n\nOnline tools: Zoom, Discord, Google Meet for virtual sessions!";
+    }
+
+    // ===== CALCULATOR/PROBLEM SOLVING =====
+    if(/calculate|solve|answer.*question|math problem|equation/i.test(text)){
+        return "I can't solve specific problems directly, but I can help you learn HOW to solve them!\n\n**Resources:**\n- Wolfram Alpha (wolframalpha.com) - Shows step-by-step solutions\n- Symbolab - Math problem solver\n- Khan Academy - Video tutorials\n- Desmos - Graphing calculator\n\n**Problem-Solving Strategy:**\n1. Read the problem carefully\n2. Identify what's given and what's unknown\n3. Choose the right formula/method\n4. Show all work step-by-step\n5. Check your answer\n\n💡 Understanding the process is more important than the answer!";
+    }
+
+    // ===== JOKES/FUN =====
+    if(/joke|funny|laugh|entertain|bored/i.test(text)){
+        const jokes = [
+            "Why did the student eat their homework? 📚\nBecause the teacher said it was a piece of cake! 😄",
+            "Why was the math book sad? 📖\nIt had too many problems! 😅",
+            "What's a pirate's favorite subject? 🏴‍☠️\nARRRRt! 🎨",
+            "Why don't scientists trust atoms? ⚛️\nBecause they make up everything! 😂"
+        ];
+        return jokes[Math.floor(Math.random() * jokes.length)] + "\n\nNow back to studying! 💪 Need help with anything?";
+    }
+
+    // ===== PROCRASTINATION =====
+    if(/procrastinat|lazy|don't want to|avoid.*work|put.*off/i.test(text)){
+        return "**Overcome Procrastination:**\n\n🎯 **Just Start (2-Minute Rule):**\n- Commit to just 2 minutes\n- Often, starting is the hardest part\n- Momentum builds once you begin\n\n🧩 **Break It Down:**\n- Large tasks feel overwhelming\n- Divide into tiny, manageable steps\n- Complete one small step at a time\n\n⏰ **Use Time Limits:**\n- Set a timer (Pomodoro: 25 min)\n- Race against the clock\n- Take breaks as rewards\n\n🎁 **Reward Yourself:**\n- Set mini rewards for completion\n- Celebrate small wins\n- Make studying more enjoyable\n\n❓ **Ask Why:**\n- Why are you avoiding this?\n- Is the task unclear? Break it down\n- Are you afraid? Start with easy parts\n\n💪 You're capable—you just need to start!";
+    }
+
+    // ===== CONFIDENCE =====
+    if(/confidence|self.*doubt|not good enough|imposter|can't do/i.test(text)){
+        return "**Building Confidence:**\n\n🌟 **You ARE Capable!**\n- Everyone starts as a beginner\n- Mistakes are part of learning\n- Progress, not perfection\n- Compare yourself to your past self, not others\n\n💪 **Confidence Builders:**\n- Track your achievements (keep a success journal)\n- Review how far you've come\n- Focus on effort, not just results\n- Practice positive self-talk\n- Prepare thoroughly—confidence comes from preparation\n\n🎯 **Action Steps:**\n- Set small, achievable goals\n- Celebrate every win\n- Learn from setbacks\n- Surround yourself with supportive people\n- Fake it till you make it (act confident!)\n\n\"Whether you think you can or you can't, you're right.\" — Henry Ford\n\nBelieve in yourself—I believe in you! ✨";
+    }
+
+    // ===== DEFAULT RESPONSE (ENHANCED) =====
+    const responseVariations = [
+        `I understand you said: "${userText}"\n\nI'm here to help! Try asking:\n- "Study tips for exams"\n- "Show my tasks"\n- "How to stay motivated"\n- "Past paper [subject] [year]"\n- "Research [topic]"\n- "Time management tips"\n- Type "help" to see all I can do!`,
+        
+        `Interesting question! "${userText}"\n\nWhile I may not have a specific answer for that, I can help with:\n- Task and project management\n- Study strategies and tips\n- Finding past papers and research\n- Motivation and productivity advice\n- FAQ about using Edumate\n\nWhat would you like to explore?`,
+        
+        `Thanks for asking! I heard: "${userText}"\n\n🤖 I'm constantly learning to help you better!\n\nRight now, I'm great at:\n- Suggesting what to work on next\n- Providing study and exam tips\n- Finding educational resources\n- Answering platform questions\n- Keeping you motivated!\n\nAsk me "help" to see my full capabilities!`
+    ];
     
-    return `I read your data. You said: "${userText}". You can ask "what should I do first" or FAQ questions.`;
+    return responseVariations[Math.floor(Math.random() * responseVariations.length)];
 }
-
 
 async function logActivity(action){
-    try{ await add("activity",{action,time:new Date().toISOString()}); }catch(e){ /* ignore */ }
+    try{ await add("activity",{action,time:new Date().toISOString()}); }catch(e){}
 }
 
-
+// ============ EVENT LISTENERS (ORIGINAL LOGIC) ============
 sendBtn.addEventListener("click", sendMessage);
 chatInput.addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); sendMessage(); } });
 document.getElementById('historyBtn').addEventListener('click', toggleSearchHistory);
 document.getElementById('clearSearchHistoryBtn').addEventListener('click', async ()=>{
     if(!confirm('Clear all search history?')) return;
     try{
-        
         if(db){
             const items = await getAll('searches');
             for(const it of (items||[])){
@@ -644,17 +769,19 @@ document.getElementById('clearSearchHistoryBtn').addEventListener('click', async
     await loadSearchHistory();
 });
 
-    
 document.getElementById('helpBtn').addEventListener('click', ()=>{
     const panel = document.getElementById('helpPanel');
     const list = document.getElementById('helpSubjectList');
     if(panel.style.display === 'block') { panel.style.display = 'none'; panel.setAttribute('aria-hidden','true'); return; }
-    // populate help intro and subject list (no year quick-links)
-    list.innerHTML = '';
-    const noteIntro = document.getElementById('helpIntro');
-    if(noteIntro) noteIntro.innerHTML = `<strong>Usage:</strong> Ask naturally. For past papers include a year (2015–2025). Code is optional for supported subjects.`;
-
     
+    const noteIntro = document.getElementById('helpIntro');
+    if(noteIntro) noteIntro.innerHTML = `<strong>Chat Bot — Quick Guide</strong>
+        <div style="margin-top:6px;font-size:14px;line-height:1.4;">
+            <div><strong>What it does:</strong> Helps you manage tasks, find resources, get study tips, search research papers, access past papers, and answer educational questions.</div>
+            <div style="margin-top:6px;"><strong>How to use:</strong> Ask naturally! Request priorities, study tips, time management advice, motivation, or search for past papers (include year 2015–2025).</div>
+        </div>`;
+
+    list.innerHTML = '';
     Object.keys(SUBJECT_MAP).forEach(k => {
         const label = k.replace(/-/g, ' ');
         const code = SUBJECT_MAP[k];
@@ -666,6 +793,7 @@ document.getElementById('helpBtn').addEventListener('click', ()=>{
     panel.style.display = 'block'; panel.setAttribute('aria-hidden','false');
 });
 
+// ============ INITIALIZATION ============
 openDB()
     .then(() => {
         sendBtn.disabled = false;
@@ -674,7 +802,6 @@ openDB()
     })
     .catch(err => {
         console.error("DB open failed", err);
-        
         sendBtn.disabled = false;
     });
 </script>
