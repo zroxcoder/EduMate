@@ -5,6 +5,7 @@
 <title>Planner | Edumate</title>
 
 <link rel="icon" href="../assets/E.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
 :root {
@@ -21,22 +22,84 @@
 
 .content { margin-left:260px;padding:30px;min-height:100vh;background:var(--light-bg);}
 .section-title { font-size:26px;font-weight:800;margin-bottom:25px; }
-.top-controls { display:flex;gap:15px;margin-bottom:20px;}
-.top-controls input,.top-controls select { padding:10px;border-radius:8px;border:1px solid #aaa;}
-.task-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
-.task-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0px 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;}
-.task-card h3 { margin:0; }
+
+/* NEW: Statistics Bar */
+.stats-bar { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap; }
+.stat-box { background:var(--soft-orange);padding:12px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:600;transition:0.3s; }
+.stat-box:hover { transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+.stat-box span { color:var(--primary-orange);font-size:20px;font-weight:800; }
+
+.top-controls { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;}
+.top-controls input,.top-controls select { padding:10px;border-radius:8px;border:1px solid #aaa;flex:1;min-width:180px;}
+.top-controls button { background:var(--primary-orange);border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;transition:0.2s; }
+.top-controls button:hover { transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+
+.task-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;}
+
+/* NEW: List View */
+.task-list { display:flex;flex-direction:column;gap:15px; }
+.task-list .task-card { min-height:auto; }
+
+.task-card { background:var(--soft-orange);border-radius:12px;padding:12px;box-shadow:0px 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;transition:0.3s;}
+.task-card:hover { transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.2); }
+.task-card h3 { margin:0 0 6px 0;padding-right:60px;font-size:18px; }
+.task-card p { margin:4px 0;word-wrap:break-word;font-size:13px; }
+.task-card small { font-size:11px; }
+
+/* NEW: Status Badges */
+.status-badge { display:inline-block;padding:3px 10px;border-radius:15px;font-size:10px;font-weight:700;margin:3px 3px 3px 0; }
+.status-completed { background:#4CAF50;color:white; }
+.status-pending { background:#FF9800;color:white; }
+.status-overdue { background:#f44336;color:white; }
+.status-due-today { background:#2196F3;color:white; }
+
 .priority-high { color:red;font-weight:bold; }
 .priority-medium { color:orange;font-weight:bold; }
 .priority-low { color:green;font-weight:bold; }
-.pin { position:absolute;right:12px;top:12px;font-size:20px;cursor:pointer; }
-.pin.active { color:gold; }
-.add-btn { position:fixed;right:40px;bottom:40px;background:var(--primary-orange);color:#fff;font-size:30px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer; }
-.modal { position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.45);display:none;justify-content:center;align-items:center; }
-.modal-content { background:var(--soft-orange);padding:25px;width:480px;max-width:92vw;box-sizing:border-box;border-radius:12px;box-shadow:0 4px 10px black;}
+
+.pin,.fav { position:absolute;right:12px;font-size:18px;cursor:pointer;transition:0.2s; }
+.pin:hover,.fav:hover { transform:scale(1.2); }
+.pin { top:12px; } .pin.active { color:gold; }
+.fav { top:36px; } .fav.active { color:red; }
+
+/* NEW: Action Buttons */
+.task-card .actions { margin-top:8px;display:flex;gap:4px;flex-wrap:wrap; }
+.task-card .actions button { padding:5px 10px;border:none;border-radius:6px;cursor:pointer;font-size:11px;background:#fff;transition:0.2s; }
+.task-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
+
+/* NEW: Archived Style */
+.task-card.archived { opacity:0.6;border:2px dashed #999; }
+
+.add-btn { position:fixed;right:40px;bottom:40px;background:var(--primary-orange);color:#fff;font-size:30px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;transition:0.3s;}
+.add-btn:hover { transform:scale(1.1);box-shadow:0 6px 18px rgba(0,0,0,0.4); }
+
+/* NEW: Secondary Buttons */
+.secondary-btn { position:fixed;right:40px;background:var(--soft-orange);color:#333;font-size:18px;width:55px;height:55px;border-radius:50%;border:2px solid var(--primary-orange);box-shadow:0 3px 10px rgba(0,0,0,0.2);cursor:pointer;transition:0.3s;}
+.secondary-btn:hover { transform:scale(1.1); }
+#archiveBtn { bottom:120px; }
+#exportBtn { bottom:190px; }
+
+.modal { position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.45);display:none;justify-content:center;align-items:center;z-index:1000; }
+.modal-content { background:var(--soft-orange);padding:25px;width:480px;max-width:92vw;max-height:85vh;overflow-y:auto;box-sizing:border-box;border-radius:12px;box-shadow:0 4px 10px black;}
 .modal-content input,.modal-content textarea,.modal-content select { width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #aaa;box-sizing:border-box;font-size:14px;}
 .modal-content textarea { min-height:120px; resize:vertical; }
-.modal-content button { background:var(--primary-orange);padding:10px 20px;border:none;margin-right:8px;border-radius:8px;cursor:pointer;}
+.modal-content button { background:var(--primary-orange);padding:10px 20px;border:none;margin-right:8px;margin-top:5px;border-radius:8px;cursor:pointer;}
+.modal-content button:hover { opacity:0.9; }
+
+/* NEW: Toast Notification */
+.toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:15px 30px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:none;z-index:2000;animation:slideUp 0.3s;}
+@keyframes slideUp { from{bottom:0;opacity:0;} to{bottom:30px;opacity:1;} }
+
+/* NEW: Empty State */
+.empty-state { text-align:center;padding:60px 20px;color:#999; }
+.empty-state h3 { font-size:24px;margin-bottom:10px; }
+
+/* NEW: Import/Export Area */
+.import-export-area { background:#fff;padding:15px;border-radius:8px;margin:10px 0;max-height:300px;overflow-y:auto;font-family:monospace;font-size:12px;white-space:pre-wrap;word-wrap:break-word; }
+
+/* NEW: Category Badge */
+.category-badge { display:inline-block;background:#9C27B0;color:white;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;margin-bottom:5px; }
+
 @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
 </style>
 </head>
@@ -56,41 +119,171 @@
 <div class="content">
     <h2 class="section-title">Planner / To-Do List</h2>
 
+    <!-- NEW: Statistics Bar -->
+    <div class="stats-bar">
+        <div class="stat-box"><i class="bi bi-list-task"></i> Total: <span id="totalCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-check-circle"></i> Completed: <span id="completedCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-clock-history"></i> Pending: <span id="pendingCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-exclamation-triangle"></i> Overdue: <span id="overdueCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-pin-angle-fill"></i> Pinned: <span id="pinnedCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-archive-fill"></i> Archived: <span id="archivedCount">0</span></div>
+    </div>
+
     <div class="top-controls">
-        <input type="text" id="searchInput" onkeyup="loadTasks()" placeholder="Search tasks...">
+        <input type="text" id="searchInput" onkeyup="loadTasks()" placeholder="🔍 Search tasks...">
+        
         <select id="priorityFilter" onchange="loadTasks()">
             <option value="all">All Priorities</option>
             <option value="High">High Priority</option>
             <option value="Medium">Medium Priority</option>
             <option value="Low">Low Priority</option>
         </select>
+
+        <!-- NEW: Status Filter -->
+        <select id="statusFilter" onchange="loadTasks()">
+            <option value="all">All Status</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+            <option value="overdue">Overdue</option>
+            <option value="due-today">Due Today</option>
+        </select>
+
+        <!-- NEW: Category Filter -->
+        <select id="categoryFilter" onchange="loadTasks()">
+            <option value="all">All Categories</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Study">Study</option>
+            <option value="Health">Health</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <!-- NEW: Sort Options -->
+        <select id="sortBy" onchange="loadTasks()">
+            <option value="date-desc">Latest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="deadline-asc">Deadline (Nearest)</option>
+            <option value="deadline-desc">Deadline (Farthest)</option>
+            <option value="title-asc">Title A-Z</option>
+            <option value="title-desc">Title Z-A</option>
+            <option value="priority">Priority</option>
+        </select>
+
+        <!-- NEW: View Mode -->
+        <select id="viewMode" onchange="toggleViewMode()">
+            <option value="grid"><i class="bi bi-grid-3x3-gap"></i> Grid View</option>
+            <option value="list"><i class="bi bi-list-ul"></i> List View</option>
+        </select>
+
+        <!-- NEW: Archive Toggle -->
+        <button onclick="toggleArchiveView()">
+            <span id="archiveViewText"><i class="bi bi-archive"></i> Show Archived</span>
+        </button>
+
+        <button onclick="clearAllFilters()"><i class="bi bi-arrow-clockwise"></i> Reset</button>
     </div>
 
     <div class="task-grid" id="taskList"></div>
 </div>
 
-<button class="add-btn" onclick="openModal()">+</button>
+<button class="add-btn" onclick="openModal()" title="Add New Task">+</button>
+
+<!-- NEW: Secondary Buttons -->
+<button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive"><i class="bi bi-archive"></i></button>
+<button class="secondary-btn" id="exportBtn" onclick="openExportModal()" title="Export Tasks"><i class="bi bi-download"></i></button>
 
 <div id="taskModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle">Add New Task</h3>
         <input type="text" id="taskTitle" placeholder="Task Title">
         <textarea id="taskDesc" placeholder="Description"></textarea>
-        <input type="date" id="taskDeadline">
-        <select id="taskPriority">
-            <option value="High">🔥 High Priority</option>
-            <option value="Medium">⚡ Medium Priority</option>
-            <option value="Low">🌿 Low Priority</option>
+        
+        <!-- NEW: Tags Input -->
+        <input type="text" id="taskTags" placeholder="Tags (comma separated)">
+        
+        <!-- NEW: Category Selection -->
+        <select id="taskCategory">
+            <option value="">Select Category</option>
+            <option value="Work"><i class="bi bi-briefcase"></i> Work</option>
+            <option value="Personal"><i class="bi bi-person"></i> Personal</option>
+            <option value="Study"><i class="bi bi-book"></i> Study</option>
+            <option value="Health"><i class="bi bi-heart-pulse"></i> Health</option>
+            <option value="Other"><i class="bi bi-three-dots"></i> Other</option>
         </select>
-        <button onclick="saveTask()">Save</button>
-        <button onclick="closeModal()">Cancel</button>
+        
+        <input type="date" id="taskDeadline" placeholder="Deadline">
+        
+        <!-- NEW: Time Input -->
+        <input type="time" id="taskTime" placeholder="Time (optional)">
+        
+        <select id="taskPriority">
+            <option value="Low"><i class="bi bi-dash-circle"></i> Low Priority</option>
+            <option value="Medium"><i class="bi bi-exclamation-circle"></i> Medium Priority</option>
+            <option value="High"><i class="bi bi-exclamation-triangle"></i> High Priority</option>
+        </select>
+        
+        <!-- NEW: Reminder Option -->
+        <label style="display:block;margin:10px 0;">
+            <input type="checkbox" id="taskReminder"> Set Reminder
+        </label>
+        
+        <button onclick="saveTask()"><i class="bi bi-save"></i> Save</button>
+        <button onclick="closeModal()"><i class="bi bi-x-circle"></i> Cancel</button>
     </div>
 </div>
+
+<!-- NEW: View Task Modal -->
+<div id="viewTaskModal" class="modal">
+    <div class="modal-content">
+        <h3 id="viewTaskTitle"></h3>
+        <div id="viewTaskStatus"></div>
+        <div id="viewTaskContent" style="background:#fff;padding:15px;border-radius:8px;margin:10px 0;min-height:100px;"></div>
+        <div style="margin-top:15px;">
+            <button onclick="closeViewModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- NEW: Archive Modal -->
+<div id="archiveModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="bi bi-archive-fill"></i> Archived Tasks</h3>
+        <div id="archiveList" style="max-height:400px;overflow-y:auto;"></div>
+        <div style="margin-top:15px;">
+            <button onclick="closeArchiveModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- NEW: Export Modal -->
+<div id="exportModal" class="modal">
+    <div class="modal-content">
+        <h3>Export / Import Tasks</h3>
+        <h4>Export Tasks</h4>
+        <button onclick="exportTasks()"><i class="bi bi-download"></i> Export as JSON</button>
+        <button onclick="exportTasksText()"><i class="bi bi-file-text"></i> Export as Text</button>
+        <button onclick="exportTasksCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV</button>
+        
+        <h4 style="margin-top:20px;">Import Tasks</h4>
+        <input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
+        <button onclick="importTasks()"><i class="bi bi-upload"></i> Import from JSON</button>
+        
+        <h4 style="margin-top:20px;">Preview</h4>
+        <div class="import-export-area" id="exportPreview">Export data will appear here...</div>
+        
+        <div style="margin-top:15px;">
+            <button onclick="closeExportModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- NEW: Toast Notification -->
+<div id="toast" class="toast"></div>
 
 <script>
 let db;
 let editID=null;
-
+let showArchived = false;
 
 function openDB() {
     return new Promise((resolve,reject)=>{
@@ -111,99 +304,509 @@ function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(st
 function put(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).put(obj); req.onsuccess=()=>resolve(); });}
 function del(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).delete(key); req.onsuccess=()=>resolve(); });}
 
-
 function openModal(isEdit=false){ document.getElementById("taskModal").style.display="flex"; }
+
 function closeModal(){ 
     document.getElementById("taskModal").style.display="none";
-    editID=null; taskTitle.value=""; taskDesc.value=""; taskDeadline.value=""; taskPriority.value="Low";
+    editID=null; 
+    taskTitle.value=""; 
+    taskDesc.value=""; 
+    taskDeadline.value=""; 
+    taskPriority.value="Low";
+    taskTags.value="";
+    taskCategory.value="";
+    taskTime.value="";
+    taskReminder.checked=false;
     document.getElementById("modalTitle").innerText="Add New Task";
 }
 
+// NEW: View Task Modal
+function openViewModal(id){
+    get("tasks",id).then(t=>{
+        if(!t) return;
+        document.getElementById("viewTaskTitle").innerText = t.title;
+        const status = getTaskStatus(t);
+        document.getElementById("viewTaskStatus").innerHTML = `<span class="status-badge status-${status.class}">${status.text}</span>`;
+        
+        let content = `
+            <p><strong>Description:</strong> ${t.desc || 'N/A'}</p>
+            <p><strong>Category:</strong> ${t.category || 'N/A'}</p>
+            <p><strong>Tags:</strong> ${t.tags || 'N/A'}</p>
+            <p><strong>Deadline:</strong> ${t.deadline || 'N/A'} ${t.taskTime ? t.taskTime : ''}</p>
+            <p><strong>Priority:</strong> <span class="priority-${t.priority.toLowerCase()}">${t.priority}</span></p>
+            <p><strong>Status:</strong> ${t.done ? 'Completed' : 'Pending'}</p>
+            <p><strong>Created:</strong> ${t.createdTime}</p>
+            ${t.reminder ? '<p><strong>Reminder:</strong> Set</p>' : ''}
+        `;
+        
+        document.getElementById("viewTaskContent").innerHTML = content;
+        document.getElementById("viewTaskModal").style.display = "flex";
+    });
+}
+
+function closeViewModal(){ document.getElementById("viewTaskModal").style.display="none"; }
+
+// NEW: Archive Modal Functions
+function openArchiveModal(){ 
+    loadArchivedTasks();
+    document.getElementById("archiveModal").style.display="flex"; 
+}
+function closeArchiveModal(){ document.getElementById("archiveModal").style.display="none"; }
+
+// NEW: Export Modal Functions
+function openExportModal(){ document.getElementById("exportModal").style.display="flex"; }
+function closeExportModal(){ document.getElementById("exportModal").style.display="none"; }
 
 async function saveTask(){
-
     let doneState = false;
+    let pinnedState = false;
+    let favState = false;
+    let archivedState = false;
+    
     if(editID){
         const existing = await get("tasks", editID);
         doneState = existing && existing.done ? true : false;
+        pinnedState = existing && existing.pinned ? true : false;
+        favState = existing && existing.fav ? true : false;
+        archivedState = existing && existing.archived ? true : false;
     }
+    
     let task={
-        title: taskTitle.value,
+        title: taskTitle.value || "Untitled Task",
         desc: taskDesc.value,
         deadline: taskDeadline.value,
         priority: taskPriority.value,
-        pinned: false,
+        tags: taskTags.value,
+        category: taskCategory.value,
+        taskTime: taskTime.value,
+        reminder: taskReminder.checked,
+        pinned: pinnedState,
+        fav: favState,
         done: doneState,
-        time: new Date().toLocaleString()
+        archived: archivedState,
+        time: new Date().toLocaleString(),
+        createdTime: new Date().toLocaleString(),
+        timestamp: Date.now()
     };
-    if(editID){ task.id=editID; await put("tasks",task); }
-    else await add("tasks",task);
-    closeModal(); loadTasks();
+    
+    if(editID){ 
+        task.id=editID; 
+        await put("tasks",task);
+        showToast('<i class="bi bi-check-circle"></i> Task updated successfully!');
+    }
+    else {
+        await add("tasks",task);
+        showToast('<i class="bi bi-check-circle"></i> Task created successfully!');
+    }
+    
+    closeModal(); 
+    loadTasks();
 }
- 
+
+// NEW: Get Task Status
+function getTaskStatus(task){
+    if(task.done) return {text: 'Completed', class: 'completed'};
+    if(!task.deadline) return {text: 'Pending', class: 'pending'};
+    
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const deadline = new Date(task.deadline);
+    deadline.setHours(0,0,0,0);
+    
+    if(deadline < today) return {text: 'Overdue', class: 'overdue'};
+    if(deadline.getTime() === today.getTime()) return {text: 'Due Today', class: 'due-today'};
+    return {text: 'Pending', class: 'pending'};
+}
 
 async function loadTasks(){
     const container=document.getElementById("taskList");
     container.innerHTML="";
     const search=searchInput.value.toLowerCase();
-    const filter=priorityFilter.value;
+    const priorityFilterVal=priorityFilter.value;
+    const statusFilterVal=statusFilter.value;
+    const categoryFilterVal=categoryFilter.value;
+    const sortVal=sortBy.value;
 
     let list=await getAll("tasks");
-    list=list.sort((a,b)=>b.pinned-a.pinned)
-             .filter(t=>t.title.toLowerCase().includes(search))
-             .filter(t=>filter==="all"||t.priority===filter);
+    
+    // Filter archived
+    list = list.filter(t => showArchived ? t.archived : !t.archived);
+    
+    // Search filter
+    list = list.filter(t=>
+        t.title.toLowerCase().includes(search) || 
+        (t.desc && t.desc.toLowerCase().includes(search)) ||
+        (t.tags && t.tags.toLowerCase().includes(search))
+    );
+    
+    // Priority filter
+    list = list.filter(t=>priorityFilterVal==="all"||t.priority===priorityFilterVal);
+    
+    // Category filter
+    if(categoryFilterVal !== 'all'){
+        list = list.filter(t => t.category === categoryFilterVal);
+    }
+    
+    // Status filter
+    if(statusFilterVal !== 'all'){
+        list = list.filter(t => {
+            const status = getTaskStatus(t);
+            return status.class === statusFilterVal;
+        });
+    }
+    
+    // Sort
+    if(sortVal === 'date-desc') list.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    else if(sortVal === 'date-asc') list.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+    else if(sortVal === 'deadline-asc') list.sort((a,b) => new Date(a.deadline || '9999') - new Date(b.deadline || '9999'));
+    else if(sortVal === 'deadline-desc') list.sort((a,b) => new Date(b.deadline || '0') - new Date(a.deadline || '0'));
+    else if(sortVal === 'title-asc') list.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+    else if(sortVal === 'title-desc') list.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
+    else if(sortVal === 'priority') {
+        const priorityOrder = {High: 3, Medium: 2, Low: 1};
+        list.sort((a,b) => (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0));
+    }
+    
+    // Pinned to top
+    list=list.sort((a,b)=>b.pinned-a.pinned);
+    
+    updateStats();
+    
+    if(list.length === 0){
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3><i class="bi bi-inbox"></i> No tasks found</h3>
+                <p>Add your first task or adjust your filters</p>
+            </div>
+        `;
+        return;
+    }
 
     list.forEach(task=>{
+        const status = getTaskStatus(task);
+        const archivedClass = task.archived ? 'archived' : '';
+        
         container.innerHTML+=`
-        <div class="task-card">
-            <span class="pin ${task.pinned?"active":""}" onclick="togglePin(${task.id},${task.pinned})">📌</span>
-            <label style="display:inline-block;margin-left:8px;">
+        <div class="task-card ${archivedClass}">
+            <span class="pin ${task.pinned?"active":""}" onclick="togglePin(${task.id},${task.pinned})" title="${task.pinned ? 'Unpin' : 'Pin'}"><i class="bi bi-pin-angle-fill"></i></span>
+            <span class="fav ${task.fav?"active":""}" onclick="toggleFav(${task.id},${task.fav})" title="${task.fav ? 'Remove Favorite' : 'Add Favorite'}"><i class="bi bi-heart-fill"></i></span>
+            
+            <span class="status-badge status-${status.class}">${status.text}</span>
+            ${task.category ? `<span class="category-badge">${task.category}</span>` : ''}
+            
+            <label style="display:inline-block;margin-left:5px;margin-bottom:5px;font-size:12px;">
                 <input type="checkbox" onchange="toggleDone(${task.id}, this.checked)" ${task.done ? "checked" : ""}> Done
             </label>
+            
             <h3>${task.title}</h3>
-            <p>${task.desc}</p>
-            <p><b>Deadline:</b> ${task.deadline}</p>
-            <p class="priority-${task.priority.toLowerCase()}">${task.priority}</p>
-            <small>${task.time}</small><br><br>
-            <button onclick="editTask(${task.id})">Edit</button>
-            <button onclick="deleteTask(${task.id})">Delete</button>
+            <p>${task.desc || 'No description'}</p>
+            
+            ${task.tags ? `<p><b><i class="bi bi-tags"></i></b> ${task.tags}</p>` : ''}
+            <p><b><i class="bi bi-calendar"></i></b> ${task.deadline || 'No deadline'} ${task.taskTime ? '⏰ ' + task.taskTime : ''}</p>
+            <p class="priority-${task.priority.toLowerCase()}" style="font-size:12px;">Priority: ${task.priority}</p>
+            
+            ${task.reminder ? '<p style="font-size:11px;"><i class="bi bi-bell"></i> Reminder Set</p>' : ''}
+            
+            <small><i class="bi bi-clock"></i> ${task.time}</small>
+            
+            <div class="actions">
+                <button onclick="openViewModal(${task.id})" title="Quick View"><i class="bi bi-eye"></i> View</button>
+                <button onclick="editTask(${task.id})" title="Edit"><i class="bi bi-pencil"></i> Edit</button>
+                <button onclick="duplicateTask(${task.id})" title="Duplicate"><i class="bi bi-files"></i> Copy</button>
+                ${task.archived 
+                    ? `<button onclick="unarchiveTask(${task.id})" title="Unarchive"><i class="bi bi-arrow-up-circle"></i> Restore</button>` 
+                    : `<button onclick="archiveTask(${task.id})" title="Archive"><i class="bi bi-archive"></i> Archive</button>`
+                }
+                <button onclick="deleteTask(${task.id})" title="Delete" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
         </div>`;
     });
 }
- 
+
+// NEW: Update Statistics
+async function updateStats(){
+    let items = await getAll("tasks");
+    const total = items.filter(t => !t.archived).length;
+    const completed = items.filter(t => t.done && !t.archived).length;
+    const pending = items.filter(t => !t.done && !t.archived).length;
+    const overdue = items.filter(t => {
+        const status = getTaskStatus(t);
+        return status.class === 'overdue' && !t.archived;
+    }).length;
+    const pinned = items.filter(t => t.pinned && !t.archived).length;
+    const archived = items.filter(t => t.archived).length;
+    
+    document.getElementById("totalCount").innerText = total;
+    document.getElementById("completedCount").innerText = completed;
+    document.getElementById("pendingCount").innerText = pending;
+    document.getElementById("overdueCount").innerText = overdue;
+    document.getElementById("pinnedCount").innerText = pinned;
+    document.getElementById("archivedCount").innerText = archived;
+}
 
 async function editTask(id){
     let t=await get("tasks",id);
     editID=id;
-    taskTitle.value=t.title; taskDesc.value=t.desc; taskDeadline.value=t.deadline; taskPriority.value=t.priority;
+    taskTitle.value=t.title; 
+    taskDesc.value=t.desc; 
+    taskDeadline.value=t.deadline; 
+    taskPriority.value=t.priority;
+    taskTags.value=t.tags || "";
+    taskCategory.value=t.category || "";
+    taskTime.value=t.taskTime || "";
+    taskReminder.checked=t.reminder || false;
     document.getElementById("modalTitle").innerText="Edit Task";
     openModal(true);
 }
- 
 
 async function toggleDone(id, state){
     let t = await get("tasks", id);
     if(!t) return;
     t.done = !!state;
     await put("tasks", t);
-
     try{ localStorage.setItem('edumate-update', JSON.stringify({time:Date.now(), store:'tasks'})); }catch(e){}
     loadTasks();
+    showToast(state ? '<i class="bi bi-check-circle"></i> Task marked as completed!' : '<i class="bi bi-arrow-repeat"></i> Task marked as pending');
 }
 
-
-async function deleteTask(id){ await del("tasks",id); loadTasks(); }
-
+async function deleteTask(id){ 
+    if(confirm("Are you sure you want to delete this task?")){
+        await del("tasks",id); 
+        loadTasks();
+        showToast('<i class="bi bi-trash"></i> Task deleted');
+    }
+}
 
 async function togglePin(id,state){
     let t=await get("tasks",id);
     t.pinned=!state;
     await put("tasks",t);
     loadTasks();
+    showToast(t.pinned ? '<i class="bi bi-pin-angle-fill"></i> Task pinned' : '<i class="bi bi-pin-angle"></i> Task unpinned');
 }
 
+// NEW: Toggle Favorite
+async function toggleFav(id,state){ 
+    let t=await get("tasks",id); 
+    t.fav=!state; 
+    await put("tasks",t); 
+    loadTasks();
+    showToast(t.fav ? '<i class="bi bi-heart-fill"></i> Added to favorites' : '<i class="bi bi-heart"></i> Removed from favorites');
+}
 
-openDB().then(loadTasks);
+// NEW: Duplicate Task
+async function duplicateTask(id){
+    let t = await get("tasks",id);
+    let copy = {
+        title: t.title + " (Copy)",
+        desc: t.desc,
+        deadline: t.deadline,
+        priority: t.priority,
+        tags: t.tags,
+        category: t.category,
+        taskTime: t.taskTime,
+        reminder: t.reminder,
+        pinned: false,
+        fav: false,
+        done: false,
+        archived: false,
+        time: new Date().toLocaleString(),
+        createdTime: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    await add("tasks", copy);
+    loadTasks();
+    showToast('<i class="bi bi-files"></i> Task duplicated');
+}
+
+// NEW: Archive Task
+async function archiveTask(id){
+    let t = await get("tasks",id);
+    t.archived = true;
+    await put("tasks",t);
+    loadTasks();
+    showToast('<i class="bi bi-archive"></i> Task archived');
+}
+
+// NEW: Unarchive Task
+async function unarchiveTask(id){
+    let t = await get("tasks",id);
+    t.archived = false;
+    await put("tasks",t);
+    loadTasks();
+    loadArchivedTasks();
+    showToast('<i class="bi bi-arrow-up-circle"></i> Task restored');
+}
+
+// NEW: Toggle Archive View
+function toggleArchiveView(){
+    showArchived = !showArchived;
+    document.getElementById("archiveViewText").innerHTML = showArchived ? '<i class="bi bi-journal-text"></i> Show Active' : '<i class="bi bi-archive"></i> Show Archived';
+    loadTasks();
+}
+
+// NEW: Load Archived Tasks
+async function loadArchivedTasks(){
+    let items = await getAll("tasks");
+    items = items.filter(t => t.archived);
+    const container = document.getElementById("archiveList");
+    
+    if(items.length === 0){
+        container.innerHTML = `<div class="empty-state"><p>No archived tasks</p></div>`;
+        return;
+    }
+    
+    container.innerHTML = "";
+    items.forEach(t => {
+        const status = getTaskStatus(t);
+        container.innerHTML += `
+        <div class="task-card" style="margin-bottom:10px;">
+            <span class="status-badge status-${status.class}">${status.text}</span>
+            <h3>${t.title}</h3>
+            <p>${t.desc || 'No description'}</p>
+            <p><b>Deadline:</b> ${t.deadline || 'N/A'}</p>
+            <small>${t.time}</small>
+            <div class="actions">
+                <button onclick="unarchiveTask(${t.id})"><i class="bi bi-arrow-up-circle"></i> Restore</button>
+                <button onclick="deleteTask(${t.id})" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
+        </div>`;
+    });
+}
+
+// NEW: Export Tasks as JSON
+async function exportTasks(){
+    let items = await getAll("tasks");
+    const dataStr = JSON.stringify(items, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-tasks-${Date.now()}.json`;
+    link.click();
+    document.getElementById("exportPreview").innerText = dataStr;
+    showToast('<i class="bi bi-download"></i> Tasks exported as JSON!');
+}
+
+// NEW: Export Tasks as Text
+async function exportTasksText(){
+    let items = await getAll("tasks");
+    let text = "EDUMATE TASKS EXPORT\n";
+    text += "=".repeat(50) + "\n\n";
+    
+    items.forEach((t, i) => {
+        text += `[${i+1}] ${t.title}\n`;
+        text += `Description: ${t.desc || 'N/A'}\n`;
+        text += `Category: ${t.category || 'N/A'}\n`;
+        text += `Tags: ${t.tags || 'None'}\n`;
+        text += `Deadline: ${t.deadline || 'N/A'}\n`;
+        text += `Priority: ${t.priority}\n`;
+        text += `Status: ${t.done ? 'Completed' : 'Pending'}\n`;
+        text += `Date: ${t.time}\n`;
+        text += "-".repeat(50) + "\n\n";
+    });
+    
+    const dataBlob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-tasks-${Date.now()}.txt`;
+    link.click();
+    document.getElementById("exportPreview").innerText = text;
+    showToast('<i class="bi bi-file-text"></i> Tasks exported as text!');
+}
+
+// NEW: Export Tasks as CSV
+async function exportTasksCSV(){
+    let items = await getAll("tasks");
+    let csv = "Title,Description,Category,Tags,Deadline,Priority,Status,Created\n";
+    
+    items.forEach(t => {
+        csv += `"${t.title}","${t.desc || ''}","${t.category || ''}","${t.tags || ''}","${t.deadline || ''}","${t.priority}","${t.done ? 'Completed' : 'Pending'}","${t.time}"\n`;
+    });
+    
+    const dataBlob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-tasks-${Date.now()}.csv`;
+    link.click();
+    showToast('<i class="bi bi-file-earmark-spreadsheet"></i> Tasks exported as CSV!');
+}
+
+// NEW: Import Tasks
+async function importTasks(){
+    const file = document.getElementById("importFile").files[0];
+    if(!file){
+        alert("Please select a file first!");
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(!Array.isArray(data)){
+                alert("Invalid file format!");
+                return;
+            }
+            
+            for(let item of data){
+                delete item.id;
+                await add("tasks", item);
+            }
+            
+            loadTasks();
+            closeExportModal();
+            showToast(`<i class="bi bi-upload"></i> ${data.length} tasks imported successfully!`);
+        } catch(err){
+            alert("Error importing file: " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// NEW: Toggle View Mode
+function toggleViewMode(){
+    const mode = document.getElementById("viewMode").value;
+    const container = document.getElementById("taskList");
+    
+    if(mode === 'list'){
+        container.classList.remove('task-grid');
+        container.classList.add('task-list');
+    } else {
+        container.classList.remove('task-list');
+        container.classList.add('task-grid');
+    }
+}
+
+// NEW: Clear All Filters
+function clearAllFilters(){
+    document.getElementById("searchInput").value = "";
+    document.getElementById("priorityFilter").value = "all";
+    document.getElementById("statusFilter").value = "all";
+    document.getElementById("categoryFilter").value = "all";
+    document.getElementById("sortBy").value = "date-desc";
+    showArchived = false;
+    document.getElementById("archiveViewText").innerHTML = '<i class="bi bi-archive"></i> Show Archived';
+    loadTasks();
+    showToast('<i class="bi bi-arrow-clockwise"></i> Filters reset');
+}
+
+// NEW: Toast Notification
+function showToast(message){
+    const toast = document.getElementById("toast");
+    toast.innerHTML = message;
+    toast.style.display = "block";
+    setTimeout(() => {
+        toast.style.display = "none";
+    }, 3000);
+}
+
+openDB().then(() => {
+    loadTasks();
+    updateStats();
+});
 </script>
 
 </body>
