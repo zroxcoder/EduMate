@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Dashboard | Edumate</title>
 <link rel="icon" href="../assets/E.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
 :root {
@@ -13,21 +14,67 @@
     --light-bg: #ffffff;
 }
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 #sidebar { width:260px;height:100vh;position:fixed;left:0;top:0;background:var(--soft-orange);padding-top:20px;overflow-y:auto;box-shadow:5px 0 12px rgba(0,0,0,0.1); }
 #sidebar h3 { font-size:30px;font-weight:900;letter-spacing:1px;text-transform:uppercase;text-shadow:2px 2px 4px rgba(0,0,0,0.2);text-align:center;animation:fadeIn 1s ease-in-out; }
 #sidebar .nav-link { display:block;color:var(--dark-text);font-weight:600;margin:6px 10px;padding:10px 15px;border-radius:10px;transition:0.25s ease-in-out;text-decoration:none; }
 #sidebar .nav-link:hover,#sidebar .nav-link.active { background:var(--primary-orange);color:#000;transform:translateX(5px); }
 
-
 .content { margin-left:260px;padding:25px 30px;background:var(--light-bg);min-height:100vh;color:var(--dark-text); }
 .dashboard-section { margin-bottom:35px; }
-.dashboard-section h4 { margin-bottom:18px;font-weight:700; }
+.dashboard-section h4 { margin-bottom:18px;font-weight:700;display:flex;align-items:center;gap:8px; }
 .dashboard-card { background:var(--soft-orange);border-radius:14px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,0.15);transition:transform 0.25s ease,box-shadow 0.25s ease;animation:slideUp 0.6s ease-in-out;margin-bottom:25px; }
 .dashboard-card:hover { transform:translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,0.22); }
+
 #quote { font-weight:500;margin-bottom:5px;display:inline-block; }
 #author { display:block;margin-top:-5px; }
 #newscontainer div,#notifications div { background:var(--soft-orange);padding:12px;margin-bottom:10px;border-radius:6px;font-weight:500;animation:fadeIn 0.8s ease-in-out; }
+
+/* New Features Styles */
+.stats-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px; }
+.stat-box { background:var(--soft-orange);border-radius:10px;padding:18px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.12);transition:transform 0.25s ease; }
+.stat-box:hover { transform:translateY(-3px); }
+.stat-box i { font-size:32px;color:var(--primary-orange);margin-bottom:10px; }
+.stat-box .stat-value { font-size:28px;font-weight:700;color:var(--dark-text); }
+.stat-box .stat-label { font-size:13px;color:#666;margin-top:5px;font-weight:600; }
+
+.progress-container { margin-top:15px; }
+.progress-item { margin-bottom:15px; }
+.progress-item .progress-header { display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;font-weight:600; }
+.progress-bar-bg { background:#fff;border-radius:10px;height:12px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,0.1); }
+.progress-bar-fill { background:linear-gradient(90deg,var(--primary-orange),#ff9f40);height:100%;border-radius:10px;transition:width 0.5s ease; }
+
+.quick-actions { display:flex;gap:12px;flex-wrap:wrap; }
+.quick-btn { background:var(--primary-orange);color:#000;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all 0.25s ease;border:none;cursor:pointer;font-size:14px; }
+.quick-btn:hover { background:#ff9f40;transform:scale(1.05); }
+
+.timer-container { text-align:center; }
+.timer-display { font-size:48px;font-weight:700;margin:20px 0;color:var(--dark-text);font-family:monospace; }
+.timer-controls { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+.timer-btn { background:var(--primary-orange);color:#000;padding:10px 20px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.25s ease; }
+.timer-btn:hover { background:#ff9f40;transform:scale(1.05); }
+.timer-btn.stop { background:#ff6b6b; }
+
+.activity-item { display:flex;align-items:center;gap:12px;padding:12px;background:var(--soft-orange);border-radius:8px;margin-bottom:10px; }
+.activity-icon { width:40px;height:40px;background:var(--primary-orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px; }
+.activity-content { flex:1; }
+.activity-title { font-weight:600;margin-bottom:3px; }
+.activity-time { font-size:12px;color:#666; }
+
+.streak-container { text-align:center;padding:20px; }
+.streak-number { font-size:64px;font-weight:900;color:var(--primary-orange);text-shadow:2px 2px 4px rgba(0,0,0,0.2); }
+.streak-label { font-size:18px;font-weight:600;margin-top:10px; }
+.streak-emoji { font-size:48px;margin-top:10px; }
+
+.calendar-mini { display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:15px; }
+.calendar-day { background:#fff;padding:10px;text-align:center;border-radius:6px;font-size:13px;font-weight:600;position:relative; }
+.calendar-day.has-event::after { content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:6px;height:6px;background:var(--primary-orange);border-radius:50%; }
+.calendar-day.today { background:var(--primary-orange);font-weight:700; }
+
+.grid-2-col { display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px; }
+
 @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
 @keyframes slideUp { from { opacity:0; transform:translateY(20px);} to { opacity:1; transform:translateY(0);} }
 </style>
@@ -48,22 +95,152 @@
 <div class="content">
     <h2 id="greetText">Loading...</h2>
 
+    <!-- Quick Stats Section -->
     <div class="dashboard-section">
-        <h4>✨ Daily Quote</h4>
+        <h4><i class="bi bi-graph-up"></i> Quick Stats</h4>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <i class="bi bi-journal-text"></i>
+                <div class="stat-value" id="totalNotes">0</div>
+                <div class="stat-label">Total Notes</div>
+            </div>
+            <div class="stat-box">
+                <i class="bi bi-check-circle"></i>
+                <div class="stat-value" id="totalTasks">0</div>
+                <div class="stat-label">Active Tasks</div>
+            </div>
+            <div class="stat-box">
+                <i class="bi bi-folder"></i>
+                <div class="stat-value" id="totalProjects">0</div>
+                <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat-box">
+                <i class="bi bi-book"></i>
+                <div class="stat-value" id="totalCourses">0</div>
+                <div class="stat-label">Courses</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dashboard-section">
+        <h4><i class="bi bi-lightning-charge"></i> Quick Actions</h4>
+        <div class="dashboard-card">
+            <div class="quick-actions">
+                <a href="notes.html" class="quick-btn"><i class="bi bi-plus-circle"></i> New Note</a>
+                <a href="planner.html" class="quick-btn"><i class="bi bi-calendar-plus"></i> Add Task</a>
+                <a href="projects.html" class="quick-btn"><i class="bi bi-folder-plus"></i> New Project</a>
+                <a href="courses.html" class="quick-btn"><i class="bi bi-book"></i> Browse Courses</a>
+                <a href="aichatbot.html" class="quick-btn"><i class="bi bi-robot"></i> Ask CHATBOT</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Progress & Streak Grid -->
+    <div class="grid-2-col">
+        <!-- Study Progress -->
+        <div class="dashboard-section">
+            <h4><i class="bi bi-bar-chart-line"></i> Study Progress</h4>
+            <div class="dashboard-card">
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Tasks Completed</span>
+                            <span id="taskProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="taskProgressBar" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Projects Progress</span>
+                            <span id="projectProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="projectProgressBar" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span>Course Completion</span>
+                            <span id="courseProgress">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="courseProgressBar" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Study Streak -->
+        <div class="dashboard-section">
+            <h4><i class="bi bi-fire"></i> Study Streak</h4>
+            <div class="dashboard-card">
+                <div class="streak-container">
+                    <div class="streak-number" id="streakNumber">0</div>
+                    <div class="streak-label">Days Streak</div>
+                    <div class="streak-emoji">🔥</div>
+                    <p style="margin-top:15px;font-size:14px;color:#666;">Keep learning every day!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pomodoro Timer -->
+    <div class="dashboard-section">
+        <h4><i class="bi bi-clock-history"></i> Study Timer (Pomodoro)</h4>
+        <div class="dashboard-card">
+            <div class="timer-container">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" id="startTimer"><i class="bi bi-play-fill"></i> Start</button>
+                    <button class="timer-btn" id="pauseTimer"><i class="bi bi-pause-fill"></i> Pause</button>
+                    <button class="timer-btn stop" id="resetTimer"><i class="bi bi-arrow-clockwise"></i> Reset</button>
+                    <button class="timer-btn" id="shortBreak"><i class="bi bi-cup-hot"></i> Short Break (5m)</button>
+                    <button class="timer-btn" id="longBreak"><i class="bi bi-cup"></i> Long Break (15m)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Quote -->
+    <div class="dashboard-section">
+        <h4><i class="bi bi-stars"></i> Daily Quote</h4>
         <div class="dashboard-card">
             <span id="quote">Loading...</span><br>
             <small id="author"></small>
         </div>
     </div>
 
+    <!-- Recent Activity -->
     <div class="dashboard-section">
-        <h4>📰 Useful website</h4>
-        <div class="dashboard-card" id="newscontainer">Loading...</div>
+        <h4><i class="bi bi-activity"></i> Recent Activity</h4>
+        <div class="dashboard-card" id="recentActivity">
+            <p style="text-align:center;color:#666;">No recent activity</p>
+        </div>
     </div>
 
+    <!-- Useful Websites & Upcoming Deadlines Grid -->
+    <div class="grid-2-col">
+        <div class="dashboard-section">
+            <h4><i class="bi bi-newspaper"></i> Useful Websites</h4>
+            <div class="dashboard-card" id="newscontainer">Loading...</div>
+        </div>
+
+        <div class="dashboard-section">
+            <h4><i class="bi bi-bell"></i> Upcoming Deadlines</h4>
+            <div class="dashboard-card" id="notifications">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Mini Calendar -->
     <div class="dashboard-section">
-        <h4>🔔 Upcoming Deadlines</h4>
-        <div class="dashboard-card" id="notifications">Loading...</div>
+        <h4><i class="bi bi-calendar3"></i> This Week</h4>
+        <div class="dashboard-card">
+            <div class="calendar-mini" id="miniCalendar"></div>
+        </div>
     </div>
 </div>
 
@@ -102,6 +279,23 @@ function getAll(storeName) {
     });
 }
 
+function add(storeName, data) {
+    return new Promise(resolve => {
+        const tx = db.transaction(storeName,"readwrite");
+        const req = tx.objectStore(storeName).add(data);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+    });
+}
+
+function put(storeName, data) {
+    return new Promise(resolve => {
+        const tx = db.transaction(storeName,"readwrite");
+        const req = tx.objectStore(storeName).put(data);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+    });
+}
 
 const quotes = [
     { text: "Education is the key to unlocking the world.", author: "Oprah" },
@@ -113,12 +307,12 @@ const quotes = [
     { text: "Education is what remains after one has forgotten what one has learned in school.", author: "Albert Einstein" },
     { text: "The mind is not a vessel to be filled but a fire to be ignited.", author: "Plutarch" },
     { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
-    { text: "Learning never exhausts the mind.", author: "Leonardo da Vinci" },
     { text: "He who opens a school door, closes a prison.", author: "Victor Hugo" },
     { text: "Education is the key to unlock the golden door of freedom.", author: "George Washington Carver" },
     { text: "Change is the end result of all true learning.", author: "Leo Buscaglia" },
-    { text: "when you return to your studies, remember that knowledge is the food of the soul.", author: "platon"}
+    { text: "When you return to your studies, remember that knowledge is the food of the soul.", author: "Platon"}
 ];
+
 const resources = [
     { title: "EdSurge — Education news", url: "https://www.edsurge.com/" },
     { title: "CNET — Tech news", url: "https://www.cnet.com/" },
@@ -127,29 +321,216 @@ const resources = [
     { title: "Codecademy — Learn coding", url: "https://www.codecademy.com/learn" }
 ];
 
+// Pomodoro Timer Logic
+let timerInterval = null;
+let timeLeft = 25 * 60; // 25 minutes in seconds
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timerDisplay').textContent = 
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function startTimer() {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+        } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            alert('⏰ Time is up! Great job studying!');
+            logActivity('Completed study session', 'timer');
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function resetTimer(minutes = 25) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timeLeft = minutes * 60;
+    updateTimerDisplay();
+}
+
+document.getElementById('startTimer').addEventListener('click', startTimer);
+document.getElementById('pauseTimer').addEventListener('click', pauseTimer);
+document.getElementById('resetTimer').addEventListener('click', () => resetTimer(25));
+document.getElementById('shortBreak').addEventListener('click', () => resetTimer(5));
+document.getElementById('longBreak').addEventListener('click', () => resetTimer(15));
+
+// Activity Logger
+async function logActivity(message, type) {
+    const activity = {
+        message: message,
+        type: type,
+        timestamp: new Date().toISOString()
+    };
+    await add('activity', activity);
+}
+
+// Load Recent Activity
+async function loadRecentActivity() {
+    const activities = await getAll('activity');
+    const activityBox = document.getElementById('recentActivity');
+    
+    if (activities.length === 0) {
+        activityBox.innerHTML = '<p style="text-align:center;color:#666;">No recent activity</p>';
+        return;
+    }
+    
+    // Sort by timestamp and get last 5
+    const recent = activities
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 5);
+    
+    activityBox.innerHTML = '';
+    recent.forEach(activity => {
+        const timeAgo = getTimeAgo(new Date(activity.timestamp));
+        const iconMap = {
+            'note': 'bi-journal-text',
+            'task': 'bi-check-circle',
+            'project': 'bi-folder',
+            'course': 'bi-book',
+            'timer': 'bi-clock-history'
+        };
+        const icon = iconMap[activity.type] || 'bi-activity';
+        
+        activityBox.innerHTML += `
+            <div class="activity-item">
+                <div class="activity-icon"><i class="bi ${icon}"></i></div>
+                <div class="activity-content">
+                    <div class="activity-title">${activity.message}</div>
+                    <div class="activity-time">${timeAgo}</div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    if (seconds < 60) return 'Just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+}
+
+// Study Streak
+async function updateStreak() {
+    let profile = await get('profile', 1);
+    if (!profile) {
+        profile = { id: 1, streak: 0, lastVisit: new Date().toDateString() };
+        await put('profile', profile);
+    }
+    
+    const today = new Date().toDateString();
+    const lastVisit = profile.lastVisit || today;
+    
+    const lastDate = new Date(lastVisit);
+    const currentDate = new Date(today);
+    const diffTime = currentDate - lastDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+        // Same day
+        document.getElementById('streakNumber').textContent = profile.streak || 1;
+    } else if (diffDays === 1) {
+        // Next day - increment streak
+        profile.streak = (profile.streak || 0) + 1;
+        profile.lastVisit = today;
+        await put('profile', profile);
+        document.getElementById('streakNumber').textContent = profile.streak;
+    } else {
+        // Streak broken
+        profile.streak = 1;
+        profile.lastVisit = today;
+        await put('profile', profile);
+        document.getElementById('streakNumber').textContent = 1;
+    }
+}
+
+// Mini Calendar
+function renderMiniCalendar() {
+    const calendar = document.getElementById('miniCalendar');
+    calendar.innerHTML = '';
+    
+    const today = new Date();
+    const currentDay = today.getDay();
+    
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    // Calculate dates for the week
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - currentDay + i);
+        
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        if (i === currentDay) dayDiv.classList.add('today');
+        
+        dayDiv.innerHTML = `<div style="font-size:11px;color:#666;">${days[i]}</div><div>${date.getDate()}</div>`;
+        calendar.appendChild(dayDiv);
+    }
+}
+
+// Update Progress Bars
+async function updateProgress() {
+    const tasks = await getAll('tasks');
+    const projects = await getAll('projects');
+    const courses = await getAll('courses');
+    
+    // Task completion
+    if (tasks.length > 0) {
+        const completedTasks = tasks.filter(t => t.completed).length;
+        const taskPercentage = Math.round((completedTasks / tasks.length) * 100);
+        document.getElementById('taskProgress').textContent = taskPercentage + '%';
+        document.getElementById('taskProgressBar').style.width = taskPercentage + '%';
+    }
+    
+    // Project progress (assuming projects have a progress field)
+    if (projects.length > 0) {
+        const avgProgress = projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length;
+        const projectPercentage = Math.round(avgProgress);
+        document.getElementById('projectProgress').textContent = projectPercentage + '%';
+        document.getElementById('projectProgressBar').style.width = projectPercentage + '%';
+    }
+    
+    // Course completion
+    if (courses.length > 0) {
+        const completedCourses = courses.filter(c => c.completed).length;
+        const coursePercentage = Math.round((completedCourses / courses.length) * 100);
+        document.getElementById('courseProgress').textContent = coursePercentage + '%';
+        document.getElementById('courseProgressBar').style.width = coursePercentage + '%';
+    }
+}
 
 async function initDashboard() {
-
     let profile = await get("profile",1);
     const username = profile?.username || "Student";
-
 
     const hour = new Date().getHours();
     const greet = hour<12?"Good Morning":hour<17?"Good Afternoon":"Good Evening";
     document.getElementById("greetText").textContent = `${greet}, ${username}!`;
 
-
     const q = quotes[Math.floor(Math.random()*quotes.length)];
     document.getElementById("quote").textContent = `"${q.text}"`;
     document.getElementById("author").textContent = `— ${q.author}`;
 
-
     const newsBox = document.getElementById("newscontainer");
     newsBox.innerHTML = "";
     resources.forEach(r => {
-        newsBox.innerHTML += `<div>📌 <a href="${r.url}" target="_blank" rel="noopener noreferrer"><b>${r.title}</b></a></div>`;
+        newsBox.innerHTML += `<div><i class="bi bi-link-45deg"></i> <a href="${r.url}" target="_blank" rel="noopener noreferrer"><b>${r.title}</b></a></div>`;
     });
-
 
     const stores = ["tasks","projects","courses"];
     const notifBox = document.getElementById("notifications");
@@ -160,13 +541,29 @@ async function initDashboard() {
         items.forEach(item => {
             if(item.deadline){
                 hasDeadline = true;
-                notifBox.innerHTML += `<div>📅 <b>${item.title}</b> — Deadline: ${item.deadline}</div>`;
+                notifBox.innerHTML += `<div><i class="bi bi-calendar-event"></i> <b>${item.title}</b> — Deadline: ${item.deadline}</div>`;
             }
         });
     }
-    if(!hasDeadline) notifBox.textContent = "No upcoming deadlines 🎉";
-}
+    if(!hasDeadline) notifBox.innerHTML = '<p style="text-align:center;color:#666;">No upcoming deadlines 🎉</p>';
 
+    // Load Quick Stats
+    const notes = await getAll('notes');
+    const tasks = await getAll('tasks');
+    const projects = await getAll('projects');
+    const courses = await getAll('courses');
+    
+    document.getElementById('totalNotes').textContent = notes.length;
+    document.getElementById('totalTasks').textContent = tasks.filter(t => !t.completed).length;
+    document.getElementById('totalProjects').textContent = projects.length;
+    document.getElementById('totalCourses').textContent = courses.length;
+
+    // Load other features
+    await updateProgress();
+    await updateStreak();
+    await loadRecentActivity();
+    renderMiniCalendar();
+}
 
 openDB().then(initDashboard);
 </script>
