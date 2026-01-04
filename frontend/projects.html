@@ -5,6 +5,7 @@
 <title>Projects | Edumate</title>
 
 <link rel="icon" href="../assets/E.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
 :root {
@@ -19,28 +20,98 @@
 #sidebar .nav-link { display:block;color:var(--dark-text);font-weight:600;margin:6px 10px;padding:10px 15px;border-radius:10px;transition:0.25s ease-in-out;text-decoration:none;}
 #sidebar .nav-link:hover,#sidebar .nav-link.active { background:var(--primary-orange); color:#000; transform:translateX(5px);}
 
-
 .content { margin-left:260px;padding:30px;min-height:100vh;background:var(--light-bg);}
 .section-title { font-size:26px;font-weight:800;margin-bottom:25px; }
-.top-controls { display:flex;gap:15px;margin-bottom:20px;}
-.top-controls input,.top-controls select { padding:10px;border-radius:8px;border:1px solid #aaa;}
+
+/* Statistics Bar */
+.stats-bar { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap; }
+.stat-box { background:var(--soft-orange);padding:12px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:600;transition:0.3s; }
+.stat-box:hover { transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+.stat-box span { color:var(--primary-orange);font-size:20px;font-weight:800; }
+
+.top-controls { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;}
+.top-controls input,.top-controls select { padding:10px;border-radius:8px;border:1px solid #aaa;flex:1;min-width:180px;}
+.top-controls button { background:var(--primary-orange);border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;transition:0.2s; }
+.top-controls button:hover { transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+
 .project-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
-.project-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;}
-.project-card h3 { margin:0; }
+
+/* List View */
+.project-list { display:flex;flex-direction:column;gap:15px; }
+.project-list .project-card { min-height:auto; }
+
+.project-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;transition:0.3s;}
+.project-card:hover { transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.2); }
+.project-card.archived { opacity:0.6;border:2px dashed #999; }
+.project-card h3 { margin:0 0 10px 0;padding-right:80px;font-size:18px; }
+.project-card p { margin:4px 0;word-wrap:break-word;font-size:13px; }
+.project-card small { font-size:11px; }
+
+/* Status Badges */
+.status-badge { display:inline-block;padding:3px 10px;border-radius:15px;font-size:10px;font-weight:700;margin:3px 3px 3px 0; }
+.status-not-started { background:#e0e0e0;color:#333; }
+.status-in-progress { background:#fff3cd;color:#856404; }
+.status-completed { background:#d4edda;color:#155724; }
+.status-on-hold { background:#f8d7da;color:#721c24; }
+
 .priority-high { color:red;font-weight:bold; }
 .priority-medium { color:orange;font-weight:bold; }
 .priority-low { color:green;font-weight:bold; }
-.pin,.fav { position:absolute; right:12px; font-size:20px; cursor:pointer;}
+
+.pin,.fav { position:absolute;right:12px;font-size:18px;cursor:pointer;transition:0.2s; }
+.pin:hover,.fav:hover { transform:scale(1.2); }
 .pin { top:12px; } .pin.active { color:gold; }
-.fav { top:40px; } .fav.active { color:red; }
-.add-btn { position:fixed; right:40px; bottom:40px; background:var(--primary-orange); color:#fff; font-size:30px; width:65px; height:65px; border-radius:50%; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer;}
-.modal { position:fixed; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.45); display:none; justify-content:center; align-items:center; }
-.modal-content { background:var(--soft-orange); padding:25px; width:480px; max-width:92vw; box-sizing:border-box; border-radius:12px; box-shadow:0 4px 10px black; }
-.modal-content input, .modal-content textarea, .modal-content select { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #aaa; box-sizing:border-box; font-size:14px; }
-.modal-content textarea { min-height:120px; resize:vertical; }
-.modal-content button { background:var(--primary-orange); padding:10px 20px; border:none; margin-right:8px; border-radius:8px; cursor:pointer; }
-.subtasks { margin-top:8px; font-size:14px; }
-.subtasks li { margin-bottom:4px; }
+.fav { top:36px; } .fav.active { color:red; }
+
+/* Progress Bar */
+.progress-container { width:100%;background:#ddd;border-radius:10px;height:8px;margin:10px 0;overflow:hidden; }
+.progress-bar { height:100%;background:linear-gradient(90deg, #ffb56b, #ff8c42);border-radius:10px;transition:width 0.3s; }
+
+/* Subtasks */
+.subtasks { margin-top:8px;font-size:14px;list-style:none;padding:0; }
+.subtasks li { margin-bottom:6px;padding:5px;border-radius:5px;background:rgba(255,255,255,0.5);display:flex;align-items:center;gap:8px; }
+.subtasks li input[type="checkbox"] { cursor:pointer;width:16px;height:16px; }
+.subtasks li.completed { text-decoration:line-through;opacity:0.7; }
+
+/* Action Buttons */
+.project-card .actions { margin-top:8px;display:flex;gap:4px;flex-wrap:wrap; }
+.project-card .actions button { padding:5px 10px;border:none;border-radius:6px;cursor:pointer;font-size:11px;background:#fff;transition:0.2s; }
+.project-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
+
+.add-btn { position:fixed;right:40px;bottom:40px;background:var(--primary-orange);color:#fff;font-size:30px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;transition:0.3s;}
+.add-btn:hover { transform:scale(1.1);box-shadow:0 6px 18px rgba(0,0,0,0.4); }
+
+/* Secondary Buttons */
+.secondary-btn { position:fixed;right:40px;background:var(--soft-orange);color:#333;font-size:18px;width:55px;height:55px;border-radius:50%;border:2px solid var(--primary-orange);box-shadow:0 3px 10px rgba(0,0,0,0.2);cursor:pointer;transition:0.3s;}
+.secondary-btn:hover { transform:scale(1.1); }
+#archiveBtn { bottom:120px; }
+#exportBtn { bottom:190px; }
+
+.modal { position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.45);display:none;justify-content:center;align-items:center;z-index:1000; }
+.modal-content { background:var(--soft-orange);padding:25px;width:520px;max-width:92vw;max-height:85vh;overflow-y:auto;box-sizing:border-box;border-radius:12px;box-shadow:0 4px 10px black;}
+.modal-content input,.modal-content textarea,.modal-content select { width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #aaa;box-sizing:border-box;font-size:14px;}
+.modal-content textarea { min-height:120px;resize:vertical; }
+.modal-content button { background:var(--primary-orange);padding:10px 20px;border:none;margin-right:8px;margin-top:5px;border-radius:8px;cursor:pointer;}
+.modal-content button:hover { opacity:0.9; }
+
+/* Toast Notification */
+.toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:15px 30px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:none;z-index:2000;animation:slideUp 0.3s;}
+@keyframes slideUp { from{bottom:0;opacity:0;} to{bottom:30px;opacity:1;} }
+
+/* Empty State */
+.empty-state { text-align:center;padding:60px 20px;color:#999; }
+.empty-state h3 { font-size:24px;margin-bottom:10px; }
+
+/* Import/Export Area */
+.import-export-area { background:#fff;padding:15px;border-radius:8px;margin:10px 0;max-height:300px;overflow-y:auto;font-family:monospace;font-size:12px;white-space:pre-wrap;word-wrap:break-word; }
+
+/* Category Badge */
+.category-badge { display:inline-block;background:#9C27B0;color:white;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;margin-bottom:5px; }
+
+.checkbox-done { margin-left:8px;margin-top:5px; }
+.checkbox-done input { cursor:pointer;width:18px;height:18px;margin-right:5px; }
+.checkbox-done label { cursor:pointer;font-weight:600; }
+
 @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
 </style>
 </head>
@@ -59,43 +130,175 @@
 
 <div class="content">
 <h2 class="section-title">Your Projects</h2>
+
+<!-- Statistics Bar -->
+<div class="stats-bar">
+<div class="stat-box"><i class="bi bi-folder-fill"></i> Total: <span id="totalCount">0</span></div>
+<div class="stat-box"><i class="bi bi-hourglass-split"></i> In Progress: <span id="inProgressCount">0</span></div>
+<div class="stat-box"><i class="bi bi-check-circle-fill"></i> Completed: <span id="completedCount">0</span></div>
+<div class="stat-box"><i class="bi bi-pin-angle-fill"></i> Pinned: <span id="pinnedCount">0</span></div>
+<div class="stat-box"><i class="bi bi-heart-fill"></i> Favorites: <span id="favCount">0</span></div>
+<div class="stat-box"><i class="bi bi-archive-fill"></i> Archived: <span id="archivedCount">0</span></div>
+</div>
+
 <div class="top-controls">
-<input type="text" id="searchInput" onkeyup="loadProjects()" placeholder="Search projects...">
+<input type="text" id="searchInput" onkeyup="loadProjects()" placeholder="🔍 Search projects...">
+
 <select id="priorityFilter" onchange="loadProjects()">
 <option value="all">All Priorities</option>
 <option value="High">High Priority</option>
 <option value="Medium">Medium Priority</option>
 <option value="Low">Low Priority</option>
 </select>
+
+<select id="statusFilter" onchange="loadProjects()">
+<option value="all">All Status</option>
+<option value="Not Started">Not Started</option>
+<option value="In Progress">In Progress</option>
+<option value="Completed">Completed</option>
+<option value="On Hold">On Hold</option>
+</select>
+
+<select id="categoryFilter" onchange="loadProjects()">
+<option value="all">All Categories</option>
+<option value="Academic">Academic</option>
+<option value="Personal">Personal</option>
+<option value="Work">Work</option>
+<option value="Research">Research</option>
+<option value="Other">Other</option>
+</select>
+
+<select id="favFilter" onchange="loadProjects()">
+<option value="all">All Projects</option>
+<option value="fav">Favorites Only</option>
+</select>
+
+<select id="sortBy" onchange="loadProjects()">
+<option value="newest">Newest First</option>
+<option value="oldest">Oldest First</option>
+<option value="deadline">By Deadline</option>
+<option value="priority">By Priority</option>
+<option value="name">By Name</option>
+<option value="progress">By Progress</option>
+</select>
+
+<select id="viewMode" onchange="toggleViewMode()">
+<option value="grid"><i class="bi bi-grid-3x3-gap"></i> Grid View</option>
+<option value="list"><i class="bi bi-list-ul"></i> List View</option>
+</select>
+
+<button onclick="toggleArchiveView()">
+<span id="archiveViewText"><i class="bi bi-archive"></i> Show Archived</span>
+</button>
+
+<button onclick="clearAllFilters()"><i class="bi bi-arrow-clockwise"></i> Reset</button>
 </div>
+
 <div class="project-grid" id="projectList"></div>
 </div>
 
-<button class="add-btn" onclick="openModal()">+</button>
+<button class="add-btn" onclick="openModal()" title="Add New Project">+</button>
 
+<!-- Secondary Buttons -->
+<button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive"><i class="bi bi-archive"></i></button>
+<button class="secondary-btn" id="exportBtn" onclick="openExportModal()" title="Export Projects"><i class="bi bi-download"></i></button>
+
+<!-- Add/Edit Project Modal -->
 <div id="projectModal" class="modal">
 <div class="modal-content">
-<h3 id="modalTitle">Add New Project</h3>
+<h3 id="modalTitle"><i class="bi bi-plus-circle"></i> Add New Project</h3>
 <input type="text" id="projectTitle" placeholder="Project Title">
 <textarea id="projectDesc" placeholder="Description"></textarea>
 <input type="text" id="projectTags" placeholder="Tags (comma separated)">
+
+<select id="projectCategory">
+<option value="">Select Category</option>
+<option value="Academic"><i class="bi bi-book"></i> Academic</option>
+<option value="Personal"><i class="bi bi-person"></i> Personal</option>
+<option value="Work"><i class="bi bi-briefcase"></i> Work</option>
+<option value="Research"><i class="bi bi-search"></i> Research</option>
+<option value="Other"><i class="bi bi-three-dots"></i> Other</option>
+</select>
+
 <input type="date" id="projectStart">
 <input type="date" id="projectDeadline">
+
 <select id="projectPriority">
 <option value="Low">🌿 Low Priority</option>
 <option value="Medium">⚡ Medium Priority</option>
 <option value="High">🔥 High Priority</option>
 </select>
-<textarea id="projectSubtasks" placeholder="Subtasks (comma separated)"></textarea>
-<button onclick="saveProject()">Save</button>
-<button onclick="closeModal()">Cancel</button>
+
+<select id="projectStatus">
+<option value="Not Started">Not Started</option>
+<option value="In Progress">In Progress</option>
+<option value="Completed">Completed</option>
+<option value="On Hold">On Hold</option>
+</select>
+
+<textarea id="projectSubtasks" placeholder="Subtasks (one per line)"></textarea>
+
+<label style="display:block;margin:10px 0;">
+<input type="checkbox" id="projectReminder"> Set Reminder
+</label>
+
+<button onclick="saveProject()"><i class="bi bi-save"></i> Save</button>
+<button onclick="closeModal()"><i class="bi bi-x-circle"></i> Cancel</button>
 </div>
 </div>
+
+<!-- View Project Modal -->
+<div id="viewProjectModal" class="modal">
+<div class="modal-content">
+<h3 id="viewProjectTitle"></h3>
+<div id="viewProjectStatus"></div>
+<div id="viewProjectContent" style="background:#fff;padding:15px;border-radius:8px;margin:10px 0;min-height:100px;"></div>
+<div style="margin-top:15px;">
+<button onclick="closeViewModal()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- Archive Modal -->
+<div id="archiveModal" class="modal">
+<div class="modal-content">
+<h3><i class="bi bi-archive-fill"></i> Archived Projects</h3>
+<div id="archiveList" style="max-height:400px;overflow-y:auto;"></div>
+<div style="margin-top:15px;">
+<button onclick="closeArchiveModal()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- Export Modal -->
+<div id="exportModal" class="modal">
+<div class="modal-content">
+<h3>Export / Import Projects</h3>
+<h4>Export Projects</h4>
+<button onclick="exportProjects()"><i class="bi bi-download"></i> Export as JSON</button>
+<button onclick="exportProjectsText()"><i class="bi bi-file-text"></i> Export as Text</button>
+<button onclick="exportProjectsCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV</button>
+
+<h4 style="margin-top:20px;">Import Projects</h4>
+<input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
+<button onclick="importProjects()"><i class="bi bi-upload"></i> Import from JSON</button>
+
+<h4 style="margin-top:20px;">Preview</h4>
+<div class="import-export-area" id="exportPreview">Export data will appear here...</div>
+
+<div style="margin-top:15px;">
+<button onclick="closeExportModal()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
 
 <script>
 let db;
 let editID=null;
-
+let showArchived=false;
 
 function openDB() {
     return new Promise((resolve,reject)=>{
@@ -110,110 +313,564 @@ function openDB() {
         req.onerror = e => reject(e);
     });
 }
+
 function get(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).get(key); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve(null); });}
 function getAll(store){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).getAll(); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve([]); });}
 function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).add(obj); req.onsuccess=()=>resolve(); });}
 function put(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).put(obj); req.onsuccess=()=>resolve(); });}
 function del(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).delete(key); req.onsuccess=()=>resolve(); });}
 
-
 function openModal(isEdit=false){
     document.getElementById("projectModal").style.display="flex";
-    document.getElementById("modalTitle").innerText = isEdit ? "Edit Project" : "Add New Project";
+    document.getElementById("modalTitle").innerHTML = isEdit ? '<i class="bi bi-pencil-square"></i> Edit Project' : '<i class="bi bi-plus-circle"></i> Add New Project';
 }
+
 function closeModal(){
     document.getElementById("projectModal").style.display="none";
     editID=null;
-    projectTitle.value=""; projectDesc.value=""; projectTags.value=""; projectStart.value=""; projectDeadline.value=""; projectPriority.value="Low"; projectSubtasks.value="";
+    projectTitle.value=""; projectDesc.value=""; projectTags.value=""; projectStart.value=""; projectDeadline.value=""; projectPriority.value="Low"; projectSubtasks.value=""; projectStatus.value="Not Started"; projectCategory.value=""; projectReminder.checked=false;
 }
 
+function openViewModal(id){
+    get("projects",id).then(p=>{
+        if(!p) return;
+        document.getElementById("viewProjectTitle").innerText = p.title;
+        
+        const statusClass = (p.status || 'Not Started').toLowerCase().replace(' ','-');
+        document.getElementById("viewProjectStatus").innerHTML = `<span class="status-badge status-${statusClass}">${p.status || 'Not Started'}</span>`;
+        
+        const completedCount = (p.subtasksCompletion || []).filter(Boolean).length;
+        const totalCount = (p.subtasks || []).length;
+        const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+        
+        let content = `
+            <p><strong>Description:</strong> ${p.description || 'N/A'}</p>
+            <p><strong>Category:</strong> ${p.category || 'N/A'}</p>
+            <p><strong>Tags:</strong> ${p.tags || 'N/A'}</p>
+            <p><strong>Start Date:</strong> ${p.startDate || 'N/A'}</p>
+            <p><strong>Deadline:</strong> ${p.deadline || 'N/A'}</p>
+            <p><strong>Priority:</strong> <span class="priority-${p.priority.toLowerCase()}">${p.priority}</span></p>
+            <p><strong>Status:</strong> ${p.status || 'Not Started'}</p>
+            ${totalCount > 0 ? `<p><strong>Progress:</strong> ${completedCount}/${totalCount} subtasks (${progress.toFixed(0)}%)</p>` : ''}
+            <p><strong>Created:</strong> ${p.time}</p>
+            ${p.reminder ? '<p><strong>Reminder:</strong> Set</p>' : ''}
+        `;
+        
+        if(p.subtasks && p.subtasks.length > 0){
+            content += '<p><strong>Subtasks:</strong></p><ul>';
+            p.subtasks.forEach((s, idx) => {
+                const isCompleted = p.subtasksCompletion && p.subtasksCompletion[idx];
+                content += `<li style="${isCompleted ? 'text-decoration:line-through;' : ''}">${isCompleted ? '✓' : '○'} ${s}</li>`;
+            });
+            content += '</ul>';
+        }
+        
+        document.getElementById("viewProjectContent").innerHTML = content;
+        document.getElementById("viewProjectModal").style.display = "flex";
+    });
+}
+
+function closeViewModal(){ document.getElementById("viewProjectModal").style.display="none"; }
+
+function openArchiveModal(){ 
+    loadArchivedProjects();
+    document.getElementById("archiveModal").style.display="flex"; 
+}
+function closeArchiveModal(){ document.getElementById("archiveModal").style.display="none"; }
+
+function openExportModal(){ document.getElementById("exportModal").style.display="flex"; }
+function closeExportModal(){ document.getElementById("exportModal").style.display="none"; }
 
 async function saveProject(){
-    // preserve done state when editing
     let doneState = false;
+    let subtasksCompletion = [];
+    let pinnedState = false;
+    let favState = false;
+    let archivedState = false;
+    
     if(editID){
         const existing = await get("projects", editID);
         doneState = existing && existing.done ? true : false;
+        subtasksCompletion = existing && existing.subtasksCompletion ? existing.subtasksCompletion : [];
+        pinnedState = existing && existing.pinned ? true : false;
+        favState = existing && existing.fav ? true : false;
+        archivedState = existing && existing.archived ? true : false;
     }
+    
+    const subtasksArray = projectSubtasks.value.split("\n").map(s=>s.trim()).filter(s=>s);
+    
+    if(subtasksCompletion.length !== subtasksArray.length) {
+        subtasksCompletion = subtasksArray.map((_, idx) => subtasksCompletion[idx] || false);
+    }
+    
     let project={
-         title: projectTitle.value,
+         title: projectTitle.value || "Untitled Project",
          description: projectDesc.value,
          tags: projectTags.value,
+         category: projectCategory.value,
          startDate: projectStart.value,
          deadline: projectDeadline.value,
          priority: projectPriority.value,
-         subtasks: projectSubtasks.value.split(",").map(s=>s.trim()).filter(s=>s),
-         pinned:false,
-         fav:false,
+         status: projectStatus.value,
+         subtasks: subtasksArray,
+         subtasksCompletion: subtasksCompletion,
+         reminder: projectReminder.checked,
+         pinned: pinnedState,
+         fav: favState,
          done: doneState,
-         time:new Date().toLocaleString()
+         archived: archivedState,
+         time: new Date().toLocaleString(),
+         createdTime: new Date().toLocaleString(),
+         timestamp: Date.now()
      };
-     if(editID){ project.id=editID; await put("projects",project); }
-     else await add("projects",project);
-     closeModal(); loadProjects();
- }
- 
+     
+     if(editID){ 
+         project.id=editID; 
+         await put("projects",project);
+         showToast('<i class="bi bi-check-circle"></i> Project updated successfully!');
+     }
+     else {
+         await add("projects",project);
+         showToast('<i class="bi bi-check-circle"></i> Project created successfully!');
+     }
+     
+     closeModal(); 
+     loadProjects();
+}
 
- async function loadProjects(){
-     const container=document.getElementById("projectList");
-     container.innerHTML="";
-     const search=searchInput.value.toLowerCase();
-     const filter=priorityFilter.value;
- 
-     let list=await getAll("projects");
-     list=list.sort((a,b)=>b.pinned-a.pinned)
-              .filter(p=>p.title.toLowerCase().includes(search))
-              .filter(p=>filter==="all"||p.priority===filter);
- 
-     list.forEach(p=>{
-         container.innerHTML+=`
-         <div class="project-card">
-            <span class="pin ${p.pinned?"active":""}" onclick="togglePin(${p.id},${p.pinned})">📌</span>
-            <label style="display:inline-block;margin-left:8px;">
-                <input type="checkbox" onchange="toggleDone(${p.id}, this.checked)" ${p.done ? "checked" : ""}> Done
-            </label>
-            <span class="fav ${p.fav?"active":""}" onclick="toggleFav(${p.id},${p.fav})">🧡</span>
-             <h3>${p.title}</h3>
-             <p>${p.description}</p>
-             <p><b>Tags:</b> ${p.tags}</p>
-             <p><b>Start:</b> ${p.startDate} | <b>Deadline:</b> ${p.deadline}</p>
-             <p class="priority-${p.priority.toLowerCase()}">${p.priority}</p>
-             <ul class="subtasks">${p.subtasks.map(s=>`<li>${s}</li>`).join("")}</ul>
-             <small>${p.time}</small><br><br>
-             <button onclick="editProject(${p.id})">Edit</button>
-             <button onclick="deleteProject(${p.id})">Delete</button>
-         </div>`;
-     });
- }
- 
- 
- async function editProject(id){
-     let p=await get("projects",id);
-     editID=id;
-     projectTitle.value=p.title; projectDesc.value=p.description; projectTags.value=p.tags;
-     projectStart.value=p.startDate; projectDeadline.value=p.deadline; projectPriority.value=p.priority;
-     projectSubtasks.value=p.subtasks.join(", ");
-     openModal(true);
- }
- 
- 
- async function toggleDone(id, state){
-     let p = await get("projects", id);
-     if(!p) return;
-     p.done = !!state;
-     await put("projects", p);
- 
+async function updateStats(){
+    let items = await getAll("projects");
+    const nonArchived = items.filter(p => !p.archived);
+    
+    document.getElementById("totalCount").textContent = nonArchived.length;
+    document.getElementById("inProgressCount").textContent = nonArchived.filter(p => p.status === "In Progress").length;
+    document.getElementById("completedCount").textContent = nonArchived.filter(p => p.status === "Completed" || p.done).length;
+    document.getElementById("pinnedCount").textContent = nonArchived.filter(p => p.pinned).length;
+    document.getElementById("favCount").textContent = nonArchived.filter(p => p.fav).length;
+    document.getElementById("archivedCount").textContent = items.filter(p => p.archived).length;
+}
+
+async function loadProjects(){
+    const container=document.getElementById("projectList");
+    container.innerHTML="";
+    const search=searchInput.value.toLowerCase();
+    const filter=priorityFilter.value;
+    const statusFlt=statusFilter.value;
+    const categoryFlt=categoryFilter.value;
+    const favFlt=favFilter.value;
+    const sort=sortBy.value;
+
+    let list=await getAll("projects");
+    
+    // Filter archived
+    list = list.filter(p => showArchived ? p.archived : !p.archived);
+    
+    // Search filter
+    list = list.filter(p=>
+        p.title.toLowerCase().includes(search) || 
+        (p.description && p.description.toLowerCase().includes(search)) ||
+        (p.tags && p.tags.toLowerCase().includes(search))
+    );
+    
+    // Priority filter
+    list = list.filter(p=>filter==="all"||p.priority===filter);
+    
+    // Status filter
+    list = list.filter(p=>statusFlt==="all"||p.status===statusFlt);
+    
+    // Category filter
+    if(categoryFlt !== 'all'){
+        list = list.filter(p => p.category === categoryFlt);
+    }
+    
+    // Favorite filter
+    list = list.filter(p=>favFlt==="all"||p.fav);
+
+    // Sort
+    if(sort === "newest") list.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    else if(sort === "oldest") list.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+    else if(sort === "deadline") list.sort((a,b) => (a.deadline || "9999").localeCompare(b.deadline || "9999"));
+    else if(sort === "priority") {
+        const priorityOrder = {High:3, Medium:2, Low:1};
+        list.sort((a,b) => (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0));
+    }
+    else if(sort === "name") list.sort((a,b) => a.title.localeCompare(b.title));
+    else if(sort === "progress") {
+        list.sort((a,b) => {
+            const progressA = (a.subtasks || []).length > 0 ? ((a.subtasksCompletion || []).filter(Boolean).length / a.subtasks.length) : 0;
+            const progressB = (b.subtasks || []).length > 0 ? ((b.subtasksCompletion || []).filter(Boolean).length / b.subtasks.length) : 0;
+            return progressB - progressA;
+        });
+    }
+    
+    // Pinned always on top
+    list.sort((a,b)=>b.pinned-a.pinned);
+    
+    updateStats();
+    
+    if(list.length === 0){
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3><i class="bi bi-folder-x"></i> No projects found</h3>
+                <p>Add your first project or adjust your filters</p>
+            </div>
+        `;
+        return;
+    }
+
+    list.forEach(p=>{
+        const completedCount = (p.subtasksCompletion || []).filter(Boolean).length;
+        const totalCount = (p.subtasks || []).length;
+        const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+        
+        const statusClass = (p.status || 'Not Started').toLowerCase().replace(' ','-');
+        const archivedClass = p.archived ? 'archived' : '';
+        
+        const subtasksHTML = (p.subtasks || []).map((s, idx) => {
+            const isCompleted = p.subtasksCompletion && p.subtasksCompletion[idx];
+            return `<li class="${isCompleted ? 'completed' : ''}">
+                <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleSubtask(${p.id}, ${idx})">
+                <span>${s}</span>
+            </li>`;
+        }).join("");
+        
+        container.innerHTML+=`
+        <div class="project-card ${archivedClass}">
+            <span class="pin ${p.pinned?"active":""}" onclick="togglePin(${p.id},${p.pinned})" title="${p.pinned ? 'Unpin' : 'Pin'}">
+                <i class="bi bi-pin-angle-fill"></i>
+            </span>
+            <span class="fav ${p.fav?"active":""}" onclick="toggleFav(${p.id},${p.fav})" title="${p.fav ? 'Remove Favorite' : 'Add Favorite'}">
+                <i class="bi bi-heart-fill"></i>
+            </span>
+            
+            <span class="status-badge status-${statusClass}">${p.status || 'Not Started'}</span>
+            ${p.category ? `<span class="category-badge">${p.category}</span>` : ''}
+            ${p.archived ? '<span class="status-badge" style="background:#999;color:#fff;">Archived</span>' : ''}
+            
+            <div class="checkbox-done">
+                <input type="checkbox" id="done-${p.id}" onchange="toggleDone(${p.id}, this.checked)" ${p.done ? "checked" : ""}>
+                <label for="done-${p.id}"><i class="bi bi-check-square"></i> Mark as Done</label>
+            </div>
+            
+            <h3><i class="bi bi-folder"></i> ${p.title}</h3>
+            <p><i class="bi bi-card-text"></i> ${p.description || 'No description'}</p>
+            ${p.tags ? `<p><i class="bi bi-tags"></i> <b>Tags:</b> ${p.tags}</p>` : ''}
+            <p><i class="bi bi-calendar-event"></i> <b>Start:</b> ${p.startDate || 'N/A'} | <b>Deadline:</b> ${p.deadline || 'N/A'}</p>
+            <p class="priority-${p.priority.toLowerCase()}"><i class="bi bi-exclamation-triangle-fill"></i> ${p.priority} Priority</p>
+            
+            ${totalCount > 0 ? `
+                <div style="margin:10px 0;">
+                    <small><i class="bi bi-list-check"></i> Progress: ${completedCount}/${totalCount} subtasks (${progress.toFixed(0)}%)</small>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width:${progress}%"></div>
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${subtasksHTML ? `<ul class="subtasks">${subtasksHTML}</ul>` : ''}
+            
+            ${p.reminder ? '<p style="font-size:11px;"><i class="bi bi-bell"></i> Reminder Set</p>' : ''}
+            
+            <small><i class="bi bi-clock"></i> ${p.time}</small>
+            
+            <div class="actions">
+                <button onclick="openViewModal(${p.id})" title="Quick View"><i class="bi bi-eye"></i> View</button>
+                <button onclick="editProject(${p.id})" title="Edit"><i class="bi bi-pencil"></i> Edit</button>
+                <button onclick="duplicateProject(${p.id})" title="Duplicate"><i class="bi bi-files"></i> Copy</button>
+                ${p.archived 
+                    ? `<button onclick="unarchiveProject(${p.id})" title="Unarchive"><i class="bi bi-arrow-up-circle"></i> Restore</button>` 
+                    : `<button onclick="archiveProject(${p.id})" title="Archive"><i class="bi bi-archive"></i> Archive</button>`
+                }
+                <button onclick="deleteProject(${p.id})" title="Delete" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
+        </div>`;
+    });
+}
+
+async function editProject(id){
+    let p=await get("projects",id);
+    editID=id;
+    projectTitle.value=p.title; 
+    projectDesc.value=p.description; 
+    projectTags.value=p.tags || "";
+    projectStart.value=p.startDate; 
+    projectDeadline.value=p.deadline; 
+    projectPriority.value=p.priority;
+    projectStatus.value=p.status || "Not Started";
+    projectCategory.value=p.category || "";
+    projectSubtasks.value=(p.subtasks || []).join("\n");
+    projectReminder.checked=p.reminder || false;
+    openModal(true);
+}
+
+async function toggleSubtask(id, idx){
+    let p = await get("projects", id);
+    if(!p) return;
+    if(!p.subtasksCompletion) p.subtasksCompletion = [];
+    p.subtasksCompletion[idx] = !p.subtasksCompletion[idx];
+    await put("projects", p);
+    
     try{ localStorage.setItem('edumate-update', JSON.stringify({time:Date.now(), store:'projects'})); }catch(e){}
     loadProjects();
- }
- 
- 
- async function deleteProject(id){ await del("projects",id); loadProjects(); }
- async function togglePin(id,state){ let p=await get("projects",id); p.pinned=!state; await put("projects",p); loadProjects(); }
- async function toggleFav(id,state){ let p=await get("projects",id); p.fav=!state; await put("projects",p); loadProjects(); }
+}
 
+async function toggleDone(id, state){
+    let p = await get("projects", id);
+    if(!p) return;
+    p.done = !!state;
+    if(state) p.status = "Completed";
+    await put("projects", p);
 
-openDB().then(loadProjects);
+    try{ localStorage.setItem('edumate-update', JSON.stringify({time:Date.now(), store:'projects'})); }catch(e){}
+    loadProjects();
+    showToast(state ? '<i class="bi bi-check-circle"></i> Project marked as completed!' : '<i class="bi bi-arrow-repeat"></i> Project marked as pending');
+}
+
+async function deleteProject(id){ 
+    if(confirm("Are you sure you want to delete this project?")) {
+        await del("projects",id); 
+        loadProjects();
+        showToast('<i class="bi bi-trash"></i> Project deleted');
+    }
+}
+
+async function togglePin(id,state){ 
+    let p=await get("projects",id); 
+    p.pinned=!state; 
+    await put("projects",p); 
+    loadProjects();
+    showToast(p.pinned ? '<i class="bi bi-pin-angle-fill"></i> Project pinned' : '<i class="bi bi-pin-angle"></i> Project unpinned');
+}
+
+async function toggleFav(id,state){ 
+    let p=await get("projects",id); 
+    p.fav=!state; 
+    await put("projects",p); 
+    loadProjects();
+    showToast(p.fav ? '<i class="bi bi-heart-fill"></i> Added to favorites' : '<i class="bi bi-heart"></i> Removed from favorites');
+}
+
+async function duplicateProject(id){
+    let p = await get("projects",id);
+    let copy = {
+        title: p.title + " (Copy)",
+        description: p.description,
+        tags: p.tags,
+        category: p.category,
+        startDate: p.startDate,
+        deadline: p.deadline,
+        priority: p.priority,
+        status: p.status,
+        subtasks: p.subtasks,
+        subtasksCompletion: (p.subtasks || []).map(() => false),
+        reminder: p.reminder,
+        pinned: false,
+        fav: false,
+        done: false,
+        archived: false,
+        time: new Date().toLocaleString(),
+        createdTime: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    await add("projects", copy);
+    loadProjects();
+    showToast('<i class="bi bi-files"></i> Project duplicated');
+}
+
+async function archiveProject(id){
+    let p = await get("projects",id);
+    p.archived = true;
+    await put("projects",p);
+    loadProjects();
+    showToast('<i class="bi bi-archive"></i> Project archived');
+}
+
+async function unarchiveProject(id){
+    let p = await get("projects",id);
+    p.archived = false;
+    await put("projects",p);
+    loadProjects();
+    loadArchivedProjects();
+    showToast('<i class="bi bi-arrow-up-circle"></i> Project restored');
+}
+
+function toggleArchiveView(){
+    showArchived = !showArchived;
+    document.getElementById("archiveViewText").innerHTML = showArchived ? '<i class="bi bi-journal-text"></i> Show Active' : '<i class="bi bi-archive"></i> Show Archived';
+    loadProjects();
+}
+
+async function loadArchivedProjects(){
+    let items = await getAll("projects");
+    items = items.filter(p => p.archived);
+    const container = document.getElementById("archiveList");
+    
+    if(items.length === 0){
+        container.innerHTML = `<div class="empty-state"><p>No archived projects</p></div>`;
+        return;
+    }
+    
+    container.innerHTML = "";
+    items.forEach(p => {
+        const statusClass = (p.status || 'Not Started').toLowerCase().replace(' ','-');
+        const completedCount = (p.subtasksCompletion || []).filter(Boolean).length;
+        const totalCount = (p.subtasks || []).length;
+        
+        container.innerHTML += `
+        <div class="project-card" style="margin-bottom:10px;">
+            <span class="status-badge status-${statusClass}">${p.status || 'Not Started'}</span>
+            <h3>${p.title}</h3>
+            <p>${p.description || 'No description'}</p>
+            ${totalCount > 0 ? `<p><b>Progress:</b> ${completedCount}/${totalCount} subtasks</p>` : ''}
+            <p><b>Deadline:</b> ${p.deadline || 'N/A'}</p>
+            <small>${p.time}</small>
+            <div class="actions">
+                <button onclick="unarchiveProject(${p.id})"><i class="bi bi-arrow-up-circle"></i> Restore</button>
+                <button onclick="deleteProject(${p.id})" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
+        </div>`;
+    });
+}
+
+async function exportProjects(){
+    let items = await getAll("projects");
+    const dataStr = JSON.stringify(items, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-projects-${Date.now()}.json`;
+    link.click();
+    document.getElementById("exportPreview").innerText = dataStr;
+    showToast('<i class="bi bi-download"></i> Projects exported as JSON!');
+}
+
+async function exportProjectsText(){
+    let items = await getAll("projects");
+    let text = "EDUMATE PROJECTS EXPORT\n";
+    text += "=".repeat(50) + "\n\n";
+    
+    items.forEach((p, i) => {
+        text += `[${i+1}] ${p.title}\n`;
+        text += `Description: ${p.description || 'N/A'}\n`;
+        text += `Category: ${p.category || 'N/A'}\n`;
+        text += `Tags: ${p.tags || 'None'}\n`;
+        text += `Start Date: ${p.startDate || 'N/A'}\n`;
+        text += `Deadline: ${p.deadline || 'N/A'}\n`;
+        text += `Priority: ${p.priority}\n`;
+        text += `Status: ${p.status || 'Not Started'}\n`;
+        if(p.subtasks && p.subtasks.length > 0){
+            text += `Subtasks:\n`;
+            p.subtasks.forEach((s, idx) => {
+                const done = p.subtasksCompletion && p.subtasksCompletion[idx] ? '✓' : '○';
+                text += `  ${done} ${s}\n`;
+            });
+        }
+        text += `Date: ${p.time}\n`;
+        text += "-".repeat(50) + "\n\n";
+    });
+    
+    const dataBlob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-projects-${Date.now()}.txt`;
+    link.click();
+    document.getElementById("exportPreview").innerText = text;
+    showToast('<i class="bi bi-file-text"></i> Projects exported as text!');
+}
+
+async function exportProjectsCSV(){
+    let items = await getAll("projects");
+    let csv = "Title,Description,Category,Tags,Start Date,Deadline,Priority,Status,Progress,Created\n";
+    
+    items.forEach(p => {
+        const completedCount = (p.subtasksCompletion || []).filter(Boolean).length;
+        const totalCount = (p.subtasks || []).length;
+        const progress = totalCount > 0 ? `${completedCount}/${totalCount}` : 'N/A';
+        
+        csv += `"${p.title}","${p.description || ''}","${p.category || ''}","${p.tags || ''}","${p.startDate || ''}","${p.deadline || ''}","${p.priority}","${p.status || 'Not Started'}","${progress}","${p.time}"\n`;
+    });
+    
+    const dataBlob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-projects-${Date.now()}.csv`;
+    link.click();
+    showToast('<i class="bi bi-file-earmark-spreadsheet"></i> Projects exported as CSV!');
+}
+
+async function importProjects(){
+    const file = document.getElementById("importFile").files[0];
+    if(!file){
+        alert("Please select a file first!");
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(!Array.isArray(data)){
+                alert("Invalid file format!");
+                return;
+            }
+            
+            for(let item of data){
+                delete item.id;
+                await add("projects", item);
+            }
+            
+            loadProjects();
+            closeExportModal();
+            showToast(`<i class="bi bi-upload"></i> ${data.length} projects imported successfully!`);
+        } catch(err){
+            alert("Error importing file: " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function toggleViewMode(){
+    const mode = document.getElementById("viewMode").value;
+    const container = document.getElementById("projectList");
+    
+    if(mode === 'list'){
+        container.classList.remove('project-grid');
+        container.classList.add('project-list');
+    } else {
+        container.classList.remove('project-list');
+        container.classList.add('project-grid');
+    }
+}
+
+function clearAllFilters(){
+    document.getElementById("searchInput").value = "";
+    document.getElementById("priorityFilter").value = "all";
+    document.getElementById("statusFilter").value = "all";
+    document.getElementById("categoryFilter").value = "all";
+    document.getElementById("favFilter").value = "all";
+    document.getElementById("sortBy").value = "newest";
+    showArchived = false;
+    document.getElementById("archiveViewText").innerHTML = '<i class="bi bi-archive"></i> Show Archived';
+    loadProjects();
+    showToast('<i class="bi bi-arrow-clockwise"></i> Filters reset');
+}
+
+function showToast(message){
+    const toast = document.getElementById("toast");
+    toast.innerHTML = message;
+    toast.style.display = "block";
+    setTimeout(() => {
+        toast.style.display = "none";
+    }, 3000);
+}
+
+openDB().then(() => {
+    loadProjects();
+    updateStats();
+});
 </script>
 
 </body>
