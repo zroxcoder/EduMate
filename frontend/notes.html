@@ -5,6 +5,7 @@
 <title>Notes | Edumate</title>
 
 <link rel="icon" href="../assets/E.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
 :root {
@@ -101,10 +102,10 @@
     <h2 class="section-title">Your Notes & Bookmarks</h2>
     
     <div class="stats-bar">
-        <div class="stat-box">📝 Notes: <span id="noteCount">0</span></div>
-        <div class="stat-box">🔗 Bookmarks: <span id="bookmarkCount">0</span></div>
-        <div class="stat-box">📌 Pinned: <span id="pinnedCount">0</span></div>
-        <div class="stat-box">📦 Archived: <span id="archivedCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-journal-text"></i> Notes: <span id="noteCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-link-45deg"></i> Bookmarks: <span id="bookmarkCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-pin-angle-fill"></i> Pinned: <span id="pinnedCount">0</span></div>
+        <div class="stat-box"><i class="bi bi-archive-fill"></i> Archived: <span id="archivedCount">0</span></div>
     </div>
     
     <div class="toolbar">
@@ -112,8 +113,8 @@
         
         <select id="filterType" onchange="loadNotes()">
             <option value="all">All Types</option>
-            <option value="note">📝 Notes Only</option>
-            <option value="bookmark">🔗 Bookmarks Only</option>
+            <option value="note"><i class="bi bi-journal-text"></i> Notes Only</option>
+            <option value="bookmark"><i class="bi bi-link-45deg"></i> Bookmarks Only</option>
         </select>
         
         <select id="sortBy" onchange="loadNotes()">
@@ -124,15 +125,15 @@
         </select>
         
         <select id="viewMode" onchange="toggleViewMode()">
-            <option value="grid">🎛️ Grid View</option>
-            <option value="list">📋 List View</option>
+            <option value="grid"><i class="bi bi-grid-3x3-gap"></i> Grid View</option>
+            <option value="list"><i class="bi bi-list-ul"></i> List View</option>
         </select>
         
         <button onclick="toggleArchiveView()">
-            <span id="archiveViewText">📦 Show Archived</span>
+            <span id="archiveViewText"><i class="bi bi-archive"></i> Show Archived</span>
         </button>
         
-        <button onclick="clearAllFilters()">🔄 Reset Filters</button>
+        <button onclick="clearAllFilters()"><i class="bi bi-arrow-clockwise"></i> Reset Filters</button>
     </div>
     
     <div class="filter-tags" id="tagFilters"></div>
@@ -142,22 +143,22 @@
 
 <button class="add-btn" onclick="openModal()" title="Add New Note">+</button>
 
-<button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive">📦</button>
-<button class="secondary-btn" id="exportBtn" onclick="openImportExportModal()" title="Import/Export">💾</button>
+<button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive"><i class="bi bi-archive"></i></button>
+<button class="secondary-btn" id="exportBtn" onclick="openImportExportModal()" title="Import/Export"><i class="bi bi-download"></i></button>
 
 <div id="noteModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle">Add Note / Bookmark</h3>
         <select id="type">
-            <option value="note">📝 Note</option>
-            <option value="bookmark">🔗 Bookmark</option>
+            <option value="note"><i class="bi bi-journal-text"></i> Note</option>
+            <option value="bookmark"><i class="bi bi-link-45deg"></i> Bookmark</option>
         </select>
         <input id="title" type="text" placeholder="Title">
         <textarea id="content" placeholder="Content / URL if bookmark"></textarea>
         <input id="tags" type="text" placeholder="Tags (comma separated)">
         <div>
-            <button onclick="saveNote()">💾 Save</button>
-            <button onclick="closeModal()">❌ Cancel</button>
+            <button onclick="saveNote()"><i class="bi bi-save"></i> Save</button>
+            <button onclick="closeModal()"><i class="bi bi-x-circle"></i> Cancel</button>
         </div>
     </div>
 </div>
@@ -166,12 +167,12 @@
     <div class="modal-content">
         <h3>Import / Export Notes</h3>
         <h4>Export Notes</h4>
-        <button onclick="exportNotes()">📥 Export All Notes (JSON)</button>
-        <button onclick="exportNotesText()">📄 Export as Text</button>
+        <button onclick="exportNotes()"><i class="bi bi-download"></i> Export All Notes (JSON)</button>
+        <button onclick="exportNotesText()"><i class="bi bi-file-text"></i> Export as Text</button>
         
         <h4 style="margin-top:20px;">Import Notes</h4>
         <input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
-        <button onclick="importNotes()">📤 Import from JSON</button>
+        <button onclick="importNotes()"><i class="bi bi-upload"></i> Import from JSON</button>
         
         <h4 style="margin-top:20px;">Preview</h4>
         <div class="import-export-area" id="exportPreview">Export data will appear here...</div>
@@ -184,7 +185,7 @@
 
 <div id="archiveModal" class="modal">
     <div class="modal-content">
-        <h3>📦 Archived Notes</h3>
+        <h3><i class="bi bi-archive-fill"></i> Archived Notes</h3>
         <div id="archiveList" style="max-height:400px;overflow-y:auto;"></div>
         <div style="margin-top:15px;">
             <button onclick="closeArchiveModal()">Close</button>
@@ -255,7 +256,7 @@ function openViewModal(id){
     get("notes",id).then(n=>{
         if(!n) return;
         document.getElementById("viewNoteTitle").innerText = n.title;
-        document.getElementById("viewNoteType").innerText = n.type === 'note' ? '📝 Note' : '🔗 Bookmark';
+        document.getElementById("viewNoteType").innerHTML = n.type === 'note' ? '<i class="bi bi-journal-text"></i> Note' : '<i class="bi bi-link-45deg"></i> Bookmark';
         if(n.type === 'bookmark'){
             document.getElementById("viewNoteContent").innerHTML = `<a href="${n.content}" target="_blank">${n.content}</a>`;
         } else {
@@ -285,11 +286,11 @@ async function saveNote(){
         obj.pinned = existing.pinned;
         obj.archived = existing.archived;
         await put("notes",obj); 
-        showToast("✅ Note updated successfully!");
+        showToast('<i class="bi bi-check-circle"></i> Note updated successfully!');
     }
     else {
         await add("notes",obj);
-        showToast("✅ Note created successfully!");
+        showToast('<i class="bi bi-check-circle"></i> Note created successfully!');
     }
     closeModal(); 
     loadNotes();
@@ -334,7 +335,7 @@ async function loadNotes(){
     if(items.length === 0){
         container.innerHTML = `
             <div class="empty-state">
-                <h3>📭 No notes found</h3>
+                <h3><i class="bi bi-inbox"></i> No notes found</h3>
                 <p>Create your first note or adjust your filters</p>
             </div>
         `;
@@ -349,22 +350,22 @@ async function loadNotes(){
         
         container.innerHTML += `
         <div class="note-card ${archivedClass}">
-            <span class="pin ${n.pinned?"active":""}" onclick="togglePin(${n.id},${n.pinned})" title="${n.pinned ? 'Unpin' : 'Pin'}">📌</span>
-            <div class="type-badge">${n.type==='note'?'📝 Note':'🔗 Bookmark'}</div>
+            <span class="pin ${n.pinned?"active":""}" onclick="togglePin(${n.id},${n.pinned})" title="${n.pinned ? 'Unpin' : 'Pin'}"><i class="bi bi-pin-angle-fill"></i></span>
+            <div class="type-badge">${n.type==='note'?'<i class="bi bi-journal-text"></i> Note':'<i class="bi bi-link-45deg"></i> Bookmark'}</div>
             <h3>${n.title}</h3>
             <p>${contentPreview}</p>
-            <small>🏷️ ${n.tags || 'No tags'}</small><br>
-            <small>🕒 ${n.time}</small>
+            <small><i class="bi bi-tags"></i> ${n.tags || 'No tags'}</small><br>
+            <small><i class="bi bi-clock"></i> ${n.time}</small>
             <div class="actions">
-                <button onclick="openViewModal(${n.id})" title="Quick View">👁️ View</button>
-                <button onclick="editNote(${n.id})" title="Edit">✏️ Edit</button>
-                <button onclick="duplicateNote(${n.id})" title="Duplicate">📋 Copy</button>
-                <button onclick="copyToClipboard(${n.id})" title="Copy to Clipboard">📎 Clipboard</button>
+                <button onclick="openViewModal(${n.id})" title="Quick View"><i class="bi bi-eye"></i> View</button>
+                <button onclick="editNote(${n.id})" title="Edit"><i class="bi bi-pencil"></i> Edit</button>
+                <button onclick="duplicateNote(${n.id})" title="Duplicate"><i class="bi bi-files"></i> Copy</button>
+                <button onclick="copyToClipboard(${n.id})" title="Copy to Clipboard"><i class="bi bi-clipboard"></i> Clipboard</button>
                 ${n.archived 
-                    ? `<button onclick="unarchiveNote(${n.id})" title="Unarchive">📤 Restore</button>` 
-                    : `<button onclick="archiveNote(${n.id})" title="Archive">📦 Archive</button>`
+                    ? `<button onclick="unarchiveNote(${n.id})" title="Unarchive"><i class="bi bi-arrow-up-circle"></i> Restore</button>` 
+                    : `<button onclick="archiveNote(${n.id})" title="Archive"><i class="bi bi-archive"></i> Archive</button>`
                 }
-                <button onclick="deleteNote(${n.id})" title="Delete" style="background:#ffcccc;">🗑️ Delete</button>
+                <button onclick="deleteNote(${n.id})" title="Delete" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
             </div>
         </div>`;
     });
@@ -422,9 +423,9 @@ function clearAllFilters(){
     document.getElementById("sortBy").value = "date-desc";
     selectedTagFilter = null;
     showArchived = false;
-    document.getElementById("archiveViewText").innerText = "📦 Show Archived";
+    document.getElementById("archiveViewText").innerHTML = '<i class="bi bi-archive"></i> Show Archived';
     loadNotes();
-    showToast("🔄 Filters reset");
+    showToast('<i class="bi bi-arrow-clockwise"></i> Filters reset');
 }
 
 async function togglePin(id,state){
@@ -432,14 +433,14 @@ async function togglePin(id,state){
     n.pinned = !state;
     await put("notes",n);
     loadNotes();
-    showToast(n.pinned ? "📌 Note pinned" : "📌 Note unpinned");
+    showToast(n.pinned ? '<i class="bi bi-pin-angle-fill"></i> Note pinned' : '<i class="bi bi-pin-angle"></i> Note unpinned');
 }
 
 async function deleteNote(id){
     if(confirm("Are you sure you want to permanently delete this note?")){
         await del("notes",id);
         loadNotes();
-        showToast("🗑️ Note deleted");
+        showToast('<i class="bi bi-trash"></i> Note deleted');
     }
 }
 
@@ -459,7 +460,7 @@ async function archiveNote(id){
     n.archived = true;
     await put("notes",n);
     loadNotes();
-    showToast("📦 Note archived");
+    showToast('<i class="bi bi-archive"></i> Note archived');
 }
 
 async function unarchiveNote(id){
@@ -468,7 +469,7 @@ async function unarchiveNote(id){
     await put("notes",n);
     loadNotes();
     loadArchivedNotes();
-    showToast("📤 Note restored");
+    showToast('<i class="bi bi-arrow-up-circle"></i> Note restored');
 }
 
 async function duplicateNote(id){
@@ -485,7 +486,7 @@ async function duplicateNote(id){
     };
     await add("notes", copy);
     loadNotes();
-    showToast("📋 Note duplicated");
+    showToast('<i class="bi bi-files"></i> Note duplicated');
 }
 
 async function copyToClipboard(id){
@@ -494,7 +495,7 @@ async function copyToClipboard(id){
     
     if(navigator.clipboard){
         navigator.clipboard.writeText(text).then(() => {
-            showToast("📎 Copied to clipboard!");
+            showToast('<i class="bi bi-clipboard-check"></i> Copied to clipboard!');
         });
     } else {
         const textarea = document.createElement('textarea');
@@ -503,13 +504,13 @@ async function copyToClipboard(id){
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        showToast("📎 Copied to clipboard!");
+        showToast('<i class="bi bi-clipboard-check"></i> Copied to clipboard!');
     }
 }
 
 function toggleArchiveView(){
     showArchived = !showArchived;
-    document.getElementById("archiveViewText").innerText = showArchived ? "📝 Show Active" : "📦 Show Archived";
+    document.getElementById("archiveViewText").innerHTML = showArchived ? '<i class="bi bi-journal-text"></i> Show Active' : '<i class="bi bi-archive"></i> Show Archived';
     loadNotes();
 }
 
@@ -527,13 +528,13 @@ async function loadArchivedNotes(){
     items.forEach(n => {
         container.innerHTML += `
         <div class="note-card" style="margin-bottom:10px;">
-            <div class="type-badge">${n.type==='note'?'📝 Note':'🔗 Bookmark'}</div>
+            <div class="type-badge">${n.type==='note'?'<i class="bi bi-journal-text"></i> Note':'<i class="bi bi-link-45deg"></i> Bookmark'}</div>
             <h3>${n.title}</h3>
             <p>${n.content.substring(0,80)}...</p>
             <small>${n.time}</small>
             <div class="actions">
-                <button onclick="unarchiveNote(${n.id})">📤 Restore</button>
-                <button onclick="deleteNote(${n.id})" style="background:#ffcccc;">🗑️ Delete</button>
+                <button onclick="unarchiveNote(${n.id})"><i class="bi bi-arrow-up-circle"></i> Restore</button>
+                <button onclick="deleteNote(${n.id})" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
             </div>
         </div>`;
     });
@@ -549,7 +550,7 @@ async function exportNotes(){
     link.download = `edumate-notes-${Date.now()}.json`;
     link.click();
     document.getElementById("exportPreview").innerText = dataStr;
-    showToast("📥 Notes exported!");
+    showToast('<i class="bi bi-download"></i> Notes exported!');
 }
 
 async function exportNotesText(){
@@ -575,7 +576,7 @@ async function exportNotesText(){
     link.download = `edumate-notes-${Date.now()}.txt`;
     link.click();
     document.getElementById("exportPreview").innerText = text;
-    showToast("📄 Notes exported as text!");
+    showToast('<i class="bi bi-file-text"></i> Notes exported as text!');
 }
 
 async function importNotes(){
@@ -601,7 +602,7 @@ async function importNotes(){
             
             loadNotes();
             closeImportExportModal();
-            showToast(`📤 ${data.length} notes imported successfully!`);
+            showToast(`<i class="bi bi-upload"></i> ${data.length} notes imported successfully!`);
         } catch(err){
             alert("Error importing file: " + err.message);
         }
@@ -624,7 +625,7 @@ function toggleViewMode(){
 
 function showToast(message){
     const toast = document.getElementById("toast");
-    toast.innerText = message;
+    toast.innerHTML = message;
     toast.style.display = "block";
     setTimeout(() => {
         toast.style.display = "none";

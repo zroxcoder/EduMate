@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>Courses | Edumate</title>
 
-
 <link rel="icon" href="../assets/E.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
 :root {
@@ -20,34 +20,87 @@
 #sidebar .nav-link { display:block;color:var(--dark-text);font-weight:600;margin:6px 10px;padding:10px 15px;border-radius:10px;transition:0.25s ease-in-out;text-decoration:none;}
 #sidebar .nav-link:hover,#sidebar .nav-link.active { background:var(--primary-orange); color:#000; transform:translateX(5px); }
 
-
 .content { margin-left:260px;padding:30px;min-height:100vh;background:var(--light-bg);}
 .section-title { font-size:26px;font-weight:800;margin-bottom:25px; }
-.top-controls { display:flex;gap:15px;margin-bottom:20px;}
-.top-controls input,.top-controls select { padding:10px;border-radius:8px;border:1px solid #aaa;}
 
+/* NEW: Statistics Bar */
+.stats-bar { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap; }
+.stat-box { background:var(--soft-orange);padding:12px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:600;transition:0.3s; }
+.stat-box:hover { transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+.stat-box span { color:var(--primary-orange);font-size:20px;font-weight:800; }
 
-.course-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px;}
-.course-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;}
-.course-card h3 { margin:0; }
+.top-controls { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;}
+.top-controls input,.top-controls select { padding:10px;border-radius:8px;border:1px solid #aaa;flex:1;min-width:180px;}
+.top-controls button { background:var(--primary-orange);border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;transition:0.2s; }
+.top-controls button:hover { transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+
+.course-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px;}
+
+/* NEW: List View */
+.course-list { display:flex;flex-direction:column;gap:15px; }
+.course-list .course-card { display:flex;flex-direction:row;flex-wrap:wrap;min-height:auto; }
+
+.course-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;transition:0.3s;}
+.course-card:hover { transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.2); }
+.course-card h3 { margin:0;padding-right:60px; }
+.course-card p { margin:8px 0;word-wrap:break-word; }
+
+/* NEW: Progress Bar */
+.progress-container { width:100%;background:#fff;border-radius:10px;height:10px;margin:10px 0;overflow:hidden; }
+.progress-bar { height:100%;background:linear-gradient(90deg, var(--primary-orange), #ff8c42);transition:width 0.3s;border-radius:10px; }
+
+/* NEW: Status Badge */
+.status-badge { display:inline-block;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:700;margin:5px 5px 5px 0; }
+.status-active { background:#4CAF50;color:white; }
+.status-completed { background:#2196F3;color:white; }
+.status-upcoming { background:#FF9800;color:white; }
+.status-overdue { background:#f44336;color:white; }
+
 .priority-high { color:red;font-weight:bold; }
 .priority-medium { color:orange;font-weight:bold; }
 .priority-low { color:green;font-weight:bold; }
 
-
-.pin,.fav { position:absolute; right:12px; font-size:20px; cursor:pointer;}
+.pin,.fav { position:absolute; right:12px; font-size:20px; cursor:pointer;transition:0.2s;}
+.pin:hover,.fav:hover { transform:scale(1.2); }
 .pin { top:12px; } .pin.active { color:gold; }
 .fav { top:40px; } .fav.active { color:red; }
 
+/* NEW: Action Buttons in Card */
+.course-card .actions { margin-top:10px;display:flex;gap:5px;flex-wrap:wrap; }
+.course-card .actions button { padding:6px 12px;border:none;border-radius:6px;cursor:pointer;font-size:12px;background:#fff;transition:0.2s; }
+.course-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
 
-.add-btn { position:fixed; right:40px; bottom:40px; background:var(--primary-orange); color:#fff; font-size:30px; width:65px; height:65px; border-radius:50%; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer;}
+.add-btn { position:fixed; right:40px; bottom:40px; background:var(--primary-orange); color:#fff; font-size:30px; width:65px; height:65px; border-radius:50%; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer;transition:0.3s;}
+.add-btn:hover { transform:scale(1.1);box-shadow:0 6px 18px rgba(0,0,0,0.4); }
 
+/* NEW: Secondary Action Buttons */
+.secondary-btn { position:fixed;right:40px;background:var(--soft-orange);color:#333;font-size:18px;width:55px;height:55px;border-radius:50%;border:2px solid var(--primary-orange);box-shadow:0 3px 10px rgba(0,0,0,0.2);cursor:pointer;transition:0.3s;}
+.secondary-btn:hover { transform:scale(1.1); }
+#archiveBtn { bottom:120px; }
+#exportBtn { bottom:190px; }
 
-.modal { position:fixed; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.45); display:none; justify-content:center; align-items:center; }
-.modal-content { background:var(--soft-orange); padding:25px; width:480px; max-width:92vw; box-sizing:border-box; border-radius:12px; box-shadow:0 4px 10px black; }
+.modal { position:fixed; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.45); display:none; justify-content:center; align-items:center;z-index:1000; }
+.modal-content { background:var(--soft-orange); padding:25px; width:500px; max-width:92vw;max-height:85vh;overflow-y:auto; box-sizing:border-box; border-radius:12px; box-shadow:0 4px 10px black; }
 .modal-content input, .modal-content textarea, .modal-content select { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #aaa; box-sizing:border-box; font-size:14px; }
 .modal-content textarea { min-height:120px; resize:vertical; }
-.modal-content button { background:var(--primary-orange); padding:10px 20px; border:none; margin-right:8px; border-radius:8px; cursor:pointer; }
+.modal-content button { background:var(--primary-orange); padding:10px 20px; border:none; margin-right:8px;margin-top:5px; border-radius:8px; cursor:pointer; }
+.modal-content button:hover { opacity:0.9; }
+
+/* NEW: Course Materials Section */
+.materials-section { background:#fff;padding:12px;border-radius:8px;margin:10px 0; }
+.material-item { display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--soft-orange);margin:5px 0;border-radius:5px; }
+.material-item button { background:#f44336;color:white;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px; }
+
+/* NEW: Toast Notification */
+.toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:15px 30px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:none;z-index:2000;animation:slideUp 0.3s;}
+@keyframes slideUp { from{bottom:0;opacity:0;} to{bottom:30px;opacity:1;} }
+
+/* NEW: Empty State */
+.empty-state { text-align:center;padding:60px 20px;color:#999; }
+.empty-state h3 { font-size:24px;margin-bottom:10px; }
+
+/* NEW: Archived Style */
+.course-card.archived { opacity:0.6;border:2px dashed #999; }
 
 @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
 </style>
@@ -67,19 +120,68 @@
 
 <div class="content">
 <h2 class="section-title">Your Courses</h2>
+
+<!-- NEW: Statistics Bar -->
+<div class="stats-bar">
+    <div class="stat-box"><i class="bi bi-book"></i> Total: <span id="totalCount">0</span></div>
+    <div class="stat-box"><i class="bi bi-check-circle"></i> Completed: <span id="completedCount">0</span></div>
+    <div class="stat-box"><i class="bi bi-arrow-repeat"></i> Active: <span id="activeCount">0</span></div>
+    <div class="stat-box"><i class="bi bi-pin-angle-fill"></i> Pinned: <span id="pinnedCount">0</span></div>
+    <div class="stat-box"><i class="bi bi-archive-fill"></i> Archived: <span id="archivedCount">0</span></div>
+</div>
+
 <div class="top-controls">
-<input type="text" id="searchInput" onkeyup="loadCourses()" placeholder="Search courses...">
+<input type="text" id="searchInput" onkeyup="loadCourses()" placeholder="🔍 Search courses...">
+
 <select id="priorityFilter" onchange="loadCourses()">
 <option value="all">All Priorities</option>
 <option value="High">High Priority</option>
 <option value="Medium">Medium Priority</option>
 <option value="Low">Low Priority</option>
 </select>
+
+<!-- NEW: Status Filter -->
+<select id="statusFilter" onchange="loadCourses()">
+<option value="all">All Status</option>
+<option value="active"><i class="bi bi-arrow-repeat"></i> Active</option>
+<option value="completed"><i class="bi bi-check-circle"></i> Completed</option>
+<option value="upcoming"><i class="bi bi-calendar"></i> Upcoming</option>
+<option value="overdue"><i class="bi bi-exclamation-triangle"></i> Overdue</option>
+</select>
+
+<!-- NEW: Sort Options -->
+<select id="sortBy" onchange="loadCourses()">
+<option value="date-desc">Latest First</option>
+<option value="date-asc">Oldest First</option>
+<option value="name-asc">Name A-Z</option>
+<option value="name-desc">Name Z-A</option>
+<option value="start-date">Start Date</option>
+<option value="end-date">End Date</option>
+<option value="progress">Progress</option>
+</select>
+
+<!-- NEW: View Mode -->
+<select id="viewMode" onchange="toggleViewMode()">
+<option value="grid"><i class="bi bi-grid-3x3-gap"></i> Grid View</option>
+<option value="list"><i class="bi bi-list-ul"></i> List View</option>
+</select>
+
+<!-- NEW: Archive Toggle -->
+<button onclick="toggleArchiveView()">
+    <span id="archiveViewText"><i class="bi bi-archive"></i> Show Archived</span>
+</button>
+
+<button onclick="clearAllFilters()"><i class="bi bi-arrow-clockwise"></i> Reset</button>
 </div>
+
 <div class="course-grid" id="courseList"></div>
 </div>
 
-<button class="add-btn" onclick="openModal()">+</button>
+<button class="add-btn" onclick="openModal()" title="Add New Course">+</button>
+
+<!-- NEW: Secondary Action Buttons -->
+<button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive"><i class="bi bi-archive"></i></button>
+<button class="secondary-btn" id="exportBtn" onclick="openExportModal()" title="Export Courses"><i class="bi bi-download"></i></button>
 
 <div id="courseModal" class="modal">
 <div class="modal-content">
@@ -87,20 +189,98 @@
 <input type="text" id="courseTitle" placeholder="Course Name">
 <textarea id="courseDesc" placeholder="Description"></textarea>
 <input type="text" id="courseTags" placeholder="Tags (comma separated)">
-<input type="date" id="courseStart">
-<input type="date" id="courseEnd">
-<select id="coursePriority">
-<option value="Low">🌿 Low Priority</option>
-<option value="Medium">⚡ Medium Priority</option>
-<option value="High">🔥 High Priority</option>
+
+<!-- NEW: Course URL -->
+<input type="url" id="courseURL" placeholder="Course URL (optional)">
+
+<!-- NEW: Instructor -->
+<input type="text" id="courseInstructor" placeholder="Instructor Name (optional)">
+
+<!-- NEW: Category -->
+<select id="courseCategory">
+<option value="">Select Category</option>
+<option value="Programming"><i class="bi bi-code-slash"></i> Programming</option>
+<option value="Design"><i class="bi bi-palette"></i> Design</option>
+<option value="Business"><i class="bi bi-briefcase"></i> Business</option>
+<option value="Science"><i class="bi bi-microscope"></i> Science</option>
+<option value="Mathematics"><i class="bi bi-calculator"></i> Mathematics</option>
+<option value="Language"><i class="bi bi-chat-text"></i> Language</option>
+<option value="Other"><i class="bi bi-book"></i> Other</option>
 </select>
-<button onclick="saveCourse()">Save</button>
-<button onclick="closeModal()">Cancel</button>
+
+<input type="date" id="courseStart" placeholder="Start Date">
+<input type="date" id="courseEnd" placeholder="End Date">
+
+<select id="coursePriority">
+<option value="Low"><i class="bi bi-dash-circle"></i> Low Priority</option>
+<option value="Medium"><i class="bi bi-exclamation-circle"></i> Medium Priority</option>
+<option value="High"><i class="bi bi-exclamation-triangle"></i> High Priority</option>
+</select>
+
+<!-- NEW: Progress Input -->
+<label>Progress: <span id="progressValue">0</span>%</label>
+<input type="range" id="courseProgress" min="0" max="100" value="0" oninput="updateProgressValue(this.value)" style="width:100%;">
+
+<!-- NEW: Course Materials -->
+<h4>Course Materials</h4>
+<div class="materials-section" id="materialsContainer">
+    <input type="text" id="materialInput" placeholder="Add material/link">
+    <button type="button" onclick="addMaterial()"><i class="bi bi-plus-circle"></i> Add Material</button>
+    <div id="materialsList"></div>
+</div>
+
+<button onclick="saveCourse()"><i class="bi bi-save"></i> Save</button>
+<button onclick="closeModal()"><i class="bi bi-x-circle"></i> Cancel</button>
 </div>
 </div>
 
+<!-- NEW: View Course Modal -->
+<div id="viewCourseModal" class="modal">
+<div class="modal-content">
+<h3 id="viewCourseTitle"></h3>
+<div id="viewCourseStatus"></div>
+<div id="viewCourseContent" style="background:#fff;padding:15px;border-radius:8px;margin:10px 0;"></div>
+<div style="margin-top:15px;">
+    <button onclick="closeViewModal()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- NEW: Archive Modal -->
+<div id="archiveModal" class="modal">
+<div class="modal-content">
+<h3><i class="bi bi-archive-fill"></i> Archived Courses</h3>
+<div id="archiveList" style="max-height:400px;overflow-y:auto;"></div>
+<div style="margin-top:15px;">
+    <button onclick="closeArchiveModal()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- NEW: Export Modal -->
+<div id="exportModal" class="modal">
+<div class="modal-content">
+<h3>Export Courses</h3>
+<button onclick="exportCourses()"><i class="bi bi-download"></i> Export as JSON</button>
+<button onclick="exportCoursesText()"><i class="bi bi-file-text"></i> Export as Text</button>
+<button onclick="exportCoursesCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV</button>
+<h4 style="margin-top:20px;">Import Courses</h4>
+<input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
+<button onclick="importCourses()"><i class="bi bi-upload"></i> Import from JSON</button>
+<div style="margin-top:15px;">
+    <button onclick="closeExportModal()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- NEW: Toast Notification -->
+<div id="toast" class="toast"></div>
+
 <script>
-let db; let editID=null;
+let db; 
+let editID=null;
+let showArchived = false;
+let courseMaterials = [];
 
 function openDB() {
     return new Promise((resolve,reject)=>{
@@ -121,95 +301,566 @@ function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(st
 function put(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).put(obj); req.onsuccess=()=>resolve(); });}
 function del(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).delete(key); req.onsuccess=()=>resolve(); });}
 
+function openModal(){ 
+    document.getElementById("courseModal").style.display="flex";
+    courseMaterials = [];
+    updateMaterialsList();
+}
 
-function openModal(){ document.getElementById("courseModal").style.display="flex"; }
 function closeModal(){ 
     document.getElementById("courseModal").style.display="none"; 
     editID=null;
     courseTitle.value=""; courseDesc.value=""; courseTags.value=""; courseStart.value=""; courseEnd.value=""; coursePriority.value="Low";
+    courseURL.value=""; courseInstructor.value=""; courseCategory.value=""; courseProgress.value=0; progressValue.innerText=0;
+    courseMaterials = [];
+    updateMaterialsList();
 }
 
+// NEW: View Course Modal
+function openViewModal(id){
+    get("courses",id).then(c=>{
+        if(!c) return;
+        document.getElementById("viewCourseTitle").innerText = c.title;
+        const status = getCourseStatus(c);
+        document.getElementById("viewCourseStatus").innerHTML = `<span class="status-badge status-${status.class}">${status.text}</span>`;
+        
+        let content = `
+            <p><strong>Description:</strong> ${c.description || 'N/A'}</p>
+            <p><strong>Category:</strong> ${c.category || 'N/A'}</p>
+            <p><strong>Instructor:</strong> ${c.instructor || 'N/A'}</p>
+            <p><strong>Tags:</strong> ${c.tags || 'N/A'}</p>
+            <p><strong>Start Date:</strong> ${c.startDate || 'N/A'}</p>
+            <p><strong>End Date:</strong> ${c.endDate || 'N/A'}</p>
+            <p><strong>Priority:</strong> <span class="priority-${c.priority.toLowerCase()}">${c.priority}</span></p>
+            <p><strong>Progress:</strong> ${c.progress || 0}%</p>
+            <div class="progress-container"><div class="progress-bar" style="width:${c.progress || 0}%"></div></div>
+        `;
+        
+        if(c.url){
+            content += `<p><strong>Course Link:</strong> <a href="${c.url}" target="_blank">${c.url}</a></p>`;
+        }
+        
+        if(c.materials && c.materials.length > 0){
+            content += `<p><strong>Materials:</strong></p><ul>`;
+            c.materials.forEach(m => {
+                if(m.startsWith('http')){
+                    content += `<li><a href="${m}" target="_blank">${m}</a></li>`;
+                } else {
+                    content += `<li>${m}</li>`;
+                }
+            });
+            content += `</ul>`;
+        }
+        
+        document.getElementById("viewCourseContent").innerHTML = content;
+        document.getElementById("viewCourseModal").style.display = "flex";
+    });
+}
+
+function closeViewModal(){ document.getElementById("viewCourseModal").style.display="none"; }
+
+// NEW: Archive Modal
+function openArchiveModal(){ 
+    loadArchivedCourses();
+    document.getElementById("archiveModal").style.display="flex"; 
+}
+function closeArchiveModal(){ document.getElementById("archiveModal").style.display="none"; }
+
+// NEW: Export Modal
+function openExportModal(){ document.getElementById("exportModal").style.display="flex"; }
+function closeExportModal(){ document.getElementById("exportModal").style.display="none"; }
+
+// NEW: Progress Value Update
+function updateProgressValue(val){
+    document.getElementById("progressValue").innerText = val;
+}
+
+// NEW: Materials Management
+function addMaterial(){
+    const input = document.getElementById("materialInput");
+    if(input.value.trim()){
+        courseMaterials.push(input.value.trim());
+        input.value = "";
+        updateMaterialsList();
+    }
+}
+
+function removeMaterial(index){
+    courseMaterials.splice(index, 1);
+    updateMaterialsList();
+}
+
+function updateMaterialsList(){
+    const container = document.getElementById("materialsList");
+    container.innerHTML = "";
+    courseMaterials.forEach((m, i) => {
+        container.innerHTML += `
+            <div class="material-item">
+                <span>${m}</span>
+                <button onclick="removeMaterial(${i})"><i class="bi bi-x"></i></button>
+            </div>
+        `;
+    });
+}
 
 async function saveCourse(){
-
     let doneState = false;
+    let pinnedState = false;
+    let favState = false;
+    let archivedState = false;
+    
     if(editID){
         const existing = await get("courses", editID);
         doneState = existing && existing.done ? true : false;
+        pinnedState = existing && existing.pinned ? true : false;
+        favState = existing && existing.fav ? true : false;
+        archivedState = existing && existing.archived ? true : false;
     }
+    
     let course={
-         title: courseTitle.value,
+         title: courseTitle.value || "Untitled Course",
          description: courseDesc.value,
          tags: courseTags.value,
          startDate: courseStart.value,
          endDate: courseEnd.value,
          priority: coursePriority.value,
-         pinned:false,
-         fav:false,
+         url: courseURL.value,
+         instructor: courseInstructor.value,
+         category: courseCategory.value,
+         progress: parseInt(courseProgress.value) || 0,
+         materials: [...courseMaterials],
+         pinned: pinnedState,
+         fav: favState,
          done: doneState,
-         time:new Date().toLocaleString()
+         archived: archivedState,
+         time: new Date().toLocaleString(),
+         timestamp: Date.now()
      };
-     if(editID){ course.id=editID; await put("courses",course);}
-     else await add("courses",course);
-     closeModal(); loadCourses();
+     
+     if(editID){ 
+         course.id=editID; 
+         await put("courses",course);
+         showToast('<i class="bi bi-check-circle"></i> Course updated successfully!');
+     }
+     else {
+         await add("courses",course);
+         showToast('<i class="bi bi-check-circle"></i> Course created successfully!');
+     }
+     
+     closeModal(); 
+     loadCourses();
  }
  
+// NEW: Get Course Status
+function getCourseStatus(course){
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    if(course.done) return {text: 'Completed', class: 'completed'};
+    if(!course.startDate || !course.endDate) return {text: 'Active', class: 'active'};
+    
+    const start = new Date(course.startDate);
+    const end = new Date(course.endDate);
+    start.setHours(0,0,0,0);
+    end.setHours(0,0,0,0);
+    
+    if(today < start) return {text: 'Upcoming', class: 'upcoming'};
+    if(today > end) return {text: 'Overdue', class: 'overdue'};
+    return {text: 'Active', class: 'active'};
+}
 
- async function loadCourses(){
-     const container=document.getElementById("courseList"); container.innerHTML="";
+async function loadCourses(){
+     const container=document.getElementById("courseList"); 
+     container.innerHTML="";
      const search=searchInput.value.toLowerCase();
-     const filter=priorityFilter.value;
- 
+     const priorityFilterVal=priorityFilter.value;
+     const statusFilterVal=statusFilter.value;
+     const sortVal=sortBy.value;
+
      let list=await getAll("courses");
-     list=list.sort((a,b)=>b.pinned-a.pinned)
-              .filter(c=>c.title.toLowerCase().includes(search))
-              .filter(c=>filter==="all"||c.priority===filter);
+     
+     // Filter archived
+     list = list.filter(c => showArchived ? c.archived : !c.archived);
+     
+     // Search filter
+     list = list.filter(c=>
+         c.title.toLowerCase().includes(search) || 
+         (c.description && c.description.toLowerCase().includes(search)) ||
+         (c.tags && c.tags.toLowerCase().includes(search))
+     );
+     
+     // Priority filter
+     list = list.filter(c=>priorityFilterVal==="all"||c.priority===priorityFilterVal);
+     
+     // Status filter
+     if(statusFilterVal !== 'all'){
+         list = list.filter(c => {
+             const status = getCourseStatus(c);
+             return status.class === statusFilterVal;
+         });
+     }
+     
+     // Sort
+     if(sortVal === 'date-desc') list.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+     else if(sortVal === 'date-asc') list.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+     else if(sortVal === 'name-asc') list.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+     else if(sortVal === 'name-desc') list.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
+     else if(sortVal === 'start-date') list.sort((a,b) => new Date(a.startDate || 0) - new Date(b.startDate || 0));
+     else if(sortVal === 'end-date') list.sort((a,b) => new Date(a.endDate || 0) - new Date(b.endDate || 0));
+     else if(sortVal === 'progress') list.sort((a,b) => (b.progress || 0) - (a.progress || 0));
+     
+     // Pinned to top
+     list=list.sort((a,b)=>b.pinned-a.pinned);
+     
+     updateStats();
+     
+     if(list.length === 0){
+         container.innerHTML = `
+             <div class="empty-state">
+                 <h3><i class="bi bi-inbox"></i> No courses found</h3>
+                 <p>Add your first course or adjust your filters</p>
+             </div>
+         `;
+         return;
+     }
  
      list.forEach(c=>{
+         const status = getCourseStatus(c);
+         const progress = c.progress || 0;
+         const archivedClass = c.archived ? 'archived' : '';
+         
          container.innerHTML+=`
-         <div class="course-card">
-            <span class="pin ${c.pinned?"active":""}" onclick="togglePin(${c.id},${c.pinned})">📌</span>
-            <label style="display:inline-block;margin-left:8px;">
-                <input type="checkbox" onchange="toggleDone(${c.id}, this.checked)" ${c.done ? "checked" : ""}> Done
-            </label>
-            <span class="fav ${c.fav?"active":""}" onclick="toggleFav(${c.id},${c.fav})">🧡</span>
-             <h3>${c.title}</h3>
-             <p>${c.description}</p>
-             <p><b>Tags:</b> ${c.tags}</p>
-             <p><b>Start:</b> ${c.startDate} | <b>End:</b> ${c.endDate}</p>
-             <p class="priority-${c.priority.toLowerCase()}">${c.priority}</p>
-             <small>${c.time}</small><br><br>
-             <button onclick="editCourse(${c.id})">Edit</button>
-             <button onclick="deleteCourse(${c.id})">Delete</button>
+         <div class="course-card ${archivedClass}">
+            <span class="pin ${c.pinned?"active":""}" onclick="togglePin(${c.id},${c.pinned})" title="${c.pinned ? 'Unpin' : 'Pin'}"><i class="bi bi-pin-angle-fill"></i></span>
+            <span class="fav ${c.fav?"active":""}" onclick="toggleFav(${c.id},${c.fav})" title="${c.fav ? 'Remove Favorite' : 'Add Favorite'}"><i class="bi bi-heart-fill"></i></span>
+            
+            <span class="status-badge status-${status.class}">${status.text}</span>
+            ${c.category ? `<span class="status-badge" style="background:#9C27B0;color:white;">${c.category}</span>` : ''}
+            
+            <h3>${c.title}</h3>
+            <p>${c.description || 'No description'}</p>
+            
+            ${c.instructor ? `<p><b><i class="bi bi-person"></i> Instructor:</b> ${c.instructor}</p>` : ''}
+            <p><b><i class="bi bi-tags"></i> Tags:</b> ${c.tags || 'None'}</p>
+            <p><b><i class="bi bi-calendar"></i> Start:</b> ${c.startDate || 'N/A'} | <b>End:</b> ${c.endDate || 'N/A'}</p>
+            <p class="priority-${c.priority.toLowerCase()}">Priority: ${c.priority}</p>
+            
+            <div style="margin:10px 0;">
+                <label style="display:inline-block;margin-right:15px;">
+                    <input type="checkbox" onchange="toggleDone(${c.id}, this.checked)" ${c.done ? "checked" : ""}> Done
+                </label>
+                <span><b>Progress:</b> ${progress}%</span>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" style="width:${progress}%"></div>
+            </div>
+            
+            <small><i class="bi bi-clock"></i> ${c.time}</small>
+            
+            <div class="actions">
+                <button onclick="openViewModal(${c.id})" title="Quick View"><i class="bi bi-eye"></i> View</button>
+                <button onclick="editCourse(${c.id})" title="Edit"><i class="bi bi-pencil"></i> Edit</button>
+                <button onclick="duplicateCourse(${c.id})" title="Duplicate"><i class="bi bi-files"></i> Duplicate</button>
+                ${c.url ? `<button onclick="window.open('${c.url}','_blank')" title="Open Course"><i class="bi bi-link-45deg"></i> Open</button>` : ''}
+                ${c.archived 
+                    ? `<button onclick="unarchiveCourse(${c.id})" title="Unarchive"><i class="bi bi-arrow-up-circle"></i> Restore</button>` 
+                    : `<button onclick="archiveCourse(${c.id})" title="Archive"><i class="bi bi-archive"></i> Archive</button>`
+                }
+                <button onclick="deleteCourse(${c.id})" title="Delete" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
          </div>`;
      });
  }
  
+// NEW: Update Statistics
+async function updateStats(){
+    let items = await getAll("courses");
+    const total = items.filter(c => !c.archived).length;
+    const completed = items.filter(c => c.done && !c.archived).length;
+    const active = items.filter(c => {
+        const status = getCourseStatus(c);
+        return status.class === 'active' && !c.archived;
+    }).length;
+    const pinned = items.filter(c => c.pinned && !c.archived).length;
+    const archived = items.filter(c => c.archived).length;
+    
+    document.getElementById("totalCount").innerText = total;
+    document.getElementById("completedCount").innerText = completed;
+    document.getElementById("activeCount").innerText = active;
+    document.getElementById("pinnedCount").innerText = pinned;
+    document.getElementById("archivedCount").innerText = archived;
+}
 
- async function editCourse(id){
+async function editCourse(id){
      let c=await get("courses",id);
-     editID=id; openModal();
-     courseTitle.value=c.title; courseDesc.value=c.description; courseTags.value=c.tags;
-     courseStart.value=c.startDate; courseEnd.value=c.endDate; coursePriority.value=c.priority;
+     editID=id; 
+     openModal();
+     courseTitle.value=c.title; 
+     courseDesc.value=c.description; 
+     courseTags.value=c.tags;
+     courseStart.value=c.startDate; 
+     courseEnd.value=c.endDate; 
+     coursePriority.value=c.priority;
+     courseURL.value=c.url || "";
+     courseInstructor.value=c.instructor || "";
+     courseCategory.value=c.category || "";
+     courseProgress.value=c.progress || 0;
+     progressValue.innerText=c.progress || 0;
+     courseMaterials = c.materials || [];
+     updateMaterialsList();
  }
- 
 
- async function toggleDone(id, state){
+async function toggleDone(id, state){
      let c = await get("courses", id);
      if(!c) return;
      c.done = !!state;
+     if(state) c.progress = 100; // Auto set progress to 100% when marked done
      await put("courses", c);
-
      try{ localStorage.setItem('edumate-update', JSON.stringify({time:Date.now(), store:'courses'})); }catch(e){}
      loadCourses();
+     showToast(state ? '<i class="bi bi-check-circle"></i> Course marked as completed!' : '<i class="bi bi-arrow-repeat"></i> Course marked as active');
  }
  
- async function deleteCourse(id){ await del("courses",id); loadCourses(); }
- async function togglePin(id,state){ let c=await get("courses",id); c.pinned=!state; await put("courses",c); loadCourses(); }
- async function toggleFav(id,state){ let c=await get("courses",id); c.fav=!state; await put("courses",c); loadCourses(); }
+async function deleteCourse(id){ 
+    if(confirm("Are you sure you want to delete this course?")){
+        await del("courses",id); 
+        loadCourses();
+        showToast('<i class="bi bi-trash"></i> Course deleted');
+    }
+}
 
+async function togglePin(id,state){ 
+    let c=await get("courses",id); 
+    c.pinned=!state; 
+    await put("courses",c); 
+    loadCourses();
+    showToast(c.pinned ? '<i class="bi bi-pin-angle-fill"></i> Course pinned' : '<i class="bi bi-pin-angle"></i> Course unpinned');
+}
 
-openDB().then(loadCourses);
+async function toggleFav(id,state){ 
+    let c=await get("courses",id); 
+    c.fav=!state; 
+    await put("courses",c); 
+    loadCourses();
+    showToast(c.fav ? '<i class="bi bi-heart-fill"></i> Added to favorites' : '<i class="bi bi-heart"></i> Removed from favorites');
+}
+
+// NEW: Duplicate Course
+async function duplicateCourse(id){
+    let c = await get("courses",id);
+    let copy = {
+        title: c.title + " (Copy)",
+        description: c.description,
+        tags: c.tags,
+        startDate: c.startDate,
+        endDate: c.endDate,
+        priority: c.priority,
+        url: c.url,
+        instructor: c.instructor,
+        category: c.category,
+        progress: 0,
+        materials: c.materials ? [...c.materials] : [],
+        pinned: false,
+        fav: false,
+        done: false,
+        archived: false,
+        time: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    await add("courses", copy);
+    loadCourses();
+    showToast('<i class="bi bi-files"></i> Course duplicated');
+}
+
+// NEW: Archive Course
+async function archiveCourse(id){
+    let c = await get("courses",id);
+    c.archived = true;
+    await put("courses",c);
+    loadCourses();
+    showToast('<i class="bi bi-archive"></i> Course archived');
+}
+
+// NEW: Unarchive Course
+async function unarchiveCourse(id){
+    let c = await get("courses",id);
+    c.archived = false;
+    await put("courses",c);
+    loadCourses();
+    loadArchivedCourses();
+    showToast('<i class="bi bi-arrow-up-circle"></i> Course restored');
+}
+
+// NEW: Toggle Archive View
+function toggleArchiveView(){
+    showArchived = !showArchived;
+    document.getElementById("archiveViewText").innerHTML = showArchived ? '<i class="bi bi-journal-text"></i> Show Active' : '<i class="bi bi-archive"></i> Show Archived';
+    loadCourses();
+}
+
+// NEW: Load Archived Courses
+async function loadArchivedCourses(){
+    let items = await getAll("courses");
+    items = items.filter(c => c.archived);
+    const container = document.getElementById("archiveList");
+    
+    if(items.length === 0){
+        container.innerHTML = `<div class="empty-state"><p>No archived courses</p></div>`;
+        return;
+    }
+    
+    container.innerHTML = "";
+    items.forEach(c => {
+        const status = getCourseStatus(c);
+        container.innerHTML += `
+        <div class="course-card" style="margin-bottom:10px;">
+            <span class="status-badge status-${status.class}">${status.text}</span>
+            <h3>${c.title}</h3>
+            <p>${c.description || 'No description'}</p>
+            <p><b>Progress:</b> ${c.progress || 0}%</p>
+            <small>${c.time}</small>
+            <div class="actions">
+                <button onclick="unarchiveCourse(${c.id})"><i class="bi bi-arrow-up-circle"></i> Restore</button>
+                <button onclick="deleteCourse(${c.id})" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
+        </div>`;
+    });
+}
+
+// NEW: Export Courses
+async function exportCourses(){
+    let items = await getAll("courses");
+    const dataStr = JSON.stringify(items, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-courses-${Date.now()}.json`;
+    link.click();
+    showToast('<i class="bi bi-download"></i> Courses exported as JSON!');
+}
+
+// NEW: Export as Text
+async function exportCoursesText(){
+    let items = await getAll("courses");
+    let text = "EDUMATE COURSES EXPORT\n";
+    text += "=".repeat(50) + "\n\n";
+    
+    items.forEach((c, i) => {
+        text += `[${i+1}] ${c.title}\n`;
+        text += `Description: ${c.description || 'N/A'}\n`;
+        text += `Category: ${c.category || 'N/A'}\n`;
+        text += `Instructor: ${c.instructor || 'N/A'}\n`;
+        text += `Tags: ${c.tags || 'None'}\n`;
+        text += `Start: ${c.startDate || 'N/A'} | End: ${c.endDate || 'N/A'}\n`;
+        text += `Priority: ${c.priority}\n`;
+        text += `Progress: ${c.progress || 0}%\n`;
+        text += `URL: ${c.url || 'N/A'}\n`;
+        text += `Completed: ${c.done ? 'Yes' : 'No'}\n`;
+        text += `Date: ${c.time}\n`;
+        text += "-".repeat(50) + "\n\n";
+    });
+    
+    const dataBlob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-courses-${Date.now()}.txt`;
+    link.click();
+    showToast('<i class="bi bi-file-text"></i> Courses exported as text!');
+}
+
+// NEW: Export as CSV
+async function exportCoursesCSV(){
+    let items = await getAll("courses");
+    let csv = "Title,Description,Category,Instructor,Tags,Start Date,End Date,Priority,Progress,URL,Completed,Created\n";
+    
+    items.forEach(c => {
+        csv += `"${c.title}","${c.description || ''}","${c.category || ''}","${c.instructor || ''}","${c.tags || ''}","${c.startDate || ''}","${c.endDate || ''}","${c.priority}","${c.progress || 0}","${c.url || ''}","${c.done ? 'Yes' : 'No'}","${c.time}"\n`;
+    });
+    
+    const dataBlob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-courses-${Date.now()}.csv`;
+    link.click();
+    showToast('<i class="bi bi-file-earmark-spreadsheet"></i> Courses exported as CSV!');
+}
+
+// NEW: Import Courses
+async function importCourses(){
+    const file = document.getElementById("importFile").files[0];
+    if(!file){
+        alert("Please select a file first!");
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(!Array.isArray(data)){
+                alert("Invalid file format!");
+                return;
+            }
+            
+            for(let item of data){
+                delete item.id;
+                await add("courses", item);
+            }
+            
+            loadCourses();
+            closeExportModal();
+            showToast(`<i class="bi bi-upload"></i> ${data.length} courses imported successfully!`);
+        } catch(err){
+            alert("Error importing file: " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// NEW: Toggle View Mode
+function toggleViewMode(){
+    const mode = document.getElementById("viewMode").value;
+    const container = document.getElementById("courseList");
+    
+    if(mode === 'list'){
+        container.classList.remove('course-grid');
+        container.classList.add('course-list');
+    } else {
+        container.classList.remove('course-list');
+        container.classList.add('course-grid');
+    }
+}
+
+// NEW: Clear All Filters
+function clearAllFilters(){
+    document.getElementById("searchInput").value = "";
+    document.getElementById("priorityFilter").value = "all";
+    document.getElementById("statusFilter").value = "all";
+    document.getElementById("sortBy").value = "date-desc";
+    showArchived = false;
+    document.getElementById("archiveViewText").innerHTML = '<i class="bi bi-archive"></i> Show Archived';
+    loadCourses();
+    showToast('<i class="bi bi-arrow-clockwise"></i> Filters reset');
+}
+
+// NEW: Toast Notification
+function showToast(message){
+    const toast = document.getElementById("toast");
+    toast.innerHTML = message;
+    toast.style.display = "block";
+    setTimeout(() => {
+        toast.style.display = "none";
+    }, 3000);
+}
+
+openDB().then(() => {
+    loadCourses();
+    updateStats();
+});
 </script>
 
 </body>
