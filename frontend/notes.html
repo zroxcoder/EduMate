@@ -22,23 +22,66 @@
 .content { margin-left:260px;padding:30px;min-height:100vh;background:var(--light-bg);}
 .section-title { font-size:26px;font-weight:800;margin-bottom:25px; }
 
+.toolbar { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:25px;align-items:center; }
+.toolbar input,.toolbar select { padding:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;flex:1;min-width:200px; }
+.toolbar button { background:var(--primary-orange);border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;transition:0.2s; }
+.toolbar button:hover { transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+
+.stats-bar { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap; }
+.stat-box { background:var(--soft-orange);padding:12px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:600; }
+.stat-box span { color:var(--primary-orange);font-size:20px;font-weight:800; }
+
 .notes-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
 
-.note-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0px 4px 10px rgba(0,0,0,0.15);position:relative;min-height:140px;animation:fadeIn 0.6s;}
-.note-card h3 { margin:0; }
-.note-card small { opacity:0.6; }
+.notes-list { display:flex;flex-direction:column;gap:15px; }
+.notes-list .note-card { min-height:auto; }
 
-.pin { position:absolute;right:12px;top:12px;font-size:20px;cursor:pointer; }
+.note-card { background:var(--soft-orange);border-radius:12px;padding:15px;box-shadow:0px 4px 10px rgba(0,0,0,0.15);position:relative;min-height:140px;animation:fadeIn 0.6s;transition:0.3s;}
+.note-card:hover { transform:translateY(-3px);box-shadow:0px 6px 15px rgba(0,0,0,0.2); }
+.note-card h3 { margin:0;padding-right:30px; }
+.note-card small { opacity:0.6; }
+.note-card p { margin:10px 0;word-wrap:break-word; }
+
+.type-badge { display:inline-block;background:var(--primary-orange);padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;margin-bottom:8px; }
+
+.note-card.archived { opacity:0.6;border:2px dashed #999; }
+
+.pin { position:absolute;right:12px;top:12px;font-size:20px;cursor:pointer;transition:0.2s; }
+.pin:hover { transform:scale(1.2); }
 .pin.active { color:gold; }
 
-.add-btn { position:fixed;right:40px;bottom:40px;background:var(--primary-orange);color:#fff;font-size:30px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;}
+.note-card .actions { margin-top:10px;display:flex;gap:5px;flex-wrap:wrap; }
+.note-card .actions button { padding:6px 12px;border:none;border-radius:6px;cursor:pointer;font-size:12px;background:#fff;transition:0.2s; }
+.note-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
 
-.modal { position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.45);display:none;justify-content:center;align-items:center;}
-.modal-content { background:var(--soft-orange);padding:25px;width:480px;max-width:92vw;box-sizing:border-box;border-radius:12px;box-shadow:0 4px 10px black;}
+.add-btn { position:fixed;right:40px;bottom:40px;background:var(--primary-orange);color:#fff;font-size:30px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;transition:0.3s;}
+.add-btn:hover { transform:scale(1.1);box-shadow:0 6px 18px rgba(0,0,0,0.4); }
+
+.secondary-btn { position:fixed;right:40px;background:var(--soft-orange);color:#333;font-size:18px;width:55px;height:55px;border-radius:50%;border:2px solid var(--primary-orange);box-shadow:0 3px 10px rgba(0,0,0,0.2);cursor:pointer;transition:0.3s;}
+.secondary-btn:hover { transform:scale(1.1); }
+#archiveBtn { bottom:120px; }
+#exportBtn { bottom:190px; }
+
+.modal { position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.45);display:none;justify-content:center;align-items:center;z-index:1000;}
+.modal-content { background:var(--soft-orange);padding:25px;width:480px;max-width:92vw;max-height:85vh;overflow-y:auto;box-sizing:border-box;border-radius:12px;box-shadow:0 4px 10px black;}
 .modal-content input,.modal-content textarea,.modal-content select { width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #aaa;box-sizing:border-box;font-size:14px;}
 .modal-content textarea { min-height:120px; resize:vertical; }
-.modal-content button { background:var(--primary-orange);border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-right:8px;}
+.modal-content button { background:var(--primary-orange);border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-right:8px;margin-top:5px;}
+.modal-content button:hover { opacity:0.9; }
+
+.import-export-area { background:#fff;padding:15px;border-radius:8px;margin:10px 0;max-height:300px;overflow-y:auto;font-family:monospace;font-size:12px;white-space:pre-wrap;word-wrap:break-word; }
+
+.toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:15px 30px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:none;z-index:2000;animation:slideUp 0.3s;}
+@keyframes slideUp { from{bottom:0;opacity:0;} to{bottom:30px;opacity:1;} }
+
 @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
+
+.filter-tags { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px; }
+.filter-tag { background:#fff;padding:6px 14px;border-radius:20px;border:2px solid var(--primary-orange);cursor:pointer;font-size:13px;transition:0.2s; }
+.filter-tag:hover,.filter-tag.active { background:var(--primary-orange);color:#fff; }
+
+.empty-state { text-align:center;padding:60px 20px;color:#999; }
+.empty-state h3 { font-size:24px;margin-bottom:10px; }
 </style>
 </head>
 <body>
@@ -56,10 +99,51 @@
 
 <div class="content">
     <h2 class="section-title">Your Notes & Bookmarks</h2>
+    
+    <div class="stats-bar">
+        <div class="stat-box">📝 Notes: <span id="noteCount">0</span></div>
+        <div class="stat-box">🔗 Bookmarks: <span id="bookmarkCount">0</span></div>
+        <div class="stat-box">📌 Pinned: <span id="pinnedCount">0</span></div>
+        <div class="stat-box">📦 Archived: <span id="archivedCount">0</span></div>
+    </div>
+    
+    <div class="toolbar">
+        <input type="text" id="searchBox" placeholder="🔍 Search notes by title, content or tags..." oninput="loadNotes()">
+        
+        <select id="filterType" onchange="loadNotes()">
+            <option value="all">All Types</option>
+            <option value="note">📝 Notes Only</option>
+            <option value="bookmark">🔗 Bookmarks Only</option>
+        </select>
+        
+        <select id="sortBy" onchange="loadNotes()">
+            <option value="date-desc">Latest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="title-asc">Title A-Z</option>
+            <option value="title-desc">Title Z-A</option>
+        </select>
+        
+        <select id="viewMode" onchange="toggleViewMode()">
+            <option value="grid">🎛️ Grid View</option>
+            <option value="list">📋 List View</option>
+        </select>
+        
+        <button onclick="toggleArchiveView()">
+            <span id="archiveViewText">📦 Show Archived</span>
+        </button>
+        
+        <button onclick="clearAllFilters()">🔄 Reset Filters</button>
+    </div>
+    
+    <div class="filter-tags" id="tagFilters"></div>
+    
     <div class="notes-grid" id="notesList"></div>
 </div>
 
-<button class="add-btn" onclick="openModal()">+</button>
+<button class="add-btn" onclick="openModal()" title="Add New Note">+</button>
+
+<button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive">📦</button>
+<button class="secondary-btn" id="exportBtn" onclick="openImportExportModal()" title="Import/Export">💾</button>
 
 <div id="noteModal" class="modal">
     <div class="modal-content">
@@ -71,15 +155,63 @@
         <input id="title" type="text" placeholder="Title">
         <textarea id="content" placeholder="Content / URL if bookmark"></textarea>
         <input id="tags" type="text" placeholder="Tags (comma separated)">
-        <button onclick="saveNote()">Save</button>
-        <button onclick="closeModal()">Cancel</button>
+        <div>
+            <button onclick="saveNote()">💾 Save</button>
+            <button onclick="closeModal()">❌ Cancel</button>
+        </div>
     </div>
 </div>
+
+<div id="importExportModal" class="modal">
+    <div class="modal-content">
+        <h3>Import / Export Notes</h3>
+        <h4>Export Notes</h4>
+        <button onclick="exportNotes()">📥 Export All Notes (JSON)</button>
+        <button onclick="exportNotesText()">📄 Export as Text</button>
+        
+        <h4 style="margin-top:20px;">Import Notes</h4>
+        <input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
+        <button onclick="importNotes()">📤 Import from JSON</button>
+        
+        <h4 style="margin-top:20px;">Preview</h4>
+        <div class="import-export-area" id="exportPreview">Export data will appear here...</div>
+        
+        <div style="margin-top:15px;">
+            <button onclick="closeImportExportModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="archiveModal" class="modal">
+    <div class="modal-content">
+        <h3>📦 Archived Notes</h3>
+        <div id="archiveList" style="max-height:400px;overflow-y:auto;"></div>
+        <div style="margin-top:15px;">
+            <button onclick="closeArchiveModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="viewNoteModal" class="modal">
+    <div class="modal-content">
+        <h3 id="viewNoteTitle"></h3>
+        <div class="type-badge" id="viewNoteType"></div>
+        <div id="viewNoteContent" style="background:#fff;padding:15px;border-radius:8px;margin:10px 0;min-height:100px;"></div>
+        <p><strong>Tags:</strong> <span id="viewNoteTags"></span></p>
+        <p><strong>Created:</strong> <span id="viewNoteTime"></span></p>
+        <div style="margin-top:15px;">
+            <button onclick="closeViewModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 let db;
 let editID = null;
-
+let showArchived = false;
+let selectedTagFilter = null;
 
 function openDB() {
     return new Promise((resolve,reject)=>{
@@ -101,7 +233,6 @@ function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(st
 function put(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).put(obj); req.onsuccess=()=>resolve(); });}
 function del(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).delete(key); req.onsuccess=()=>resolve(); });}
 
-
 function openModal(){ document.getElementById("noteModal").style.display="flex"; }
 function closeModal(){ 
     document.getElementById("noteModal").style.display="none";
@@ -111,66 +242,399 @@ function closeModal(){
     modalTitle.innerText = "Add Note / Bookmark";
 }
 
+function openImportExportModal(){ document.getElementById("importExportModal").style.display="flex"; }
+function closeImportExportModal(){ document.getElementById("importExportModal").style.display="none"; }
+
+function openArchiveModal(){ 
+    loadArchivedNotes();
+    document.getElementById("archiveModal").style.display="flex"; 
+}
+function closeArchiveModal(){ document.getElementById("archiveModal").style.display="none"; }
+
+function openViewModal(id){
+    get("notes",id).then(n=>{
+        if(!n) return;
+        document.getElementById("viewNoteTitle").innerText = n.title;
+        document.getElementById("viewNoteType").innerText = n.type === 'note' ? '📝 Note' : '🔗 Bookmark';
+        if(n.type === 'bookmark'){
+            document.getElementById("viewNoteContent").innerHTML = `<a href="${n.content}" target="_blank">${n.content}</a>`;
+        } else {
+            document.getElementById("viewNoteContent").innerText = n.content;
+        }
+        document.getElementById("viewNoteTags").innerText = n.tags || 'No tags';
+        document.getElementById("viewNoteTime").innerText = n.time;
+        document.getElementById("viewNoteModal").style.display = "flex";
+    });
+}
+function closeViewModal(){ document.getElementById("viewNoteModal").style.display="none"; }
 
 async function saveNote(){
     let obj = {
         type: type.value,
-        title: title.value,
+        title: title.value || "Untitled",
         content: content.value,
         tags: tags.value,
         pinned: false,
-        time: new Date().toLocaleString()
+        archived: false,
+        time: new Date().toLocaleString(),
+        timestamp: Date.now()
     };
-    if(editID){ obj.id = editID; await put("notes",obj); }
-    else await add("notes",obj);
-    closeModal(); loadNotes();
+    if(editID){ 
+        let existing = await get("notes", editID);
+        obj.id = editID; 
+        obj.pinned = existing.pinned;
+        obj.archived = existing.archived;
+        await put("notes",obj); 
+        showToast("✅ Note updated successfully!");
+    }
+    else {
+        await add("notes",obj);
+        showToast("✅ Note created successfully!");
+    }
+    closeModal(); 
+    loadNotes();
 }
-
 
 async function loadNotes(){
     const container = notesList;
     container.innerHTML = "";
     let items = await getAll("notes");
-    items = items.sort((a,b)=>b.pinned - a.pinned);
+    
+    items = items.filter(n => showArchived ? n.archived : !n.archived);
+    
+    const search = searchBox.value.toLowerCase();
+    if(search){
+        items = items.filter(n => 
+            n.title.toLowerCase().includes(search) || 
+            n.content.toLowerCase().includes(search) ||
+            (n.tags && n.tags.toLowerCase().includes(search))
+        );
+    }
+    
+    const typeFilter = filterType.value;
+    if(typeFilter !== 'all'){
+        items = items.filter(n => n.type === typeFilter);
+    }
+    
+    if(selectedTagFilter){
+        items = items.filter(n => n.tags && n.tags.toLowerCase().includes(selectedTagFilter.toLowerCase()));
+    }
+    
+    const sort = sortBy.value;
+    if(sort === 'date-desc') items.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    else if(sort === 'date-asc') items.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+    else if(sort === 'title-asc') items.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+    else if(sort === 'title-desc') items.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
+    
+    items = items.sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+    
+    updateStats();
+    updateTagFilters();
+    
+    if(items.length === 0){
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>📭 No notes found</h3>
+                <p>Create your first note or adjust your filters</p>
+            </div>
+        `;
+        return;
+    }
+    
     items.forEach(n=>{
+        const archivedClass = n.archived ? 'archived' : '';
+        const contentPreview = n.type === 'bookmark' 
+            ? `<a href="${n.content}" target="_blank">${n.content.substring(0,50)}${n.content.length > 50 ? '...' : ''}</a>`
+            : `${(n.content || '').substring(0,100)}${(n.content || '').length > 100 ? '...' : ''}`;
+        
         container.innerHTML += `
-        <div class="note-card">
-            <span class="pin ${n.pinned?"active":""}" onclick="togglePin(${n.id},${n.pinned})">📌</span>
+        <div class="note-card ${archivedClass}">
+            <span class="pin ${n.pinned?"active":""}" onclick="togglePin(${n.id},${n.pinned})" title="${n.pinned ? 'Unpin' : 'Pin'}">📌</span>
+            <div class="type-badge">${n.type==='note'?'📝 Note':'🔗 Bookmark'}</div>
             <h3>${n.title}</h3>
-            <p>${n.type==='bookmark'?`<a href="${n.content}" target="_blank">${n.content}</a>`:n.content}</p>
-            <small>${n.tags}</small><br>
-            <small>${n.time}</small><br><br>
-            <button onclick="editNote(${n.id})">Edit</button>
-            <button onclick="deleteNote(${n.id})">Delete</button>
+            <p>${contentPreview}</p>
+            <small>🏷️ ${n.tags || 'No tags'}</small><br>
+            <small>🕒 ${n.time}</small>
+            <div class="actions">
+                <button onclick="openViewModal(${n.id})" title="Quick View">👁️ View</button>
+                <button onclick="editNote(${n.id})" title="Edit">✏️ Edit</button>
+                <button onclick="duplicateNote(${n.id})" title="Duplicate">📋 Copy</button>
+                <button onclick="copyToClipboard(${n.id})" title="Copy to Clipboard">📎 Clipboard</button>
+                ${n.archived 
+                    ? `<button onclick="unarchiveNote(${n.id})" title="Unarchive">📤 Restore</button>` 
+                    : `<button onclick="archiveNote(${n.id})" title="Archive">📦 Archive</button>`
+                }
+                <button onclick="deleteNote(${n.id})" title="Delete" style="background:#ffcccc;">🗑️ Delete</button>
+            </div>
         </div>`;
     });
 }
 
+async function updateStats(){
+    let items = await getAll("notes");
+    const notes = items.filter(n => n.type === 'note' && !n.archived).length;
+    const bookmarks = items.filter(n => n.type === 'bookmark' && !n.archived).length;
+    const pinned = items.filter(n => n.pinned && !n.archived).length;
+    const archived = items.filter(n => n.archived).length;
+    
+    document.getElementById("noteCount").innerText = notes;
+    document.getElementById("bookmarkCount").innerText = bookmarks;
+    document.getElementById("pinnedCount").innerText = pinned;
+    document.getElementById("archivedCount").innerText = archived;
+}
+
+async function updateTagFilters(){
+    let items = await getAll("notes");
+    let allTags = new Set();
+    
+    items.forEach(n => {
+        if(n.tags && !n.archived){
+            n.tags.split(',').forEach(tag => {
+                const trimmed = tag.trim();
+                if(trimmed) allTags.add(trimmed);
+            });
+        }
+    });
+    
+    const container = document.getElementById("tagFilters");
+    container.innerHTML = "";
+    
+    if(allTags.size > 0){
+        allTags.forEach(tag => {
+            const activeClass = selectedTagFilter === tag ? 'active' : '';
+            container.innerHTML += `<div class="filter-tag ${activeClass}" onclick="filterByTag('${tag}')">${tag}</div>`;
+        });
+    }
+}
+
+function filterByTag(tag){
+    if(selectedTagFilter === tag){
+        selectedTagFilter = null;
+    } else {
+        selectedTagFilter = tag;
+    }
+    loadNotes();
+}
+
+function clearAllFilters(){
+    document.getElementById("searchBox").value = "";
+    document.getElementById("filterType").value = "all";
+    document.getElementById("sortBy").value = "date-desc";
+    selectedTagFilter = null;
+    showArchived = false;
+    document.getElementById("archiveViewText").innerText = "📦 Show Archived";
+    loadNotes();
+    showToast("🔄 Filters reset");
+}
 
 async function togglePin(id,state){
     let n = await get("notes",id);
     n.pinned = !state;
     await put("notes",n);
     loadNotes();
+    showToast(n.pinned ? "📌 Note pinned" : "📌 Note unpinned");
 }
-
 
 async function deleteNote(id){
-    await del("notes",id);
-    loadNotes();
+    if(confirm("Are you sure you want to permanently delete this note?")){
+        await del("notes",id);
+        loadNotes();
+        showToast("🗑️ Note deleted");
+    }
 }
-
 
 async function editNote(id){
     let n = await get("notes",id);
     editID = id;
-    title.value = n.title; content.value = n.content; tags.value = n.tags; type.value = n.type;
+    title.value = n.title; 
+    content.value = n.content; 
+    tags.value = n.tags; 
+    type.value = n.type;
     modalTitle.innerText = "Edit Note / Bookmark";
     openModal();
 }
 
+async function archiveNote(id){
+    let n = await get("notes",id);
+    n.archived = true;
+    await put("notes",n);
+    loadNotes();
+    showToast("📦 Note archived");
+}
 
-openDB().then(loadNotes);
+async function unarchiveNote(id){
+    let n = await get("notes",id);
+    n.archived = false;
+    await put("notes",n);
+    loadNotes();
+    loadArchivedNotes();
+    showToast("📤 Note restored");
+}
+
+async function duplicateNote(id){
+    let n = await get("notes",id);
+    let copy = {
+        type: n.type,
+        title: n.title + " (Copy)",
+        content: n.content,
+        tags: n.tags,
+        pinned: false,
+        archived: false,
+        time: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    await add("notes", copy);
+    loadNotes();
+    showToast("📋 Note duplicated");
+}
+
+async function copyToClipboard(id){
+    let n = await get("notes",id);
+    const text = `${n.title}\n\n${n.content}\n\nTags: ${n.tags || 'None'}`;
+    
+    if(navigator.clipboard){
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("📎 Copied to clipboard!");
+        });
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast("📎 Copied to clipboard!");
+    }
+}
+
+function toggleArchiveView(){
+    showArchived = !showArchived;
+    document.getElementById("archiveViewText").innerText = showArchived ? "📝 Show Active" : "📦 Show Archived";
+    loadNotes();
+}
+
+async function loadArchivedNotes(){
+    let items = await getAll("notes");
+    items = items.filter(n => n.archived);
+    const container = document.getElementById("archiveList");
+    
+    if(items.length === 0){
+        container.innerHTML = `<div class="empty-state"><p>No archived notes</p></div>`;
+        return;
+    }
+    
+    container.innerHTML = "";
+    items.forEach(n => {
+        container.innerHTML += `
+        <div class="note-card" style="margin-bottom:10px;">
+            <div class="type-badge">${n.type==='note'?'📝 Note':'🔗 Bookmark'}</div>
+            <h3>${n.title}</h3>
+            <p>${n.content.substring(0,80)}...</p>
+            <small>${n.time}</small>
+            <div class="actions">
+                <button onclick="unarchiveNote(${n.id})">📤 Restore</button>
+                <button onclick="deleteNote(${n.id})" style="background:#ffcccc;">🗑️ Delete</button>
+            </div>
+        </div>`;
+    });
+}
+
+async function exportNotes(){
+    let items = await getAll("notes");
+    const dataStr = JSON.stringify(items, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-notes-${Date.now()}.json`;
+    link.click();
+    document.getElementById("exportPreview").innerText = dataStr;
+    showToast("📥 Notes exported!");
+}
+
+async function exportNotesText(){
+    let items = await getAll("notes");
+    let text = "EDUMATE NOTES EXPORT\n";
+    text += "=".repeat(50) + "\n\n";
+    
+    items.forEach((n, i) => {
+        text += `[${i+1}] ${n.title}\n`;
+        text += `Type: ${n.type}\n`;
+        text += `Content: ${n.content}\n`;
+        text += `Tags: ${n.tags || 'None'}\n`;
+        text += `Date: ${n.time}\n`;
+        text += `Pinned: ${n.pinned ? 'Yes' : 'No'}\n`;
+        text += `Archived: ${n.archived ? 'Yes' : 'No'}\n`;
+        text += "-".repeat(50) + "\n\n";
+    });
+    
+    const dataBlob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-notes-${Date.now()}.txt`;
+    link.click();
+    document.getElementById("exportPreview").innerText = text;
+    showToast("📄 Notes exported as text!");
+}
+
+async function importNotes(){
+    const file = document.getElementById("importFile").files[0];
+    if(!file){
+        alert("Please select a file first!");
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(!Array.isArray(data)){
+                alert("Invalid file format!");
+                return;
+            }
+            
+            for(let item of data){
+                delete item.id;
+                await add("notes", item);
+            }
+            
+            loadNotes();
+            closeImportExportModal();
+            showToast(`📤 ${data.length} notes imported successfully!`);
+        } catch(err){
+            alert("Error importing file: " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function toggleViewMode(){
+    const mode = document.getElementById("viewMode").value;
+    const container = document.getElementById("notesList");
+    
+    if(mode === 'list'){
+        container.classList.remove('notes-grid');
+        container.classList.add('notes-list');
+    } else {
+        container.classList.remove('notes-list');
+        container.classList.add('notes-grid');
+    }
+}
+
+function showToast(message){
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.style.display = "block";
+    setTimeout(() => {
+        toast.style.display = "none";
+    }, 3000);
+}
+
+openDB().then(() => {
+    loadNotes();
+    updateStats();
+});
 </script>
 
 </body>
