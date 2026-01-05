@@ -219,7 +219,7 @@ function openDB() {
         const req = indexedDB.open("MateDB",3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes","tasks","projects","courses","profile","activity","certificates","chats","searches"].forEach(store=>{
+            ["notes","tasks","projects","courses","profile","activity","certificates","chats","searches","watchlist"].forEach(store=>{
                 if(!db.objectStoreNames.contains(store)) db.createObjectStore(store,{keyPath:"id",autoIncrement:true});
             });
         };
@@ -227,7 +227,6 @@ function openDB() {
         req.onerror = e => reject(e);
     });
 }
-
 function get(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).get(key); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve(null);});}
 function getAll(store){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).getAll(); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve([]);});}
 function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).add(obj); req.onsuccess=()=>resolve(); });}

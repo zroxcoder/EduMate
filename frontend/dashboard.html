@@ -248,11 +248,11 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 let db;
 function openDB() {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.open("MateDB", 3);
+    return new Promise((resolve,reject)=>{
+        const req = indexedDB.open("MateDB",3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes","tasks","projects","courses","profile","activity","certificates","chats","searches"].forEach(store=>{
+            ["notes","tasks","projects","courses","profile","activity","certificates","chats","searches","watchlist"].forEach(store=>{
                 if(!db.objectStoreNames.contains(store)) db.createObjectStore(store,{keyPath:"id",autoIncrement:true});
             });
         };
