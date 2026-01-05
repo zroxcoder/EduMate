@@ -286,6 +286,8 @@ body {
                 <li><code>explain photosynthesis</code> — Concept explanations</li>
                 <li><code>programming help</code> — Coding resources</li>
                 <li><code>test anxiety tips</code> — Exam stress help</li>
+                <li><code>show my watchlist</code> — View watchlist items</li>
+                <li><code>random pick</code> — Get random watch suggestion</li>
             </ul>
         </div>
     </div>
@@ -641,6 +643,7 @@ async function getAIResponse(userText){
     const projects = await getAll("projects");
     const courses = await getAll("courses");
     const notes = await getAll("notes");
+    const watchlist = await getAll("watchlist");
     
     const text = (userText || "").toLowerCase();
 
@@ -713,7 +716,13 @@ async function getAIResponse(userText){
             `- "Past paper chemistry 9701 2023"\n` +
             `- "Explain Newton's laws"\n` +
             `- "I'm feeling overwhelmed"\n` +
-            `- "Programming resources"`;
+            `- "Programming resources"`
+                    `🎬 **Watchlist Features:**\n` +
+        `- Show your watchlist items\n` +
+        `- Random pick suggestions\n` +
+        `- Track movies and series\n` +
+        `- Progress monitoring\n` +
+        `- Rating and organization\n\n`;
     }
 
     // ===== PAST PAPERS (ORIGINAL + ENHANCED) =====
@@ -1991,14 +2000,192 @@ if (/test anxiety|exam anxiety|exam stress|nervous.*exam|afraid.*test|panic.*exa
                `**Want note-taking tips?** Ask: "note-taking methods"`;
     }
 
+    // ===== WATCHLIST DISPLAY (NEW) =====
+if(/show.*(watch|watchlist|movie|series|to watch)|list.*watch|my watchlist|what.*watching/i.test(text)){
+    if(!watchlist || watchlist.length === 0) {
+        return "🎬 **Your Watchlist is Empty**\n\n" +
+               "You haven't added any movies or series yet!\n\n" +
+               "**💡 How to Add:**\n" +
+               "1. Go to the Planner page\n" +
+               "2. Switch to Watchlist tab\n" +
+               "3. Click the + button\n" +
+               "4. Add your favorite shows!\n\n" +
+               "**Why Use Watchlist?**\n" +
+               "- Track what you want to watch\n" +
+               "- Remember where you left off\n" +
+               "- Rate and organize content\n" +
+               "- Never forget a recommendation\n" +
+               "- Get random suggestions when bored!\n\n" +
+               "Start building your watchlist today! 🍿";
+    }
+    
+    const watching = watchlist.filter(w => w.status === 'Watching');
+    const planToWatch = watchlist.filter(w => w.status === 'Plan to Watch');
+    const watched = watchlist.filter(w => w.status === 'Watched');
+    
+    let response = "🎬 **Your Watchlist:**\n\n";
+    
+    if(watching.length > 0) {
+        response += "📺 **Currently Watching:**\n";
+        watching.slice(0, 5).forEach(w => {
+            const progress = w.progress > 0 ? ` (${w.progress}% complete)` : '';
+            response += `- ${w.title}${progress}\n`;
+        });
+        response += "\n";
+    }
+    
+    if(planToWatch.length > 0) {
+        response += "📌 **Plan to Watch:**\n";
+        planToWatch.slice(0, 5).forEach(w => {
+            const rating = w.rating > 0 ? ` ⭐ ${w.rating}/10` : '';
+            response += `- ${w.title}${rating}\n`;
+        });
+        response += "\n";
+    }
+    
+    if(watched.length > 0) {
+        response += "✅ **Watched:**\n";
+        watched.slice(0, 3).forEach(w => {
+            const rating = w.rating > 0 ? ` ⭐ ${w.rating}/10` : '';
+            response += `- ${w.title}${rating}\n`;
+        });
+        response += "\n";
+    }
+    
+    response += `**📊 Summary:**\n` +
+                `- Total Items: ${watchlist.length}\n` +
+                `- Currently Watching: ${watching.length}\n` +
+                `- Plan to Watch: ${planToWatch.length}\n` +
+                `- Completed: ${watched.length}\n\n` +
+                `**💡 Tips:**\n` +
+                `- Update your progress regularly\n` +
+                `- Rate shows after watching\n` +
+                `- Add notes about where to find them\n` +
+                `- Use "Random Pick" when you can't decide!\n\n` +
+                `**Want a suggestion?** Ask: "random pick" or "what should I watch"`;
+    
+    return response;
+}
+
+// ===== RANDOM PICK / WATCH SUGGESTION (NEW) =====
+if(/random pick|what.*watch|suggest.*watch|pick.*watch|movie.*suggest|series.*suggest|can't decide.*watch|what to watch|recommend.*watch/i.test(text)){
+    if(!watchlist || watchlist.length === 0) {
+        return "🎬 **Watchlist is Empty!**\n\n" +
+               "Add some movies or series to your watchlist first!\n\n" +
+               "**Quick Start:**\n" +
+               "1. Go to Planner → Watchlist tab\n" +
+               "2. Click the + button\n" +
+               "3. Add shows you want to watch\n" +
+               "4. Come back and ask for a random pick!\n\n" +
+               "I'll help you decide what to watch! 🍿";
+    }
+    
+    // Filter for items user hasn't watched yet
+    const unwatched = watchlist.filter(w => 
+        w.status === 'Plan to Watch' || w.status === 'Watching' || w.status === 'On Hold'
+    );
+    
+    if(unwatched.length === 0) {
+        return "🎉 **You've Watched Everything!**\n\n" +
+               "Amazing! You've completed your entire watchlist!\n\n" +
+               "**What's Next?**\n" +
+               "- Add new shows to your watchlist\n" +
+               "- Rewatch your favorites\n" +
+               "- Browse recommendations online\n" +
+               "- Ask friends for suggestions\n\n" +
+               "Time to discover something new! 🌟";
+    }
+    
+    // Pick a random item
+    const randomIndex = Math.floor(Math.random() * unwatched.length);
+    const pick = unwatched[randomIndex];
+    
+    const stars = pick.rating > 0 ? '⭐'.repeat(Math.floor(pick.rating)) : '';
+    const ratingText = pick.rating > 0 ? `${stars} (${pick.rating}/10)` : 'Not rated yet';
+    
+    let response = `🎬 **Random Pick: ${pick.title}**\n\n`;
+    
+    response += `**Type:** ${pick.type || 'N/A'}\n`;
+    if(pick.genre) response += `**Genre:** ${pick.genre}\n`;
+    if(pick.platform) response += `**Available on:** ${pick.platform}\n`;
+    response += `**Rating:** ${ratingText}\n`;
+    if(pick.year) response += `**Year:** ${pick.year}\n`;
+    
+    if(pick.seasons > 0) {
+        response += `\n**Series Info:**\n`;
+        response += `- Seasons: ${pick.seasons}\n`;
+        response += `- Episodes: ${pick.episodes}\n`;
+        if(pick.progress > 0) {
+            response += `- Your Progress: Season ${pick.currentSeason}, Episode ${pick.currentEpisode} (${pick.progress}%)\n`;
+        }
+    }
+    
+    if(pick.desc) {
+        response += `\n**Description:**\n${pick.desc}\n`;
+    }
+    
+    if(pick.director) response += `\n**Director:** ${pick.director}`;
+    if(pick.cast) response += `\n**Cast:** ${pick.cast}`;
+    
+    response += `\n\n🍿 **Time to watch this!**\n\n`;
+    response += `**💡 Pro Tips:**\n`;
+    response += `- Set aside time when you won't be interrupted\n`;
+    response += `- Grab snacks and get comfortable\n`;
+    response += `- Update your progress in the watchlist after\n`;
+    response += `- Rate it when you're done!\n\n`;
+    response += `**Not feeling it?** Ask for another "random pick"!\n`;
+    response += `**Ready to watch?** Go to Planner → Watchlist to track your progress!`;
+    
+    return response;
+}
+
+// ===== WATCHLIST TIPS (NEW) =====
+if(/watchlist tips|how.*use watchlist|watchlist help|organize watchlist/i.test(text)){
+    return `🎬 **Watchlist Management Guide:**\n\n` +
+           `**📝 Adding Items:**\n` +
+           `- Include title, type (movie/series), and platform\n` +
+           `- Add genre for easier filtering\n` +
+           `- Note where it's available (Netflix, Prime, etc.)\n` +
+           `- Include year for easier searching\n\n` +
+           `**📊 Tracking Progress:**\n` +
+           `- Update current episode/season regularly\n` +
+           `- Mark status (Watching/Plan to Watch/Watched)\n` +
+           `- Rate shows after watching (helps with recommendations)\n` +
+           `- Add notes about where you heard about it\n\n` +
+           `**🎯 Organization Tips:**\n` +
+           `- Use categories: Work, Personal, etc.\n` +
+           `- Pin urgent or time-sensitive shows\n` +
+           `- Mark favorites with heart icon\n` +
+           `- Archive completed seasons\n\n` +
+           `**⭐ Rating System:**\n` +
+           `- 1-3: Didn't enjoy, won't continue\n` +
+           `- 4-6: Okay, might finish eventually\n` +
+           `- 7-8: Good, definitely worth watching\n` +
+           `- 9-10: Excellent, highly recommend!\n\n` +
+           `**🔀 Random Pick Feature:**\n` +
+           `- Can't decide what to watch? Ask me!\n` +
+           `- I'll suggest from your "Plan to Watch" or "Watching" list\n` +
+           `- Just say "random pick" or "what should I watch"\n\n` +
+           `**💡 Pro Tips:**\n` +
+           `- Add shows as soon as you hear about them\n` +
+           `- Update progress to avoid forgetting where you left off\n` +
+           `- Export your watchlist as backup\n` +
+           `- Share highly-rated shows with friends\n` +
+           `- Set reminders for series premieres\n\n` +
+           `**🎬 Go to Planner → Watchlist to get started!**`;
+}
+
     // ===== STATISTICS & PROGRESS =====
-    if(/\b(statistic|stats|progress|how am i doing|show progress|my performance|dashboard|summary)\b/i.test(text)){
-        const totalTasks = (tasks||[]).length;
-        const doneTasks = (tasks||[]).filter(t=>t.done).length;
-        const totalProjects = (projects||[]).length;
-        const doneProjects = (projects||[]).filter(p=>p.done).length;
-        const totalCourses = (courses||[]).length;
-        const doneCourses = (courses||[]).filter(c=>c.done).length;
+if(/\b(statistic|stats|progress|how am i doing|show progress|my performance|dashboard|summary)\b/i.test(text)){
+    const totalTasks = (tasks||[]).length;
+    const doneTasks = (tasks||[]).filter(t=>t.done).length;
+    const totalProjects = (projects||[]).length;
+    const doneProjects = (projects||[]).filter(p=>p.done).length;
+    const totalCourses = (courses||[]).length;
+    const doneCourses = (courses||[]).filter(c=>c.done).length;
+    const totalWatch = (watchlist||[]).length;
+    const watchedItems = (watchlist||[]).filter(w=>w.status==='Watched').length;
+    const watchingItems = (watchlist||[]).filter(w=>w.status==='Watching').length;
         const taskPercent = totalTasks > 0 ? Math.round((doneTasks/totalTasks)*100) : 0;
         const projectPercent = totalProjects > 0 ? Math.round((doneProjects/totalProjects)*100) : 0;
         const coursePercent = totalCourses > 0 ? Math.round((doneCourses/totalCourses)*100) : 0;
@@ -2009,21 +2196,21 @@ if (/test anxiety|exam anxiety|exam stress|nervous.*exam|afraid.*test|panic.*exa
                           totalCompleted > 5 ? "✨ Keep going!" :
                           "🚀 Let's build momentum together!";
         
-        return `📊 **Your Progress Dashboard:**\n\n` +
-               `**✅ Tasks:**\n` +
-               `- Completed: ${doneTasks}/${totalTasks} (${taskPercent}%)\n` +
-               `- Pending: ${totalTasks - doneTasks}\n\n` +
-               `**📁 Projects:**\n` +
-               `- Completed: ${doneProjects}/${totalProjects} (${projectPercent}%)\n` +
-               `- Pending: ${totalProjects - doneProjects}\n\n` +
-               `**🎓 Courses:**\n` +
-               `- Completed: ${doneCourses}/${totalCourses} (${coursePercent}%)\n` +
-               `- Pending: ${totalCourses - doneCourses}\n\n` +
-               `**📝 Notes:** ${notes.length} total\n\n` +
-               `**🎯 Total Completed Items:** ${totalCompleted}\n\n` +
-               `${motivation}\n\n` +
-               `**💡 Tip:** Check your Dashboard page for detailed visualizations and analytics!\n\n` +
-               `**Keep it up!** Consistency is key to success! 🌟`;
+            return `📊 **Your Progress Dashboard:**\n\n` +
+           `**✅ Tasks:**\n` +
+           `- Completed: ${doneTasks}/${totalTasks} (${taskPercent}%)\n` +
+           `- Pending: ${totalTasks - doneTasks}\n\n` +
+           `**📁 Projects:**\n` +
+           `- Completed: ${doneProjects}/${totalProjects} (${projectPercent}%)\n` +
+           `- Pending: ${totalProjects - doneProjects}\n\n` +
+           `**🎓 Courses:**\n` +
+           `- Completed: ${doneCourses}/${totalCourses} (${coursePercent}%)\n` +
+           `- Pending: ${totalCourses - doneCourses}\n\n` +
+           `**🎬 Watchlist:**\n` +
+           `- Total Items: ${totalWatch}\n` +
+           `- Watched: ${watchedItems}\n` +
+           `- Currently Watching: ${watchingItems}\n\n` +
+           `**📝 Notes:** ${notes.length} total\n\n` 
     }
 
     // ===== CLEAR CHAT =====
@@ -2218,7 +2405,10 @@ if (/test anxiety|exam anxiety|exam stress|nervous.*exam|afraid.*test|panic.*exa
         `- "How to stay motivated"\n` +
         `- "Past paper [subject] [year]"\n` +
         `- "Research [topic]"\n` +
-        `- Type **"help"** for full capabilities!`,
+        `- Type **"help"** for full capabilities!`
+                `- "Show my watchlist"\n` +
+        `- "Random pick" / "What should I watch"\n` +
+        `- "Watchlist tips"\n`,
         
         `🤔 Interesting question!\n\n` +
         `While I may not have a specific answer for **"${userText}"**, I'm constantly learning!\n\n` +

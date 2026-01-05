@@ -23,7 +23,12 @@
 .content { margin-left:260px;padding:30px;min-height:100vh;background:var(--light-bg);}
 .section-title { font-size:26px;font-weight:800;margin-bottom:25px; }
 
-/* NEW: Statistics Bar */
+/* NEW: Mode Toggle Tabs */
+.mode-toggle { display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap; }
+.mode-toggle button { background:var(--soft-orange);border:2px solid var(--primary-orange);padding:12px 25px;border-radius:8px;cursor:pointer;font-weight:700;font-size:16px;transition:0.3s;color:var(--dark-text); }
+.mode-toggle button.active { background:var(--primary-orange);color:#000;transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+.mode-toggle button:hover { transform:translateY(-2px); }
+
 .stats-bar { display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap; }
 .stat-box { background:var(--soft-orange);padding:12px 20px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:600;transition:0.3s; }
 .stat-box:hover { transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.15); }
@@ -35,8 +40,6 @@
 .top-controls button:hover { transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,0.2); }
 
 .task-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;}
-
-/* NEW: List View */
 .task-list { display:flex;flex-direction:column;gap:15px; }
 .task-list .task-card { min-height:auto; }
 
@@ -46,12 +49,54 @@
 .task-card p { margin:4px 0;word-wrap:break-word;font-size:13px; }
 .task-card small { font-size:11px; }
 
-/* NEW: Status Badges */
+/* NEW: Watchlist Card Styles */
+/* NEW: Watchlist Card Styles */
+.watch-card { background:var(--soft-orange);border-radius:12px;padding:12px;box-shadow:0px 4px 10px rgba(0,0,0,0.15);position:relative;animation:fadeIn 0.6s;transition:0.3s;}
+.watch-card:hover { transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.2); }
+.watch-card h3 { margin:0 0 6px 0;padding-right:60px;font-size:18px; }
+.watch-card p { margin:4px 0;word-wrap:break-word;font-size:13px; }
+.watch-card small { font-size:11px; }
+.watch-card .actions button { background:#fff; }
+.watch-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
+
+/* NEW: Watch Type Badges */
+.type-movie { background:#e74c3c;color:white;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:5px; }
+.type-series { background:#3498db;color:white;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:5px; }
+.type-anime { background:#9b59b6;color:white;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:5px; }
+.type-documentary { background:#16a085;color:white;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:5px; }
+.type-other { background:#95a5a6;color:white;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:5px; }
+
+/* NEW: Rating Stars */
+.rating-stars { color:#f39c12;font-size:14px;margin:5px 0; }
+
+/* NEW: Platform Badge */
+.platform-badge { background:#2c3e50;color:white;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;display:inline-block;margin:3px 3px 0 0; }
+
+/* NEW: Progress Bar */
+.progress-bar-container { background:rgba(255,255,255,0.3);height:8px;border-radius:10px;margin:8px 0;overflow:hidden; }
+.progress-bar { background:#2ecc71;height:100%;border-radius:10px;transition:width 0.3s; }
+
+/* NEW: Random Pick Button */
+.random-pick-btn { position:fixed;right:40px;bottom:120px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;font-size:24px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;transition:0.3s;animation:pulse 2s infinite;}
+.random-pick-btn:hover { transform:scale(1.1);box-shadow:0 6px 18px rgba(0,0,0,0.4); }
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+    50% { box-shadow: 0 4px 20px rgba(102, 126, 234, 0.8); }
+}
+
 .status-badge { display:inline-block;padding:3px 10px;border-radius:15px;font-size:10px;font-weight:700;margin:3px 3px 3px 0; }
 .status-completed { background:#4CAF50;color:white; }
 .status-pending { background:#FF9800;color:white; }
 .status-overdue { background:#f44336;color:white; }
 .status-due-today { background:#2196F3;color:white; }
+
+/* NEW: Watch Status */
+.status-watching { background:#3498db;color:white; }
+.status-plan-to-watch { background:#95a5a6;color:white; }
+.status-watched { background:#2ecc71;color:white; }
+.status-on-hold { background:#f39c12;color:white; }
+.status-dropped { background:#e74c3c;color:white; }
 
 .priority-high { color:red;font-weight:bold; }
 .priority-medium { color:orange;font-weight:bold; }
@@ -62,22 +107,19 @@
 .pin { top:12px; } .pin.active { color:gold; }
 .fav { top:36px; } .fav.active { color:red; }
 
-/* NEW: Action Buttons */
 .task-card .actions { margin-top:8px;display:flex;gap:4px;flex-wrap:wrap; }
-.task-card .actions button { padding:5px 10px;border:none;border-radius:6px;cursor:pointer;font-size:11px;background:#fff;transition:0.2s; }
-.task-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
+.task-card .actions button, .watch-card .actions button { padding:5px 10px;border:none;border-radius:6px;cursor:pointer;font-size:11px;background:#fff;transition:0.2s; }
+.task-card .actions button:hover, .watch-card .actions button:hover { background:var(--primary-orange);transform:scale(1.05); }
 
-/* NEW: Archived Style */
 .task-card.archived { opacity:0.6;border:2px dashed #999; }
 
 .add-btn { position:fixed;right:40px;bottom:40px;background:var(--primary-orange);color:#fff;font-size:30px;width:65px;height:65px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);cursor:pointer;transition:0.3s;}
 .add-btn:hover { transform:scale(1.1);box-shadow:0 6px 18px rgba(0,0,0,0.4); }
 
-/* NEW: Secondary Buttons */
 .secondary-btn { position:fixed;right:40px;background:var(--soft-orange);color:#333;font-size:18px;width:55px;height:55px;border-radius:50%;border:2px solid var(--primary-orange);box-shadow:0 3px 10px rgba(0,0,0,0.2);cursor:pointer;transition:0.3s;}
 .secondary-btn:hover { transform:scale(1.1); }
-#archiveBtn { bottom:120px; }
-#exportBtn { bottom:190px; }
+#archiveBtn { bottom:200px; }
+#exportBtn { bottom:270px; }
 
 .modal { position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.45);display:none;justify-content:center;align-items:center;z-index:1000; }
 .modal-content { background:var(--soft-orange);padding:25px;width:480px;max-width:92vw;max-height:85vh;overflow-y:auto;box-sizing:border-box;border-radius:12px;box-shadow:0 4px 10px black;}
@@ -86,19 +128,30 @@
 .modal-content button { background:var(--primary-orange);padding:10px 20px;border:none;margin-right:8px;margin-top:5px;border-radius:8px;cursor:pointer;}
 .modal-content button:hover { opacity:0.9; }
 
-/* NEW: Toast Notification */
+/* NEW: Random Pick Modal */
+.random-modal .modal-content { background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;text-align:center;padding:40px; }
+.random-modal .modal-content h2 { font-size:32px;margin-bottom:20px;animation:fadeIn 0.5s; }
+.random-modal .modal-content h3 { font-size:28px;margin:20px 0;color:#fff;animation:slideIn 0.8s; }
+.random-modal .modal-content p { font-size:16px;margin:10px 0;color:#f0f0f0; }
+.random-modal .modal-content button { background:white;color:#667eea;font-weight:700;font-size:16px;padding:12px 30px; }
+
+@keyframes slideIn {
+    from { transform:translateY(-20px); opacity:0; }
+    to { transform:translateY(0); opacity:1; }
+}
+
 .toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:15px 30px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:none;z-index:2000;animation:slideUp 0.3s;}
 @keyframes slideUp { from{bottom:0;opacity:0;} to{bottom:30px;opacity:1;} }
 
-/* NEW: Empty State */
 .empty-state { text-align:center;padding:60px 20px;color:#999; }
 .empty-state h3 { font-size:24px;margin-bottom:10px; }
 
-/* NEW: Import/Export Area */
 .import-export-area { background:#fff;padding:15px;border-radius:8px;margin:10px 0;max-height:300px;overflow-y:auto;font-family:monospace;font-size:12px;white-space:pre-wrap;word-wrap:break-word; }
 
-/* NEW: Category Badge */
 .category-badge { display:inline-block;background:#9C27B0;color:white;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;margin-bottom:5px; }
+
+/* NEW: Hidden Class */
+.hidden { display:none !important; }
 
 @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
 </style>
@@ -117,112 +170,178 @@
 </div>
 
 <div class="content">
-    <h2 class="section-title">Planner / To-Do List</h2>
+    <h2 class="section-title">Planner / To-Do List & Watchlist</h2>
 
-    <!-- NEW: Statistics Bar -->
-    <div class="stats-bar">
-        <div class="stat-box"><i class="bi bi-list-task"></i> Total: <span id="totalCount">0</span></div>
-        <div class="stat-box"><i class="bi bi-check-circle"></i> Completed: <span id="completedCount">0</span></div>
-        <div class="stat-box"><i class="bi bi-clock-history"></i> Pending: <span id="pendingCount">0</span></div>
-        <div class="stat-box"><i class="bi bi-exclamation-triangle"></i> Overdue: <span id="overdueCount">0</span></div>
-        <div class="stat-box"><i class="bi bi-pin-angle-fill"></i> Pinned: <span id="pinnedCount">0</span></div>
-        <div class="stat-box"><i class="bi bi-archive-fill"></i> Archived: <span id="archivedCount">0</span></div>
-    </div>
-
-    <div class="top-controls">
-        <input type="text" id="searchInput" onkeyup="loadTasks()" placeholder="🔍 Search tasks...">
-        
-        <select id="priorityFilter" onchange="loadTasks()">
-            <option value="all">All Priorities</option>
-            <option value="High">High Priority</option>
-            <option value="Medium">Medium Priority</option>
-            <option value="Low">Low Priority</option>
-        </select>
-
-        <!-- NEW: Status Filter -->
-        <select id="statusFilter" onchange="loadTasks()">
-            <option value="all">All Status</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-            <option value="overdue">Overdue</option>
-            <option value="due-today">Due Today</option>
-        </select>
-
-        <!-- NEW: Category Filter -->
-        <select id="categoryFilter" onchange="loadTasks()">
-            <option value="all">All Categories</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Study">Study</option>
-            <option value="Health">Health</option>
-            <option value="Other">Other</option>
-        </select>
-
-        <!-- NEW: Sort Options -->
-        <select id="sortBy" onchange="loadTasks()">
-            <option value="date-desc">Latest First</option>
-            <option value="date-asc">Oldest First</option>
-            <option value="deadline-asc">Deadline (Nearest)</option>
-            <option value="deadline-desc">Deadline (Farthest)</option>
-            <option value="title-asc">Title A-Z</option>
-            <option value="title-desc">Title Z-A</option>
-            <option value="priority">Priority</option>
-        </select>
-
-        <!-- NEW: View Mode -->
-        <select id="viewMode" onchange="toggleViewMode()">
-            <option value="grid"><i class="bi bi-grid-3x3-gap"></i> Grid View</option>
-            <option value="list"><i class="bi bi-list-ul"></i> List View</option>
-        </select>
-
-        <!-- NEW: Archive Toggle -->
-        <button onclick="toggleArchiveView()">
-            <span id="archiveViewText"><i class="bi bi-archive"></i> Show Archived</span>
+    <!-- NEW: Mode Toggle -->
+    <div class="mode-toggle">
+        <button id="tasksTab" class="active" onclick="switchMode('tasks')">
+            <i class="bi bi-list-check"></i> Tasks & To-Do
         </button>
-
-        <button onclick="clearAllFilters()"><i class="bi bi-arrow-clockwise"></i> Reset</button>
+        <button id="watchlistTab" onclick="switchMode('watchlist')">
+            <i class="bi bi-camera-reels"></i> Watchlist
+        </button>
     </div>
 
-    <div class="task-grid" id="taskList"></div>
+    <!-- TASKS SECTION -->
+    <div id="tasksSection">
+        <div class="stats-bar">
+            <div class="stat-box"><i class="bi bi-list-task"></i> Total: <span id="totalCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-check-circle"></i> Completed: <span id="completedCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-clock-history"></i> Pending: <span id="pendingCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-exclamation-triangle"></i> Overdue: <span id="overdueCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-pin-angle-fill"></i> Pinned: <span id="pinnedCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-archive-fill"></i> Archived: <span id="archivedCount">0</span></div>
+        </div>
+
+        <div class="top-controls">
+            <input type="text" id="searchInput" onkeyup="loadTasks()" placeholder="🔍 Search tasks...">
+            
+            <select id="priorityFilter" onchange="loadTasks()">
+                <option value="all">All Priorities</option>
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="Low">Low Priority</option>
+            </select>
+
+            <select id="statusFilter" onchange="loadTasks()">
+                <option value="all">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="overdue">Overdue</option>
+                <option value="due-today">Due Today</option>
+            </select>
+
+            <select id="categoryFilter" onchange="loadTasks()">
+                <option value="all">All Categories</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+                <option value="Health">Health</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <select id="sortBy" onchange="loadTasks()">
+                <option value="date-desc">Latest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="deadline-asc">Deadline (Nearest)</option>
+                <option value="deadline-desc">Deadline (Farthest)</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+                <option value="priority">Priority</option>
+            </select>
+
+            <select id="viewMode" onchange="toggleViewMode()">
+                <option value="grid">Grid View</option>
+                <option value="list">List View</option>
+            </select>
+
+            <button onclick="toggleArchiveView()">
+                <span id="archiveViewText"><i class="bi bi-archive"></i> Show Archived</span>
+            </button>
+
+            <button onclick="clearAllFilters()"><i class="bi bi-arrow-clockwise"></i> Reset</button>
+        </div>
+
+        <div class="task-grid" id="taskList"></div>
+    </div>
+
+    <!-- NEW: WATCHLIST SECTION -->
+    <div id="watchlistSection" class="hidden">
+        <div class="stats-bar">
+            <div class="stat-box"><i class="bi bi-camera-reels"></i> Total: <span id="watchTotalCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-play-circle"></i> Watching: <span id="watchWatchingCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-check-circle"></i> Watched: <span id="watchWatchedCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-bookmark"></i> Plan to Watch: <span id="watchPlanCount">0</span></div>
+            <div class="stat-box"><i class="bi bi-star-fill"></i> Favorites: <span id="watchFavCount">0</span></div>
+        </div>
+
+        <div class="top-controls">
+            <input type="text" id="watchSearchInput" onkeyup="loadWatchlist()" placeholder="🔍 Search watchlist...">
+            
+            <select id="watchTypeFilter" onchange="loadWatchlist()">
+                <option value="all">All Types</option>
+                <option value="Movie">Movies</option>
+                <option value="Series">Series</option>
+                <option value="Anime">Anime</option>
+                <option value="Documentary">Documentary</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <select id="watchStatusFilter" onchange="loadWatchlist()">
+                <option value="all">All Status</option>
+                <option value="Watching">Watching</option>
+                <option value="Watched">Watched</option>
+                <option value="Plan to Watch">Plan to Watch</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Dropped">Dropped</option>
+            </select>
+
+            <select id="watchPlatformFilter" onchange="loadWatchlist()">
+                <option value="all">All Platforms</option>
+                <option value="Netflix">Netflix</option>
+                <option value="Amazon Prime">Amazon Prime</option>
+                <option value="Disney+">Disney+</option>
+                <option value="HBO Max">HBO Max</option>
+                <option value="Hulu">Hulu</option>
+                <option value="YouTube">YouTube</option>
+                <option value="Apple TV+">Apple TV+</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <select id="watchSortBy" onchange="loadWatchlist()">
+                <option value="date-desc">Latest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+                <option value="rating-desc">Highest Rated</option>
+                <option value="rating-asc">Lowest Rated</option>
+            </select>
+
+            <button onclick="clearWatchFilters()"><i class="bi bi-arrow-clockwise"></i> Reset</button>
+        </div>
+
+        <div class="task-grid" id="watchList"></div>
+    </div>
 </div>
 
-<button class="add-btn" onclick="openModal()" title="Add New Task">+</button>
+<button class="add-btn" onclick="openAddModal()" title="Add New Item">+</button>
 
-<!-- NEW: Secondary Buttons -->
+<!-- NEW: Random Pick Button (Only visible in Watchlist mode) -->
+<button class="random-pick-btn hidden" id="randomPickBtn" onclick="showRandomPick()" title="Random Pick">
+    <i class="bi bi-shuffle"></i>
+</button>
+
 <button class="secondary-btn" id="archiveBtn" onclick="openArchiveModal()" title="View Archive"><i class="bi bi-archive"></i></button>
-<button class="secondary-btn" id="exportBtn" onclick="openExportModal()" title="Export Tasks"><i class="bi bi-download"></i></button>
+<button class="secondary-btn" id="exportBtn" onclick="openExportModal()" title="Export/Import"><i class="bi bi-download"></i></button>
 
+<!-- TASK MODAL -->
 <div id="taskModal" class="modal">
     <div class="modal-content">
         <h3 id="modalTitle">Add New Task</h3>
         <input type="text" id="taskTitle" placeholder="Task Title">
         <textarea id="taskDesc" placeholder="Description"></textarea>
         
-        <!-- NEW: Tags Input -->
         <input type="text" id="taskTags" placeholder="Tags (comma separated)">
         
-        <!-- NEW: Category Selection -->
         <select id="taskCategory">
             <option value="">Select Category</option>
-            <option value="Work"><i class="bi bi-briefcase"></i> Work</option>
-            <option value="Personal"><i class="bi bi-person"></i> Personal</option>
-            <option value="Study"><i class="bi bi-book"></i> Study</option>
-            <option value="Health"><i class="bi bi-heart-pulse"></i> Health</option>
-            <option value="Other"><i class="bi bi-three-dots"></i> Other</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Study">Study</option>
+            <option value="Health">Health</option>
+            <option value="Other">Other</option>
         </select>
         
         <input type="date" id="taskDeadline" placeholder="Deadline">
         
-        <!-- NEW: Time Input -->
         <input type="time" id="taskTime" placeholder="Time (optional)">
         
         <select id="taskPriority">
-            <option value="Low"><i class="bi bi-dash-circle"></i> Low Priority</option>
-            <option value="Medium"><i class="bi bi-exclamation-circle"></i> Medium Priority</option>
-            <option value="High"><i class="bi bi-exclamation-triangle"></i> High Priority</option>
+            <option value="Low">Low Priority</option>
+            <option value="Medium">Medium Priority</option>
+            <option value="High">High Priority</option>
         </select>
         
-        <!-- NEW: Reminder Option -->
         <label style="display:block;margin:10px 0;">
             <input type="checkbox" id="taskReminder"> Set Reminder
         </label>
@@ -232,7 +351,78 @@
     </div>
 </div>
 
-<!-- NEW: View Task Modal -->
+<!-- NEW: WATCHLIST MODAL -->
+<div id="watchModal" class="modal">
+    <div class="modal-content">
+        <h3 id="watchModalTitle">Add to Watchlist</h3>
+        
+        <input type="text" id="watchTitle" placeholder="Title (Movie/Series Name)">
+        
+        <select id="watchType">
+            <option value="Movie">Movie</option>
+            <option value="Series">Series</option>
+            <option value="Anime">Anime</option>
+            <option value="Documentary">Documentary</option>
+            <option value="Other">Other</option>
+        </select>
+        
+        <textarea id="watchDesc" placeholder="Description / Notes"></textarea>
+        
+        <select id="watchStatus">
+            <option value="Plan to Watch">Plan to Watch</option>
+            <option value="Watching">Currently Watching</option>
+            <option value="Watched">Completed</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Dropped">Dropped</option>
+        </select>
+        
+        <input type="text" id="watchPlatform" placeholder="Platform (Netflix, Prime, etc.)">
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <input type="number" id="watchSeasons" placeholder="Seasons" min="0">
+            <input type="number" id="watchEpisodes" placeholder="Episodes" min="0">
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <input type="number" id="watchCurrentSeason" placeholder="Current Season" min="0">
+            <input type="number" id="watchCurrentEpisode" placeholder="Current Episode" min="0">
+        </div>
+        
+        <label style="display:block;margin:10px 0;font-weight:600;">Rating (1-10):</label>
+        <input type="range" id="watchRating" min="0" max="10" value="0" step="0.5" 
+               oninput="document.getElementById('ratingValue').innerText=this.value" 
+               style="width:100%;">
+        <div style="text-align:center;font-size:20px;font-weight:700;color:var(--primary-orange);" id="ratingValue">0</div>
+        
+        <input type="text" id="watchGenre" placeholder="Genre (Action, Drama, etc.)">
+        
+        <input type="number" id="watchYear" placeholder="Release Year" min="1900" max="2100">
+        
+        <input type="text" id="watchDirector" placeholder="Director/Creator">
+        
+        <input type="text" id="watchCast" placeholder="Main Cast (comma separated)">
+        
+        <label style="display:block;margin:10px 0;">
+            <input type="checkbox" id="watchFavorite"> Mark as Favorite
+        </label>
+        
+        <button onclick="saveWatch()"><i class="bi bi-save"></i> Save</button>
+        <button onclick="closeWatchModal()"><i class="bi bi-x-circle"></i> Cancel</button>
+    </div>
+</div>
+
+<!-- NEW: VIEW WATCHLIST ITEM MODAL -->
+<div id="viewWatchModal" class="modal">
+    <div class="modal-content">
+        <h3 id="viewWatchTitle"></h3>
+        <div id="viewWatchContent" style="background:#fff;padding:15px;border-radius:8px;margin:10px 0;min-height:100px;"></div>
+        <div style="margin-top:15px;">
+            <button onclick="closeViewWatchModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW TASK MODAL -->
 <div id="viewTaskModal" class="modal">
     <div class="modal-content">
         <h3 id="viewTaskTitle"></h3>
@@ -244,7 +434,7 @@
     </div>
 </div>
 
-<!-- NEW: Archive Modal -->
+<!-- ARCHIVE MODAL -->
 <div id="archiveModal" class="modal">
     <div class="modal-content">
         <h3><i class="bi bi-archive-fill"></i> Archived Tasks</h3>
@@ -255,18 +445,32 @@
     </div>
 </div>
 
-<!-- NEW: Export Modal -->
+<!-- EXPORT MODAL -->
 <div id="exportModal" class="modal">
     <div class="modal-content">
-        <h3>Export / Import Tasks</h3>
-        <h4>Export Tasks</h4>
-        <button onclick="exportTasks()"><i class="bi bi-download"></i> Export as JSON</button>
-        <button onclick="exportTasksText()"><i class="bi bi-file-text"></i> Export as Text</button>
-        <button onclick="exportTasksCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV</button>
+        <h3>Export / Import Data</h3>
         
-        <h4 style="margin-top:20px;">Import Tasks</h4>
-        <input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
-        <button onclick="importTasks()"><i class="bi bi-upload"></i> Import from JSON</button>
+        <div id="exportTasksSection">
+            <h4>Export Tasks</h4>
+            <button onclick="exportTasks()"><i class="bi bi-download"></i> Export as JSON</button>
+            <button onclick="exportTasksText()"><i class="bi bi-file-text"></i> Export as Text</button>
+            <button onclick="exportTasksCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV</button>
+            
+            <h4 style="margin-top:20px;">Import Tasks</h4>
+            <input type="file" id="importFile" accept=".json" style="margin-bottom:10px;">
+            <button onclick="importTasks()"><i class="bi bi-upload"></i> Import from JSON</button>
+        </div>
+
+        <div id="exportWatchSection" style="margin-top:20px;">
+            <h4>Export Watchlist</h4>
+            <button onclick="exportWatchlist()"><i class="bi bi-download"></i> Export as JSON</button>
+            <button onclick="exportWatchlistText()"><i class="bi bi-file-text"></i> Export as Text</button>
+            <button onclick="exportWatchlistCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Export as CSV</button>
+            
+            <h4 style="margin-top:20px;">Import Watchlist</h4>
+            <input type="file" id="importWatchFile" accept=".json" style="margin-bottom:10px;">
+            <button onclick="importWatchlist()"><i class="bi bi-upload"></i> Import from JSON</button>
+        </div>
         
         <h4 style="margin-top:20px;">Preview</h4>
         <div class="import-export-area" id="exportPreview">Export data will appear here...</div>
@@ -277,20 +481,38 @@
     </div>
 </div>
 
-<!-- NEW: Toast Notification -->
+<!-- NEW: RANDOM PICK MODAL -->
+<div id="randomModal" class="modal random-modal">
+    <div class="modal-content">
+        <h2>🎬 What Should You Watch?</h2>
+        <div id="randomContent"></div>
+        <div style="margin-top:25px;">
+            <button onclick="showRandomPick()" style="margin-right:10px;">
+                <i class="bi bi-shuffle"></i> Pick Again
+            </button>
+            <button onclick="closeRandomModal()" style="background:#e74c3c;color:white;">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
 <div id="toast" class="toast"></div>
 
 <script>
 let db;
 let editID=null;
+let watchEditID=null;
 let showArchived = false;
+let currentMode = 'tasks'; // 'tasks' or 'watchlist'
 
 function openDB() {
     return new Promise((resolve,reject)=>{
         const req=indexedDB.open("MateDB",3);
         req.onupgradeneeded = e => {
             db=e.target.result;
-            ["tasks","notes","projects","courses","profile","activity","certificates","chats","searches"].forEach(store=>{
+            ["tasks","notes","projects","courses","profile","activity","certificates","chats","searches","watchlist"].forEach(store=>{
                 if(!db.objectStoreNames.contains(store)) db.createObjectStore(store,{keyPath:"id",autoIncrement:true});
             });
         };
@@ -298,12 +520,44 @@ function openDB() {
         req.onerror = e => reject(e);
     });
 }
+
 function get(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).get(key); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve(null); });}
 function getAll(store){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).getAll(); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve([]); });}
 function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).add(obj); req.onsuccess=()=>resolve(); });}
 function put(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).put(obj); req.onsuccess=()=>resolve(); });}
 function del(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).delete(key); req.onsuccess=()=>resolve(); });}
 
+// ============= MODE SWITCHING =============
+function switchMode(mode) {
+    currentMode = mode;
+    
+    if(mode === 'tasks') {
+        document.getElementById('tasksSection').classList.remove('hidden');
+        document.getElementById('watchlistSection').classList.add('hidden');
+        document.getElementById('tasksTab').classList.add('active');
+        document.getElementById('watchlistTab').classList.remove('active');
+        document.getElementById('randomPickBtn').classList.add('hidden');
+        loadTasks();
+    } else {
+        document.getElementById('tasksSection').classList.add('hidden');
+        document.getElementById('watchlistSection').classList.remove('hidden');
+        document.getElementById('tasksTab').classList.remove('active');
+        document.getElementById('watchlistTab').classList.add('active');
+        document.getElementById('randomPickBtn').classList.remove('hidden');
+        loadWatchlist();
+    }
+}
+
+// ============= ADD MODAL OPENER =============
+function openAddModal() {
+    if(currentMode === 'tasks') {
+        openModal();
+    } else {
+        openWatchModal();
+    }
+}
+
+// ============= TASKS FUNCTIONS (UNCHANGED) =============
 function openModal(isEdit=false){ document.getElementById("taskModal").style.display="flex"; }
 
 function closeModal(){ 
@@ -320,7 +574,6 @@ function closeModal(){
     document.getElementById("modalTitle").innerText="Add New Task";
 }
 
-// NEW: View Task Modal
 function openViewModal(id){
     get("tasks",id).then(t=>{
         if(!t) return;
@@ -346,14 +599,12 @@ function openViewModal(id){
 
 function closeViewModal(){ document.getElementById("viewTaskModal").style.display="none"; }
 
-// NEW: Archive Modal Functions
 function openArchiveModal(){ 
     loadArchivedTasks();
     document.getElementById("archiveModal").style.display="flex"; 
 }
 function closeArchiveModal(){ document.getElementById("archiveModal").style.display="none"; }
 
-// NEW: Export Modal Functions
 function openExportModal(){ document.getElementById("exportModal").style.display="flex"; }
 function closeExportModal(){ document.getElementById("exportModal").style.display="none"; }
 
@@ -403,7 +654,6 @@ async function saveTask(){
     loadTasks();
 }
 
-// NEW: Get Task Status
 function getTaskStatus(task){
     if(task.done) return {text: 'Completed', class: 'completed'};
     if(!task.deadline) return {text: 'Pending', class: 'pending'};
@@ -429,25 +679,20 @@ async function loadTasks(){
 
     let list=await getAll("tasks");
     
-    // Filter archived
     list = list.filter(t => showArchived ? t.archived : !t.archived);
     
-    // Search filter
     list = list.filter(t=>
         t.title.toLowerCase().includes(search) || 
         (t.desc && t.desc.toLowerCase().includes(search)) ||
         (t.tags && t.tags.toLowerCase().includes(search))
     );
     
-    // Priority filter
     list = list.filter(t=>priorityFilterVal==="all"||t.priority===priorityFilterVal);
     
-    // Category filter
     if(categoryFilterVal !== 'all'){
         list = list.filter(t => t.category === categoryFilterVal);
     }
     
-    // Status filter
     if(statusFilterVal !== 'all'){
         list = list.filter(t => {
             const status = getTaskStatus(t);
@@ -455,7 +700,6 @@ async function loadTasks(){
         });
     }
     
-    // Sort
     if(sortVal === 'date-desc') list.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
     else if(sortVal === 'date-asc') list.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
     else if(sortVal === 'deadline-asc') list.sort((a,b) => new Date(a.deadline || '9999') - new Date(b.deadline || '9999'));
@@ -467,7 +711,6 @@ async function loadTasks(){
         list.sort((a,b) => (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0));
     }
     
-    // Pinned to top
     list=list.sort((a,b)=>b.pinned-a.pinned);
     
     updateStats();
@@ -523,7 +766,6 @@ async function loadTasks(){
     });
 }
 
-// NEW: Update Statistics
 async function updateStats(){
     let items = await getAll("tasks");
     const total = items.filter(t => !t.archived).length;
@@ -585,7 +827,6 @@ async function togglePin(id,state){
     showToast(t.pinned ? '<i class="bi bi-pin-angle-fill"></i> Task pinned' : '<i class="bi bi-pin-angle"></i> Task unpinned');
 }
 
-// NEW: Toggle Favorite
 async function toggleFav(id,state){ 
     let t=await get("tasks",id); 
     t.fav=!state; 
@@ -594,7 +835,6 @@ async function toggleFav(id,state){
     showToast(t.fav ? '<i class="bi bi-heart-fill"></i> Added to favorites' : '<i class="bi bi-heart"></i> Removed from favorites');
 }
 
-// NEW: Duplicate Task
 async function duplicateTask(id){
     let t = await get("tasks",id);
     let copy = {
@@ -619,7 +859,6 @@ async function duplicateTask(id){
     showToast('<i class="bi bi-files"></i> Task duplicated');
 }
 
-// NEW: Archive Task
 async function archiveTask(id){
     let t = await get("tasks",id);
     t.archived = true;
@@ -628,7 +867,6 @@ async function archiveTask(id){
     showToast('<i class="bi bi-archive"></i> Task archived');
 }
 
-// NEW: Unarchive Task
 async function unarchiveTask(id){
     let t = await get("tasks",id);
     t.archived = false;
@@ -638,14 +876,12 @@ async function unarchiveTask(id){
     showToast('<i class="bi bi-arrow-up-circle"></i> Task restored');
 }
 
-// NEW: Toggle Archive View
 function toggleArchiveView(){
     showArchived = !showArchived;
     document.getElementById("archiveViewText").innerHTML = showArchived ? '<i class="bi bi-journal-text"></i> Show Active' : '<i class="bi bi-archive"></i> Show Archived';
     loadTasks();
 }
 
-// NEW: Load Archived Tasks
 async function loadArchivedTasks(){
     let items = await getAll("tasks");
     items = items.filter(t => t.archived);
@@ -674,7 +910,6 @@ async function loadArchivedTasks(){
     });
 }
 
-// NEW: Export Tasks as JSON
 async function exportTasks(){
     let items = await getAll("tasks");
     const dataStr = JSON.stringify(items, null, 2);
@@ -688,7 +923,6 @@ async function exportTasks(){
     showToast('<i class="bi bi-download"></i> Tasks exported as JSON!');
 }
 
-// NEW: Export Tasks as Text
 async function exportTasksText(){
     let items = await getAll("tasks");
     let text = "EDUMATE TASKS EXPORT\n";
@@ -716,7 +950,6 @@ async function exportTasksText(){
     showToast('<i class="bi bi-file-text"></i> Tasks exported as text!');
 }
 
-// NEW: Export Tasks as CSV
 async function exportTasksCSV(){
     let items = await getAll("tasks");
     let csv = "Title,Description,Category,Tags,Deadline,Priority,Status,Created\n";
@@ -734,7 +967,6 @@ async function exportTasksCSV(){
     showToast('<i class="bi bi-file-earmark-spreadsheet"></i> Tasks exported as CSV!');
 }
 
-// NEW: Import Tasks
 async function importTasks(){
     const file = document.getElementById("importFile").files[0];
     if(!file){
@@ -766,7 +998,6 @@ async function importTasks(){
     reader.readAsText(file);
 }
 
-// NEW: Toggle View Mode
 function toggleViewMode(){
     const mode = document.getElementById("viewMode").value;
     const container = document.getElementById("taskList");
@@ -780,7 +1011,6 @@ function toggleViewMode(){
     }
 }
 
-// NEW: Clear All Filters
 function clearAllFilters(){
     document.getElementById("searchInput").value = "";
     document.getElementById("priorityFilter").value = "all";
@@ -793,7 +1023,469 @@ function clearAllFilters(){
     showToast('<i class="bi bi-arrow-clockwise"></i> Filters reset');
 }
 
-// NEW: Toast Notification
+// ============= WATCHLIST FUNCTIONS (NEW) =============
+
+function openWatchModal(isEdit=false){ 
+    document.getElementById("watchModal").style.display="flex"; 
+}
+
+function closeWatchModal(){ 
+    document.getElementById("watchModal").style.display="none";
+    watchEditID=null; 
+    watchTitle.value=""; 
+    watchDesc.value=""; 
+    watchType.value="Movie";
+    watchStatus.value="Plan to Watch";
+    watchPlatform.value="";
+    watchSeasons.value="";
+    watchEpisodes.value="";
+    watchCurrentSeason.value="";
+    watchCurrentEpisode.value="";
+    watchRating.value="0";
+    watchGenre.value="";
+    watchYear.value="";
+    watchDirector.value="";
+    watchCast.value="";
+    watchFavorite.checked=false;
+    document.getElementById("ratingValue").innerText="0";
+    document.getElementById("watchModalTitle").innerText="Add to Watchlist";
+}
+
+async function saveWatch(){
+    let pinnedState = false;
+    let favState = false;
+    
+    if(watchEditID){
+        const existing = await get("watchlist", watchEditID);
+        pinnedState = existing && existing.pinned ? true : false;
+        favState = existing && existing.fav ? true : false;
+    }
+    
+    const totalEp = parseInt(watchEpisodes.value) || 0;
+    const currentEp = parseInt(watchCurrentEpisode.value) || 0;
+    const progress = totalEp > 0 ? Math.round((currentEp / totalEp) * 100) : 0;
+    
+    let watch={
+        title: watchTitle.value || "Untitled",
+        desc: watchDesc.value,
+        type: watchType.value,
+        status: watchStatus.value,
+        platform: watchPlatform.value,
+        seasons: parseInt(watchSeasons.value) || 0,
+        episodes: totalEp,
+        currentSeason: parseInt(watchCurrentSeason.value) || 0,
+        currentEpisode: currentEp,
+        progress: progress,
+        rating: parseFloat(watchRating.value) || 0,
+        genre: watchGenre.value,
+        year: parseInt(watchYear.value) || 0,
+        director: watchDirector.value,
+        cast: watchCast.value,
+        favorite: watchFavorite.checked,
+        pinned: pinnedState,
+        fav: favState || watchFavorite.checked,
+        time: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    
+    if(watchEditID){ 
+        watch.id=watchEditID; 
+        await put("watchlist",watch);
+        showToast('<i class="bi bi-check-circle"></i> Watchlist item updated!');
+    }
+    else {
+        await add("watchlist",watch);
+        showToast('<i class="bi bi-check-circle"></i> Added to watchlist!');
+    }
+    
+    closeWatchModal(); 
+    loadWatchlist();
+}
+
+async function loadWatchlist(){
+    const container=document.getElementById("watchList");
+    container.innerHTML="";
+    const search=watchSearchInput.value.toLowerCase();
+    const typeFilterVal=watchTypeFilter.value;
+    const statusFilterVal=watchStatusFilter.value;
+    const platformFilterVal=watchPlatformFilter.value;
+    const sortVal=watchSortBy.value;
+
+    let list=await getAll("watchlist");
+    
+    list = list.filter(w=>
+        w.title.toLowerCase().includes(search) || 
+        (w.desc && w.desc.toLowerCase().includes(search)) ||
+        (w.genre && w.genre.toLowerCase().includes(search)) ||
+        (w.cast && w.cast.toLowerCase().includes(search))
+    );
+    
+    if(typeFilterVal !== 'all'){
+        list = list.filter(w => w.type === typeFilterVal);
+    }
+    
+    if(statusFilterVal !== 'all'){
+        list = list.filter(w => w.status === statusFilterVal);
+    }
+    
+    if(platformFilterVal !== 'all'){
+        list = list.filter(w => w.platform.includes(platformFilterVal));
+    }
+    
+    if(sortVal === 'date-desc') list.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+    else if(sortVal === 'date-asc') list.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+    else if(sortVal === 'title-asc') list.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+    else if(sortVal === 'title-desc') list.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
+    else if(sortVal === 'rating-desc') list.sort((a,b) => (b.rating || 0) - (a.rating || 0));
+    else if(sortVal === 'rating-asc') list.sort((a,b) => (a.rating || 0) - (b.rating || 0));
+    
+    list=list.sort((a,b)=>b.pinned-a.pinned);
+    
+    updateWatchStats();
+    
+    if(list.length === 0){
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3><i class="bi bi-camera-reels"></i> No items in watchlist</h3>
+                <p>Add your first movie or series!</p>
+            </div>
+        `;
+        return;
+    }
+
+    list.forEach(watch=>{
+        const typeClass = `type-${watch.type.toLowerCase()}`;
+        const statusClass = `status-${watch.status.toLowerCase().replace(/ /g, '-')}`;
+        const stars = '★'.repeat(Math.floor(watch.rating)) + '☆'.repeat(10 - Math.floor(watch.rating));
+        
+        container.innerHTML+=`
+        <div class="watch-card">
+            <span class="pin ${watch.pinned?"active":""}" onclick="toggleWatchPin(${watch.id},${watch.pinned})" title="${watch.pinned ? 'Unpin' : 'Pin'}"><i class="bi bi-pin-angle-fill"></i></span>
+            <span class="fav ${watch.fav?"active":""}" onclick="toggleWatchFav(${watch.id},${watch.fav})" title="${watch.fav ? 'Remove Favorite' : 'Add Favorite'}"><i class="bi bi-heart-fill"></i></span>
+            
+            <span class="${typeClass}">${watch.type}</span>
+            <span class="status-badge ${statusClass}">${watch.status}</span>
+            
+            <h3>${watch.title}</h3>
+            ${watch.year ? `<p><b>Year:</b> ${watch.year}</p>` : ''}
+            ${watch.genre ? `<p><b>Genre:</b> ${watch.genre}</p>` : ''}
+            ${watch.platform ? `<span class="platform-badge">${watch.platform}</span>` : ''}
+            
+            ${watch.seasons > 0 ? `<p><b>Seasons:</b> ${watch.seasons} | <b>Episodes:</b> ${watch.episodes}</p>` : ''}
+            ${watch.currentSeason > 0 || watch.currentEpisode > 0 ? `<p><b>Progress:</b> S${watch.currentSeason} E${watch.currentEpisode}</p>` : ''}
+            
+            ${watch.progress > 0 ? `
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width:${watch.progress}%"></div>
+                </div>
+                <p style="font-size:11px;text-align:center;">${watch.progress}% Complete</p>
+            ` : ''}
+            
+            ${watch.rating > 0 ? `<div class="rating-stars">${stars} (${watch.rating}/10)</div>` : ''}
+            
+            <p>${watch.desc || 'No description'}</p>
+            
+            ${watch.director ? `<p style="font-size:11px;"><b>Director:</b> ${watch.director}</p>` : ''}
+            ${watch.cast ? `<p style="font-size:11px;"><b>Cast:</b> ${watch.cast}</p>` : ''}
+            
+            <small><i class="bi bi-clock"></i> ${watch.time}</small>
+            
+            <div class="actions">
+                <button onclick="openViewWatchModal(${watch.id})" title="Quick View"><i class="bi bi-eye"></i> View</button>
+                <button onclick="editWatch(${watch.id})" title="Edit"><i class="bi bi-pencil"></i> Edit</button>
+                <button onclick="duplicateWatch(${watch.id})" title="Duplicate"><i class="bi bi-files"></i> Copy</button>
+                <button onclick="updateProgress(${watch.id})" title="Update Progress"><i class="bi bi-arrow-up-circle"></i> Progress</button>
+                <button onclick="deleteWatch(${watch.id})" title="Delete" style="background:#ffcccc;"><i class="bi bi-trash"></i> Delete</button>
+            </div>
+        </div>`;
+    });
+}
+
+async function updateWatchStats(){
+    let items = await getAll("watchlist");
+    const total = items.length;
+    const watching = items.filter(w => w.status === 'Watching').length;
+    const watched = items.filter(w => w.status === 'Watched').length;
+    const plan = items.filter(w => w.status === 'Plan to Watch').length;
+    const fav = items.filter(w => w.fav).length;
+    
+    document.getElementById("watchTotalCount").innerText = total;
+    document.getElementById("watchWatchingCount").innerText = watching;
+    document.getElementById("watchWatchedCount").innerText = watched;
+    document.getElementById("watchPlanCount").innerText = plan;
+    document.getElementById("watchFavCount").innerText = fav;
+}
+
+async function editWatch(id){
+    let w=await get("watchlist",id);
+    watchEditID=id;
+    watchTitle.value=w.title; 
+    watchDesc.value=w.desc; 
+    watchType.value=w.type;
+    watchStatus.value=w.status;
+    watchPlatform.value=w.platform || "";
+    watchSeasons.value=w.seasons || "";
+    watchEpisodes.value=w.episodes || "";
+    watchCurrentSeason.value=w.currentSeason || "";
+    watchCurrentEpisode.value=w.currentEpisode || "";
+    watchRating.value=w.rating || 0;
+    watchGenre.value=w.genre || "";
+    watchYear.value=w.year || "";
+    watchDirector.value=w.director || "";
+    watchCast.value=w.cast || "";
+    watchFavorite.checked=w.favorite || false;
+    document.getElementById("ratingValue").innerText=w.rating || 0;
+    document.getElementById("watchModalTitle").innerText="Edit Watchlist Item";
+    openWatchModal(true);
+}
+
+async function deleteWatch(id){ 
+    if(confirm("Are you sure you want to remove this from watchlist?")){
+        await del("watchlist",id); 
+        loadWatchlist();
+        showToast('<i class="bi bi-trash"></i> Removed from watchlist');
+    }
+}
+
+async function toggleWatchPin(id,state){
+    let w=await get("watchlist",id);
+    w.pinned=!state;
+    await put("watchlist",w);
+    loadWatchlist();
+    showToast(w.pinned ? '<i class="bi bi-pin-angle-fill"></i> Pinned' : '<i class="bi bi-pin-angle"></i> Unpinned');
+}
+
+async function toggleWatchFav(id,state){ 
+    let w=await get("watchlist",id); 
+    w.fav=!state; 
+    await put("watchlist",w); 
+    loadWatchlist();
+    showToast(w.fav ? '<i class="bi bi-heart-fill"></i> Added to favorites' : '<i class="bi bi-heart"></i> Removed from favorites');
+}
+
+async function duplicateWatch(id){
+    let w = await get("watchlist",id);
+    let copy = {
+        title: w.title + " (Copy)",
+        desc: w.desc,
+        type: w.type,
+        status: w.status,
+        platform: w.platform,
+        seasons: w.seasons,
+        episodes: w.episodes,
+        currentSeason: 0,
+        currentEpisode: 0,
+        progress: 0,
+        rating: w.rating,
+        genre: w.genre,
+        year: w.year,
+        director: w.director,
+        cast: w.cast,
+        favorite: false,
+        pinned: false,
+        fav: false,
+        time: new Date().toLocaleString(),
+        timestamp: Date.now()
+    };
+    await add("watchlist", copy);
+    loadWatchlist();
+    showToast('<i class="bi bi-files"></i> Item duplicated');
+}
+
+async function updateProgress(id){
+    let w = await get("watchlist",id);
+    const newEp = prompt(`Current Episode (Total: ${w.episodes})`, w.currentEpisode || 0);
+    if(newEp === null) return;
+    
+    const newSeason = prompt(`Current Season (Total: ${w.seasons})`, w.currentSeason || 0);
+    if(newSeason === null) return;
+    
+    w.currentEpisode = parseInt(newEp) || 0;
+    w.currentSeason = parseInt(newSeason) || 0;
+    w.progress = w.episodes > 0 ? Math.round((w.currentEpisode / w.episodes) * 100) : 0;
+    
+    if(w.progress >= 100) {
+        w.status = 'Watched';
+    } else if(w.progress > 0) {
+        w.status = 'Watching';
+    }
+    
+    await put("watchlist",w);
+    loadWatchlist();
+    showToast('<i class="bi bi-arrow-up-circle"></i> Progress updated!');
+}
+
+function openViewWatchModal(id){
+    get("watchlist",id).then(w=>{
+        if(!w) return;
+        document.getElementById("viewWatchTitle").innerText = w.title;
+        
+        const stars = '★'.repeat(Math.floor(w.rating)) + '☆'.repeat(10 - Math.floor(w.rating));
+        
+        let content = `
+            <p><strong>Type:</strong> ${w.type}</p>
+            <p><strong>Status:</strong> ${w.status}</p>
+            <p><strong>Platform:</strong> ${w.platform || 'N/A'}</p>
+            ${w.seasons > 0 ? `<p><strong>Seasons:</strong> ${w.seasons}</p>` : ''}
+            ${w.episodes > 0 ? `<p><strong>Episodes:</strong> ${w.episodes}</p>` : ''}
+            ${w.currentSeason > 0 || w.currentEpisode > 0 ? `<p><strong>Current Progress:</strong> Season ${w.currentSeason}, Episode ${w.currentEpisode}</p>` : ''}
+            ${w.progress > 0 ? `<p><strong>Completion:</strong> ${w.progress}%</p>` : ''}
+            <p><strong>Rating:</strong> ${stars} (${w.rating}/10)</p>
+            <p><strong>Genre:</strong> ${w.genre || 'N/A'}</p>
+            <p><strong>Year:</strong> ${w.year || 'N/A'}</p>
+            <p><strong>Director:</strong> ${w.director || 'N/A'}</p>
+            <p><strong>Cast:</strong> ${w.cast || 'N/A'}</p>
+            <p><strong>Description:</strong> ${w.desc || 'N/A'}</p>
+            <p><strong>Added:</strong> ${w.time}</p>
+        `;
+        
+        document.getElementById("viewWatchContent").innerHTML = content;
+        document.getElementById("viewWatchModal").style.display = "flex";
+    });
+}
+
+function closeViewWatchModal(){ document.getElementById("viewWatchModal").style.display="none"; }
+
+function clearWatchFilters(){
+    document.getElementById("watchSearchInput").value = "";
+    document.getElementById("watchTypeFilter").value = "all";
+    document.getElementById("watchStatusFilter").value = "all";
+    document.getElementById("watchPlatformFilter").value = "all";
+    document.getElementById("watchSortBy").value = "date-desc";
+    loadWatchlist();
+    showToast('<i class="bi bi-arrow-clockwise"></i> Filters reset');
+}
+
+// ============= RANDOM PICK FEATURE =============
+
+async function showRandomPick(){
+    let items = await getAll("watchlist");
+    
+    // Filter only items that are "Plan to Watch" or "Watching"
+    items = items.filter(w => w.status === 'Plan to Watch' || w.status === 'Watching');
+    
+    if(items.length === 0){
+        showToast('<i class="bi bi-exclamation-circle"></i> No items in your watchlist to pick from!');
+        return;
+    }
+    
+    const randomIndex = Math.floor(Math.random() * items.length);
+    const pick = items[randomIndex];
+    
+    const stars = '★'.repeat(Math.floor(pick.rating)) + '☆'.repeat(10 - Math.floor(pick.rating));
+    
+    let content = `
+        <h3>${pick.title}</h3>
+        <p><strong>Type:</strong> ${pick.type}</p>
+        ${pick.genre ? `<p><strong>Genre:</strong> ${pick.genre}</p>` : ''}
+        ${pick.platform ? `<p><strong>Available on:</strong> ${pick.platform}</p>` : ''}
+        ${pick.rating > 0 ? `<p><strong>Rating:</strong> ${stars} (${pick.rating}/10)</p>` : ''}
+        ${pick.seasons > 0 ? `<p><strong>Seasons:</strong> ${pick.seasons} | <strong>Episodes:</strong> ${pick.episodes}</p>` : ''}
+        ${pick.desc ? `<p style="margin-top:15px;">${pick.desc}</p>` : ''}
+        <p style="margin-top:20px;font-size:18px;"><strong>🍿 Time to watch this!</strong></p>
+    `;
+    
+    document.getElementById("randomContent").innerHTML = content;
+    document.getElementById("randomModal").style.display = "flex";
+}
+
+function closeRandomModal(){ 
+    document.getElementById("randomModal").style.display="none"; 
+}
+
+// ============= EXPORT/IMPORT WATCHLIST =============
+
+async function exportWatchlist(){
+    let items = await getAll("watchlist");
+    const dataStr = JSON.stringify(items, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-watchlist-${Date.now()}.json`;
+    link.click();
+    document.getElementById("exportPreview").innerText = dataStr;
+    showToast('<i class="bi bi-download"></i> Watchlist exported as JSON!');
+}
+
+async function exportWatchlistText(){
+    let items = await getAll("watchlist");
+    let text = "EDUMATE WATCHLIST EXPORT\n";
+    text += "=".repeat(50) + "\n\n";
+    
+    items.forEach((w, i) => {
+        text += `[${i+1}] ${w.title} (${w.type})\n`;
+        text += `Status: ${w.status}\n`;
+        text += `Platform: ${w.platform || 'N/A'}\n`;
+        text += `Genre: ${w.genre || 'N/A'}\n`;
+        text += `Rating: ${w.rating}/10\n`;
+        if(w.seasons > 0) text += `Seasons: ${w.seasons} | Episodes: ${w.episodes}\n`;
+        if(w.progress > 0) text += `Progress: ${w.progress}%\n`;
+        text += `Description: ${w.desc || 'N/A'}\n`;
+        text += `Added: ${w.time}\n`;
+        text += "-".repeat(50) + "\n\n";
+    });
+    
+    const dataBlob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-watchlist-${Date.now()}.txt`;
+    link.click();
+    document.getElementById("exportPreview").innerText = text;
+    showToast('<i class="bi bi-file-text"></i> Watchlist exported as text!');
+}
+
+async function exportWatchlistCSV(){
+    let items = await getAll("watchlist");
+    let csv = "Title,Type,Status,Platform,Genre,Rating,Seasons,Episodes,Progress,Year,Director,Description,Added\n";
+    
+    items.forEach(w => {
+        csv += `"${w.title}","${w.type}","${w.status}","${w.platform || ''}","${w.genre || ''}",${w.rating},${w.seasons},${w.episodes},${w.progress},"${w.year || ''}","${w.director || ''}","${w.desc || ''}","${w.time}"\n`;
+    });
+    
+    const dataBlob = new Blob([csv], {type: 'text/csv'});
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `edumate-watchlist-${Date.now()}.csv`;
+    link.click();
+    showToast('<i class="bi bi-file-earmark-spreadsheet"></i> Watchlist exported as CSV!');
+}
+
+async function importWatchlist(){
+    const file = document.getElementById("importWatchFile").files[0];
+    if(!file){
+        alert("Please select a file first!");
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(!Array.isArray(data)){
+                alert("Invalid file format!");
+                return;
+            }
+            
+            for(let item of data){
+                delete item.id;
+                await add("watchlist", item);
+            }
+            
+            loadWatchlist();
+            closeExportModal();
+            showToast(`<i class="bi bi-upload"></i> ${data.length} items imported to watchlist!`);
+        } catch(err){
+            alert("Error importing file: " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ============= UTILITIES =============
+
 function showToast(message){
     const toast = document.getElementById("toast");
     toast.innerHTML = message;
@@ -803,9 +1495,12 @@ function showToast(message){
     }, 3000);
 }
 
+// ============= INITIALIZATION =============
+
 openDB().then(() => {
     loadTasks();
     updateStats();
+    updateWatchStats();
 });
 </script>
 
