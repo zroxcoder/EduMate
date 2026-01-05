@@ -509,14 +509,14 @@ let currentMode = 'tasks'; // 'tasks' or 'watchlist'
 
 function openDB() {
     return new Promise((resolve,reject)=>{
-        const req=indexedDB.open("MateDB",3);
+        const req = indexedDB.open("MateDB",3);
         req.onupgradeneeded = e => {
-            db=e.target.result;
-            ["tasks","notes","projects","courses","profile","activity","certificates","chats","searches","watchlist"].forEach(store=>{
+            db = e.target.result;
+            ["notes","tasks","projects","courses","profile","activity","certificates","chats","searches","watchlist"].forEach(store=>{
                 if(!db.objectStoreNames.contains(store)) db.createObjectStore(store,{keyPath:"id",autoIncrement:true});
             });
         };
-        req.onsuccess = e => { db=e.target.result; resolve(db); };
+        req.onsuccess = e => { db = e.target.result; resolve(db); };
         req.onerror = e => reject(e);
     });
 }
