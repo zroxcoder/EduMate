@@ -406,7 +406,7 @@ function openDB() {
         const req = indexedDB.open("MateDB",3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes","tasks","projects","courses","profile","activity","certificates","expenses","chats","searches","watchlist"].forEach(store=>{
+            ["notes","tasks","projects","courses","profile","activity","certificates","chats","searches","watchlist","expenses","settings"].forEach(store=>{
                 if(!db.objectStoreNames.contains(store)) db.createObjectStore(store,{keyPath:"id",autoIncrement:true});
             });
         };
@@ -414,6 +414,7 @@ function openDB() {
         req.onerror = e => reject(e);
     });
 }
+
 function get(store,key){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).get(key); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve(null); });}
 function getAll(store){return new Promise(resolve=>{ const tx=db.transaction(store,"readonly"); const req=tx.objectStore(store).getAll(); req.onsuccess=()=>resolve(req.result); req.onerror=()=>resolve([]); });}
 function add(store,obj){return new Promise(resolve=>{ const tx=db.transaction(store,"readwrite"); const req=tx.objectStore(store).add(obj); req.onsuccess=()=>resolve(); });}
@@ -429,9 +430,12 @@ function formatAmount(amount){
     return `${symbol}${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 }
 
+// FIXED: This was overwriting the budget
 async function saveCurrency(){
     selectedCurrency = document.getElementById('currencySelect').value;
-    await put('settings', {id: 1, currency: selectedCurrency});
+    let settings = await get('settings', 1) || {id: 1};
+    settings.currency = selectedCurrency;
+    await put('settings', settings);
     loadExpenses();
     showToast('<i class="bi bi-currency-exchange"></i> Currency updated!');
 }
@@ -681,8 +685,6 @@ async function updateStats(){
     const balance = income - expenses;
     const pinned = items.filter(i => i.pinned).length;
     
-    const symbol = getCurrencySymbol();
-    
     document.getElementById("totalIncome").innerText = formatAmount(income);
     document.getElementById("totalExpenses").innerText = formatAmount(expenses);
     document.getElementById("totalBalance").innerText = formatAmount(balance);
@@ -891,6 +893,8 @@ function openBudgetModal(){
     get('settings', 1).then(settings => {
         if(settings && settings.budget){
             document.getElementById('budgetAmount').value = settings.budget;
+        } else {
+            document.getElementById('budgetAmount').value = '';
         }
     });
 }
@@ -1033,9 +1037,9 @@ function showToast(message){
     }, 3000);
 }
 
-// Initialize
-openDB().then(() => {
-    loadCurrency();
+// FIXED: Initialize with proper async/await
+openDB().then(async () => {
+    await loadCurrency();
     loadExpenses();
 });
 </script>
