@@ -299,18 +299,24 @@ let db;
 
 // ============ DATABASE FUNCTIONS ============
 function openDB() {
-    return new Promise((resolve,reject)=>{
-        const req = indexedDB.open("MateDB",3);
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open("MateDB", 3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes","tasks","projects","courses","profile","activity","certificates","expenses","chats","searches","watchlist"].forEach(store=>{
-                if(!db.objectStoreNames.contains(store)) db.createObjectStore(store,{keyPath:"id",autoIncrement:true});
+            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings"].forEach(store => {
+                if (!db.objectStoreNames.contains(store)) {
+                    db.createObjectStore(store, {keyPath: "id", autoIncrement: true});
+                }
             });
         };
-        req.onsuccess = e => { db = e.target.result; resolve(db); };
+        req.onsuccess = e => { 
+            db = e.target.result; 
+            resolve(db); 
+        };
         req.onerror = e => reject(e);
     });
 }
+
 function get(store,key){
     return new Promise((resolve,reject)=>{
         try{
@@ -644,9 +650,35 @@ async function getAIResponse(userText){
     const courses = await getAll("courses");
     const notes = await getAll("notes");
     const watchlist = await getAll("watchlist");
-    const expenses = await getAll("expenses"); 
+    const expenses = await getAll("expenses");
     
     const text = (userText || "").toLowerCase();
+
+        // Helper function to get currency symbol
+    const getCurrencySymbol = async () => {
+        const currencySymbols = {
+            'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 'JPY': '¥', 'CNY': '¥',
+            'AUD': 'A$', 'CAD': 'C$', 'CHF': 'Fr', 'SEK': 'kr', 'NZD': 'NZ$',
+            'SGD': 'S$', 'HKD': 'HK$', 'NOK': 'kr', 'KRW': '₩', 'TRY': '₺',
+            'RUB': '₽', 'BRL': 'R$', 'ZAR': 'R', 'MXN': '$', 'AED': 'د.إ',
+            'SAR': '﷼', 'THB': '฿', 'IDR': 'Rp', 'MYR': 'RM', 'PHP': '₱',
+            'PKR': '₨', 'BDT': '৳', 'VND': '₫', 'EGP': 'E£', 'NGN': '₦',
+            'ILS': '₪', 'DKK': 'kr', 'PLN': 'zł', 'CZK': 'Kč', 'HUF': 'Ft',
+            'CLP': '$', 'ARS': '$', 'COP': '$', 'PEN': 'S/.', 'NPR': 'रु'
+        };
+        
+        try {
+            const settings = await get('settings', 1);
+            const currency = settings && settings.currency ? settings.currency : 'USD';
+            return currencySymbols[currency] || '$';
+        } catch(e) {
+            return '$';
+        }
+    };
+    
+    const formatMoney = (amount, symbol) => {
+        return `${symbol}${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    };
 
     // ===== GREETINGS (ENHANCED) =====
     if(/^(hi|hello|hey|good morning|good afternoon|good evening|greetings|howdy|sup|what's up|yo)\b/i.test(text)){
@@ -679,61 +711,64 @@ async function getAIResponse(userText){
         return farewells[Math.floor(Math.random() * farewells.length)];
     }
 
-    // ===== HELP & COMMANDS (COMPREHENSIVE) =====
+    
     if(/^(help|commands|menu|options|what can you do|capabilities|features|show faq)\b/i.test(text)){
-        return `🤖 **I'm here to help you succeed! Here's what I can do:**\n\n` +
-            `📚 **Academic Support:**\n` +
-            `- Find past papers (2015-2025)\n` +
-            `- Search research papers on Google Scholar\n` +
-            `- Subject-specific study tips\n` +
-            `- Explain concepts (ask "explain [topic]")\n` +
-            `- Essay & writing guidance\n` +
-            `- Exam preparation strategies\n\n` +
-            `✅ **Productivity & Tasks:**\n` +
-            `- Show pending tasks/projects/courses\n` +
-            `- Suggest priorities ("what should I do first")\n` +
-            `- Time management techniques\n` +
-            `- Goal setting frameworks\n` +
-            `- Progress tracking\n\n` +
-            `💡 **Learning Techniques:**\n` +
-            `- Study methods (Pomodoro, Feynman, etc.)\n` +
-            `- Memory improvement tips\n` +
-            `- Note-taking strategies\n` +
-            `- Speed reading techniques\n` +
-            `- Focus & concentration help\n\n` +
-            `🧠 **Mental Wellness:**\n` +
-            `- Motivation & encouragement\n` +
-            `- Stress & anxiety management\n` +
-            `- Test anxiety tips\n` +
-            `- Work-life balance advice\n` +
-            `- Burnout prevention\n\n` +
-            `💰 **Finance Management:**\n` +                                   
-            `- Show expense summary and budget status\n` +                    
-            `- Track income vs expenses\n` +                                     
-            `- Monthly spending insights\n` +                                   
-            `- Budget recommendations\n` +                                     
-            `- Financial tips and advice\n\n` +                                 
-            `🔧 **Platform Help:**\n` +
-            `- How to use Notes, Planner, Projects\n` +
-            `- Feature tutorials\n` +
-            `- FAQ answers\n\n` +
-            `💬 **Just ask naturally!** Examples:\n` +
-            `- "Study tips for biology"\n` +
-            `- "How to write better essays"\n` +
-            `- "Past paper chemistry 9701 2023"\n` +
-            `- "Explain Newton's laws"\n` +
-            `- "I'm feeling overwhelmed"\n` +
-            `- "Show my expenses"\n` +                                         
-            `- "Budget advice"\n\n` +                                           
-            `- "Programming resources"`
-            `🎬 **Watchlist Features:**\n` +
-           `- Show your watchlist items\n` +
-           `- Random pick suggestions\n` +
-           `- Track movies and series\n` +
-           `- Progress monitoring\n` +
-           `- Rating and organization\n\n`;
-    }
-
+    return `🤖 **I'm here to help you succeed! Here's what I can do:**\n\n` +
+        `📚 **Academic Support:**\n` +
+        `- Find past papers (2015-2025)\n` +
+        `- Search research papers on Google Scholar\n` +
+        `- Subject-specific study tips\n` +
+        `- Explain concepts (ask "explain [topic]")\n` +
+        `- Essay & writing guidance\n` +
+        `- Exam preparation strategies\n\n` +
+        `✅ **Productivity & Tasks:**\n` +
+        `- Show pending tasks/projects/courses\n` +
+        `- Suggest priorities ("what should I do first")\n` +
+        `- Time management techniques\n` +
+        `- Goal setting frameworks\n` +
+        `- Progress tracking\n\n` +
+        `💡 **Learning Techniques:**\n` +
+        `- Study methods (Pomodoro, Feynman, etc.)\n` +
+        `- Memory improvement tips\n` +
+        `- Note-taking strategies\n` +
+        `- Speed reading techniques\n` +
+        `- Focus & concentration help\n\n` +
+        `🧠 **Mental Wellness:**\n` +
+        `- Motivation & encouragement\n` +
+        `- Stress & anxiety management\n` +
+        `- Test anxiety tips\n` +
+        `- Work-life balance advice\n` +
+        `- Burnout prevention\n\n` +
+        `🔧 **Platform Help:**\n` +
+        `- How to use Notes, Planner, Projects\n` +
+        `- Feature tutorials\n` +
+        `- FAQ answers\n\n` +
+        `💰 **Expense Tracking:**\n` +
+        `- View expense summaries and balance\n` +
+        `- Budget analysis and monitoring\n` +
+        `- Financial tips and advice\n` +
+        `- Category-wise spending breakdown\n` +
+        `- Money-saving strategies\n\n` +
+        `🎬 **Watchlist Features:**\n` +
+        `- Show your watchlist items\n` +
+        `- Random pick suggestions\n` +
+        `- Track movies and series\n` +
+        `- Progress monitoring\n` +
+        `- Rating and organization\n\n` +
+        `💬 **Just ask naturally!** Examples:\n` +
+        `- "Study tips for biology"\n` +
+        `- "How to write better essays"\n` +
+        `- "Past paper chemistry 9701 2023"\n` +
+        `- "Explain Newton's laws"\n` +
+        `- "I'm feeling overwhelmed"\n` +
+        `- "Programming resources"\n` +
+        `- "Show my expenses"\n` +
+        `- "How to save money"\n` +
+        `- "Budget tips"\n` +
+        `- "Show my watchlist"\n` +
+        `- "Random pick" / "What should I watch"\n` +
+        `- "Watchlist tips"`;
+}
     // ===== PAST PAPERS (ORIGINAL + ENHANCED) =====
     if(/past paper|pastpaper|previous paper|exam paper|question paper/i.test(text)){
         const yearMatch = text.match(/\b(20(?:1[5-9]|2[0-5]))\b/);
@@ -2027,247 +2062,6 @@ if(/show.*(watch|watchlist|movie|series|to watch)|list.*watch|my watchlist|what.
                "- Get random suggestions when bored!\n\n" +
                "Start building your watchlist today! 🍿";
     }
-
-    // ===== EXPENSES DISPLAY (NEW) =====
-if(/show.*(expense|spending|budget|money|finance|income)|list.*expense|my expenses|my budget|financial.*summary|spending.*summary/i.test(text)){
-    const expenses = await getAll("expenses");
-    const settings = await get("settings", 1);
-    
-    if(!expenses || expenses.length === 0) {
-        return "💰 **No Expense Records Yet**\n\n" +
-               "You haven't added any transactions yet!\n\n" +
-               "**💡 Get Started:**\n" +
-               "1. Go to the Expenses page\n" +
-               "2. Click the + button\n" +
-               "3. Add your income and expenses\n" +
-               "4. Track your financial health!\n\n" +
-               "**Why Track Expenses?**\n" +
-               "- Understand spending patterns\n" +
-               "- Stay within budget\n" +
-               "- Identify areas to save\n" +
-               "- Achieve financial goals\n" +
-               "- Reduce money stress\n\n" +
-               "Start tracking today! 💸";
-    }
-    
-    // Get current month data
-    const today = new Date();
-    const thisMonth = expenses.filter(e => {
-        const expenseDate = new Date(e.date);
-        return expenseDate.getMonth() === today.getMonth() && 
-               expenseDate.getFullYear() === today.getFullYear();
-    });
-    
-    // Calculate totals
-    const totalIncome = expenses.filter(e => e.type === 'income')
-        .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const totalExpenses = expenses.filter(e => e.type === 'expense')
-        .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const balance = totalIncome - totalExpenses;
-    
-    const monthIncome = thisMonth.filter(e => e.type === 'income')
-        .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const monthExpenses = thisMonth.filter(e => e.type === 'expense')
-        .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const monthBalance = monthIncome - monthExpenses;
-    
-    // Get currency
-    const currency = settings && settings.currency ? settings.currency : 'USD';
-    const currencySymbols = {
-        'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 'JPY': '¥', 'CNY': '¥',
-        'AUD': 'A$', 'CAD': 'C$', 'CHF': 'Fr', 'SEK': 'kr', 'NZD': 'NZ$',
-        'SGD': 'S$', 'HKD': 'HK$', 'NOK': 'kr', 'KRW': '₩', 'TRY': '₺',
-        'RUB': '₽', 'BRL': 'R$', 'ZAR': 'R', 'MXN': '$', 'AED': 'د.إ',
-        'SAR': '﷼', 'THB': '฿', 'IDR': 'Rp', 'MYR': 'RM', 'PHP': '₱',
-        'PKR': '₨', 'BDT': '৳', 'VND': '₫', 'EGP': 'E£', 'NGN': '₦',
-        'ILS': '₪', 'DKK': 'kr', 'PLN': 'zł', 'CZK': 'Kč', 'HUF': 'Ft',
-        'CLP': '$', 'ARS': '$', 'COP': '$', 'PEN': 'S/.'
-    };
-    const symbol = currencySymbols[currency] || '$';
-    
-    const formatMoney = (amount) => {
-        return symbol + parseFloat(amount).toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    };
-    
-    let response = `💰 **Your Financial Summary:**\n\n`;
-    
-    response += `**📊 All Time:**\n`;
-    response += `- Total Income: ${formatMoney(totalIncome)}\n`;
-    response += `- Total Expenses: ${formatMoney(totalExpenses)}\n`;
-    response += `- Net Balance: ${formatMoney(balance)} ${balance >= 0 ? '✅' : '⚠️'}\n\n`;
-    
-    response += `**📅 This Month:**\n`;
-    response += `- Income: ${formatMoney(monthIncome)}\n`;
-    response += `- Expenses: ${formatMoney(monthExpenses)}\n`;
-    response += `- Balance: ${formatMoney(monthBalance)} ${monthBalance >= 0 ? '✅' : '⚠️'}\n\n`;
-    
-    // Budget status
-    if(settings && settings.budget) {
-        const budget = settings.budget;
-        const budgetUsed = (monthExpenses / budget) * 100;
-        const remaining = budget - monthExpenses;
-        
-        response += `**🎯 Budget Status:**\n`;
-        response += `- Monthly Budget: ${formatMoney(budget)}\n`;
-        response += `- Spent: ${formatMoney(monthExpenses)} (${budgetUsed.toFixed(1)}%)\n`;
-        response += `- Remaining: ${formatMoney(remaining)}\n`;
-        
-        if(budgetUsed > 100) {
-            response += `- Status: ⚠️ OVER BUDGET!\n\n`;
-        } else if(budgetUsed > 90) {
-            response += `- Status: ⚠️ Warning - Near limit!\n\n`;
-        } else if(budgetUsed > 70) {
-            response += `- Status: 🟡 Caution - 70% used\n\n`;
-        } else {
-            response += `- Status: ✅ On track\n\n`;
-        }
-    } else {
-        response += `**🎯 Budget:** Not set\n`;
-        response += `💡 Set a monthly budget to track spending better!\n\n`;
-    }
-    
-    // Category breakdown (top 3 expense categories)
-    const expensesByCategory = {};
-    expenses.filter(e => e.type === 'expense').forEach(e => {
-        const cat = e.category || 'Other';
-        expensesByCategory[cat] = (expensesByCategory[cat] || 0) + parseFloat(e.amount || 0);
-    });
-    
-    const topCategories = Object.entries(expensesByCategory)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3);
-    
-    if(topCategories.length > 0) {
-        response += `**📈 Top Spending Categories:**\n`;
-        topCategories.forEach(([cat, amount], i) => {
-            response += `${i + 1}. ${cat}: ${formatMoney(amount)}\n`;
-        });
-        response += `\n`;
-    }
-    
-    response += `**💡 Financial Tips:**\n`;
-    
-    if(balance < 0) {
-        response += `- Your expenses exceed income - review spending!\n`;
-        response += `- Look for areas to cut back\n`;
-        response += `- Consider increasing income sources\n`;
-    } else if(monthBalance < 0) {
-        response += `- This month's expenses are high\n`;
-        response += `- Review recent transactions\n`;
-        response += `- Plan for upcoming expenses\n`;
-    } else {
-        response += `- You're managing finances well! ✅\n`;
-        response += `- Keep tracking consistently\n`;
-        response += `- Consider saving the surplus\n`;
-    }
-    
-    response += `- Review expenses weekly\n`;
-    response += `- Set budget for each category\n`;
-    response += `- Use the Expenses page for detailed analysis\n\n`;
-    
-    response += `**📱 Go to Expenses page for:**\n`;
-    response += `- Add new transactions\n`;
-    response += `- Set/update monthly budget\n`;
-    response += `- View category breakdown charts\n`;
-    response += `- Export financial reports\n`;
-    response += `- Change currency settings`;
-    
-    return response;
-}
-
-// ===== BUDGET ADVICE (NEW) =====
-if(/budget.*advice|budget.*tips|how.*budget|save.*money|financial.*advice|money.*management|spending.*tips/i.test(text)){
-    return `💰 **Budget & Money Management Guide:**\n\n` +
-           `**📊 Budgeting Fundamentals:**\n\n` +
-           `**50/30/20 Rule:**\n` +
-           `- 50% Needs (rent, food, utilities, transport)\n` +
-           `- 30% Wants (entertainment, dining out, hobbies)\n` +
-           `- 20% Savings & debt repayment\n\n` +
-           `**Zero-Based Budget:**\n` +
-           `- Assign every dollar a purpose\n` +
-           `- Income - Expenses = 0\n` +
-           `- Know where all money goes\n\n` +
-           `**💡 Money-Saving Strategies:**\n\n` +
-           `**Track Every Expense:**\n` +
-           `- Use Edumate's Expense Tracker!\n` +
-           `- Record daily transactions\n` +
-           `- Review weekly patterns\n` +
-           `- Identify waste areas\n\n` +
-           `**Reduce Common Expenses:**\n` +
-           `- Cook at home instead of eating out\n` +
-           `- Use public transport when possible\n` +
-           `- Cancel unused subscriptions\n` +
-           `- Buy generic brands\n` +
-           `- Use student discounts\n` +
-           `- Share costs with roommates\n\n` +
-           `**Smart Shopping:**\n` +
-           `- Make shopping lists\n` +
-           `- Compare prices online\n` +
-           `- Wait 24 hours before big purchases\n` +
-           `- Buy during sales\n` +
-           `- Use cashback apps\n` +
-           `- Avoid impulse buying\n\n` +
-           `**📈 Building Savings:**\n\n` +
-           `**Emergency Fund:**\n` +
-           `- Goal: 3-6 months expenses\n` +
-           `- Start small (even $10/week)\n` +
-           `- Keep in separate account\n` +
-           `- Don't touch except emergencies\n\n` +
-           `**Automatic Savings:**\n` +
-           `- Set up automatic transfers\n` +
-           `- "Pay yourself first"\n` +
-           `- Save before spending\n` +
-           `- Start with 10% of income\n\n` +
-           `**💳 Managing Debt:**\n\n` +
-           `**Debt Snowball Method:**\n` +
-           `1. List all debts smallest to largest\n` +
-           `2. Pay minimums on all\n` +
-           `3. Put extra toward smallest debt\n` +
-           `4. Once paid, move to next\n` +
-           `5. Momentum builds!\n\n` +
-           `**Avoid New Debt:**\n` +
-           `- Live within means\n` +
-           `- Use cash for variable expenses\n` +
-           `- Pay credit cards in full\n` +
-           `- Avoid high-interest loans\n\n` +
-           `**🎓 Student-Specific Tips:**\n\n` +
-           `**Save on Education:**\n` +
-           `- Use library for textbooks\n` +
-           `- Buy used or rent books\n` +
-           `- Share resources with classmates\n` +
-           `- Use free online resources\n` +
-           `- Apply for scholarships\n\n` +
-           `**Side Income Ideas:**\n` +
-           `- Tutoring (your strong subjects)\n` +
-           `- Freelance work online\n` +
-           `- Part-time campus jobs\n` +
-           `- Sell unused items\n` +
-           `- Participate in paid studies\n\n` +
-           `**📱 Use Edumate Expense Tracker:**\n\n` +
-           `**Track:**\n` +
-           `- All income sources\n` +
-           `- Every expense (categorized)\n` +
-           `- Monthly budget limits\n` +
-           `- Spending patterns\n\n` +
-           `**Review:**\n` +
-           `- Weekly: Check spending\n` +
-           `- Monthly: Compare to budget\n` +
-           `- Quarterly: Adjust budget\n` +
-           `- Yearly: Big picture review\n\n` +
-           `**🎯 Action Steps Today:**\n\n` +
-           `1. Go to Expenses page\n` +
-           `2. Set a realistic monthly budget\n` +
-           `3. Add this week's transactions\n` +
-           `4. Identify one area to cut spending\n` +
-           `5. Set up automatic savings transfer\n\n` +
-           `**💡 Remember:**\n` +
-           `"A budget is telling your money where to go instead of wondering where it went."\n\n` +
-           `Small consistent changes = Big financial impact! 💪\n\n` +
-           `Ask me "show my expenses" to see your current status!`;
-}
     
     const watching = watchlist.filter(w => w.status === 'Watching');
     const planToWatch = watchlist.filter(w => w.status === 'Plan to Watch');
@@ -2425,7 +2219,540 @@ if(/watchlist tips|how.*use watchlist|watchlist help|organize watchlist/i.test(t
            `**🎬 Go to Planner → Watchlist to get started!**`;
 }
 
-   // ===== STATISTICS & PROGRESS =====
+// ===== EXPENSE TRACKING FEATURES =====
+
+// Show Expense Summary
+if(/show.*(expense|spending|transaction|money|budget)|my (expense|spending|transaction|budget)|expense (summary|report|overview)|spending (summary|report)|financial (summary|overview)/i.test(text)){
+    if(!expenses || expenses.length === 0){
+        return `💰 **No Expenses Tracked Yet**\n\n` +
+               `You haven't recorded any transactions yet!\n\n` +
+               `**💡 Start Tracking:**\n` +
+               `1. Go to the Expenses page\n` +
+               `2. Click the + button\n` +
+               `3. Add your income and expenses\n` +
+               `4. Track your financial health!\n\n` +
+               `**Why Track Expenses?**\n` +
+               `- Know where your money goes\n` +
+               `- Identify spending patterns\n` +
+               `- Stay within budget\n` +
+               `- Achieve financial goals\n` +
+               `- Reduce unnecessary spending\n\n` +
+               `**📊 I can help you:**\n` +
+               `- View expense summaries\n` +
+               `- Analyze spending by category\n` +
+               `- Give budget advice\n` +
+               `- Track financial goals\n\n` +
+               `Start your financial journey today! 💪`;
+    }
+    
+    const symbol = await getCurrencySymbol();
+    
+    // Calculate totals
+    const income = expenses.filter(e => e.type === 'income' && !e.archived)
+                          .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const expenseTotal = expenses.filter(e => e.type === 'expense' && !e.archived)
+                                .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const balance = income - expenseTotal;
+    
+    // Get current month expenses
+    const today = new Date();
+    const monthExpenses = expenses.filter(e => {
+        if(e.archived || e.type !== 'expense') return false;
+        const eDate = new Date(e.date);
+        return eDate.getMonth() === today.getMonth() && 
+               eDate.getFullYear() === today.getFullYear();
+    });
+    const monthTotal = monthExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    
+    // Category breakdown (top 5)
+    const categoryTotals = {};
+    expenses.filter(e => e.type === 'expense' && !e.archived).forEach(e => {
+        const cat = e.category || 'Other';
+        categoryTotals[cat] = (categoryTotals[cat] || 0) + parseFloat(e.amount || 0);
+    });
+    
+    const topCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([cat, amt]) => `  • ${cat}: ${formatMoney(amt, symbol)}`)
+        .join('\n');
+    
+    // Recent transactions
+    const recent = expenses.filter(e => !e.archived)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5)
+        .map(e => {
+            const emoji = e.type === 'income' ? '💰' : '💸';
+            return `  ${emoji} ${e.title}: ${formatMoney(e.amount, symbol)} (${e.date})`;
+        })
+        .join('\n');
+    
+    // Budget check
+    let budgetText = '';
+    try {
+        const settings = await get('settings', 1);
+        if(settings && settings.budget){
+            const budget = settings.budget;
+            const percentage = (monthTotal / budget) * 100;
+            const remaining = budget - monthTotal;
+            
+            if(percentage >= 100){
+                budgetText = `\n**⚠️ Budget Alert:**\nYou've spent ${formatMoney(monthTotal, symbol)} of your ${formatMoney(budget, symbol)} budget (${percentage.toFixed(1)}%)\n**Over budget by ${formatMoney(Math.abs(remaining), symbol)}!**\n`;
+            } else if(percentage >= 80){
+                budgetText = `\n**⚡ Budget Warning:**\nYou've spent ${formatMoney(monthTotal, symbol)} of your ${formatMoney(budget, symbol)} budget (${percentage.toFixed(1)}%)\n**${formatMoney(remaining, symbol)} remaining**\n`;
+            } else {
+                budgetText = `\n**✅ Budget Status:**\nSpent ${formatMoney(monthTotal, symbol)} of ${formatMoney(budget, symbol)} (${percentage.toFixed(1)}%)\n**${formatMoney(remaining, symbol)} remaining**\n`;
+            }
+        }
+    } catch(e) {}
+    
+    return `💰 **Your Financial Summary**\n\n` +
+           `**📊 Overall:**\n` +
+           `💚 Income: ${formatMoney(income, symbol)}\n` +
+           `💸 Expenses: ${formatMoney(expenseTotal, symbol)}\n` +
+           `💰 Balance: ${formatMoney(balance, symbol)}\n` +
+           `📝 Total Transactions: ${expenses.filter(e => !e.archived).length}\n` +
+           budgetText + `\n` +
+           `**📅 This Month:**\n` +
+           `Spent: ${formatMoney(monthTotal, symbol)}\n` +
+           `Transactions: ${monthExpenses.length}\n\n` +
+           `**🏷️ Top Spending Categories:**\n${topCategories || '  No expenses yet'}\n\n` +
+           `**📜 Recent Transactions:**\n${recent || '  No transactions yet'}\n\n` +
+           `**💡 Quick Actions:**\n` +
+           `- View detailed analysis: Go to Expenses page\n` +
+           `- Add transaction: Click + button\n` +
+           `- Set budget: Click piggy bank icon\n` +
+           `- Ask me: "budget tips" for advice\n\n` +
+           `**Need help?** Try:\n` +
+           `- "Budget tips"\n` +
+           `- "How to save money"\n` +
+           `- "Expense categories"`;
+}
+
+// Add Expense via Chat
+if(/add (expense|income|transaction)|record (expense|income|transaction)|log (expense|income|spending)/i.test(text)){
+    return `💰 **Add Transaction via Expenses Page**\n\n` +
+           `I can't directly add transactions yet, but it's super easy!\n\n` +
+           `**📝 Quick Steps:**\n` +
+           `1. Go to **Expenses page**\n` +
+           `2. Click the **+ button** (bottom right)\n` +
+           `3. Fill in details:\n` +
+           `   • Type (Income/Expense)\n` +
+           `   • Amount\n` +
+           `   • Category\n` +
+           `   • Date\n` +
+           `   • Description\n` +
+           `4. Click **Save**\n\n` +
+           `**💡 Pro Tips:**\n` +
+           `- Add transactions immediately (don't forget!)\n` +
+           `- Use clear, consistent titles\n` +
+           `- Choose appropriate categories\n` +
+           `- Add notes for future reference\n` +
+           `- Use recurring for regular expenses\n\n` +
+           `**📱 Features:**\n` +
+           `- Pin important transactions\n` +
+           `- Set recurring payments\n` +
+           `- Track by category\n` +
+           `- Monthly budget monitoring\n` +
+           `- Export your data\n\n` +
+           `Start tracking your finances today! 💪`;
+}
+
+// Budget Tips & Advice
+if(/budget (tip|advice|help)|save money|saving (tip|advice)|financial (tip|advice)|money management|reduce spending|cut (cost|expense)/i.test(text)){
+    return `💰 **Smart Budget & Money Management Tips**\n\n` +
+           `**🎯 The 50/30/20 Rule:**\n\n` +
+           `Divide your income:\n` +
+           `- **50%** Needs (rent, food, bills, transport)\n` +
+           `- **30%** Wants (entertainment, dining, hobbies)\n` +
+           `- **20%** Savings (emergency fund, goals, investments)\n\n` +
+           `**💡 Essential Budgeting Steps:**\n\n` +
+           `**1. Track Everything:**\n` +
+           `- Record ALL expenses (even small ones!)\n` +
+           `- Use Edumate Expenses tracker\n` +
+           `- Review weekly\n` +
+           `- Identify spending patterns\n\n` +
+           `**2. Set Clear Goals:**\n` +
+           `- Emergency fund (3-6 months expenses)\n` +
+           `- Short-term (vacation, gadget)\n` +
+           `- Long-term (education, car, house)\n` +
+           `- Write them down!\n\n` +
+           `**3. Create Realistic Budget:**\n` +
+           `- Based on actual spending (track first!)\n` +
+           `- Include all categories\n` +
+           `- Leave buffer (10-15%)\n` +
+           `- Review and adjust monthly\n\n` +
+           `**4. Automate Savings:**\n` +
+           `- Pay yourself first\n` +
+           `- Auto-transfer to savings\n` +
+           `- Before you spend anything\n` +
+           `- Even small amounts add up!\n\n` +
+           `**💸 Practical Money-Saving Tips:**\n\n` +
+           `**Daily Savings:**\n` +
+           `- Make coffee at home (save $5/day = $150/month!)\n` +
+           `- Pack lunch instead of eating out\n` +
+           `- Use reusable water bottle\n` +
+           `- Walk/bike for short distances\n` +
+           `- Cancel unused subscriptions\n\n` +
+           `**Shopping Smart:**\n` +
+           `- Make shopping lists (avoid impulse buys)\n` +
+           `- Compare prices before buying\n` +
+           `- Use coupons and discounts\n` +
+           `- Buy generic brands\n` +
+           `- Wait 24 hours before non-essential purchases\n\n` +
+           `**Reduce Bills:**\n` +
+           `- Turn off lights when leaving room\n` +
+           `- Unplug devices not in use\n` +
+           `- Use fans instead of AC when possible\n` +
+           `- Fix leaky faucets\n` +
+           `- Negotiate phone/internet plans\n\n` +
+           `**Student-Specific:**\n` +
+           `- Use student discounts (always ask!)\n` +
+           `- Buy used textbooks\n` +
+           `- Share streaming subscriptions\n` +
+           `- Use public libraries\n` +
+           `- Cook in bulk, freeze portions\n\n` +
+           `**🚫 Avoid These:**\n\n` +
+           `- Impulse buying (sleep on it!)\n` +
+           `- Lifestyle inflation (don't increase spending with income)\n` +
+           `- Ignoring small expenses (they add up!)\n` +
+           `- Not having emergency fund\n` +
+           `- Using credit cards irresponsibly\n\n` +
+           `**📱 Use Edumate Expenses to:**\n\n` +
+           `- Set monthly budget limits\n` +
+           `- Track spending by category\n` +
+           `- Get visual budget progress\n` +
+           `- Export reports monthly\n` +
+           `- Identify where to cut back\n\n` +
+           `**🎯 Challenge: Pick ONE tip and start today!**\n\n` +
+           `**Remember:** Small consistent savings = Big results! 💪`;
+}
+
+// Expense Categories Info
+if(/expense categor|spending categor|what.*categor|transaction.*categor|budget.*categor/i.test(text)){
+    return `🏷️ **Expense Categories Guide**\n\n` +
+           `**💸 EXPENSE CATEGORIES:**\n\n` +
+           `**🍔 Food:**\n` +
+           `- Groceries\n` +
+           `- Restaurants\n` +
+           `- Snacks & drinks\n` +
+           `- Food delivery\n\n` +
+           `**🚗 Transport:**\n` +
+           `- Public transport\n` +
+           `- Fuel/gas\n` +
+           `- Parking\n` +
+           `- Uber/taxi\n` +
+           `- Vehicle maintenance\n\n` +
+           `**📚 Education:**\n` +
+           `- Tuition fees\n` +
+           `- Books & supplies\n` +
+           `- Online courses\n` +
+           `- Stationery\n\n` +
+           `**🛍️ Shopping:**\n` +
+           `- Clothing\n` +
+           `- Electronics\n` +
+           `- Personal items\n` +
+           `- Gifts\n\n` +
+           `**📄 Bills:**\n` +
+           `- Utilities (electricity, water, gas)\n` +
+           `- Phone/internet\n` +
+           `- Subscriptions (Netflix, Spotify)\n` +
+           `- Insurance\n\n` +
+           `**🎬 Entertainment:**\n` +
+           `- Movies\n` +
+           `- Games\n` +
+           `- Events/concerts\n` +
+           `- Hobbies\n\n` +
+           `**🏥 Health:**\n` +
+           `- Medical appointments\n` +
+           `- Medicines\n` +
+           `- Gym membership\n` +
+           `- Health insurance\n\n` +
+           `**✈️ Travel:**\n` +
+           `- Flights\n` +
+           `- Hotels\n` +
+           `- Vacation expenses\n` +
+           `- Travel insurance\n\n` +
+           `**🏠 Rent:**\n` +
+           `- Monthly rent\n` +
+           `- Maintenance\n` +
+           `- Security deposit\n\n` +
+           `**💳 Other Expense:**\n` +
+           `- Miscellaneous\n` +
+           `- One-time purchases\n` +
+           `- Uncategorized\n\n` +
+           `**💰 INCOME CATEGORIES:**\n\n` +
+           `**💼 Salary:**\n` +
+           `- Regular paycheck\n` +
+           `- Part-time job\n` +
+           `- Internship\n\n` +
+           `**💻 Freelance:**\n` +
+           `- Contract work\n` +
+           `- Gig economy\n` +
+           `- Side projects\n\n` +
+           `**📈 Investment:**\n` +
+           `- Dividends\n` +
+           `- Interest\n` +
+           `- Returns\n\n` +
+           `**🎁 Gift:**\n` +
+           `- Birthday money\n` +
+           `- Holiday gifts\n` +
+           `- Rewards\n\n` +
+           `**💵 Other Income:**\n` +
+           `- Refunds\n` +
+           `- Cashback\n` +
+           `- Miscellaneous\n\n` +
+           `**💡 Pro Tips:**\n\n` +
+           `- Be consistent with categories\n` +
+           `- Don't over-categorize\n` +
+           `- Review monthly which categories are highest\n` +
+           `- Adjust spending in high-expense categories\n` +
+           `- Use "Other" sparingly\n\n` +
+           `**📊 Track your spending by category in Edumate Expenses!**`;
+}
+
+// Financial Goals
+if(/financial goal|money goal|saving goal|investment goal|wealth|financial planning|financial future/i.test(text)){
+    return `💰 **Financial Goals & Planning Guide**\n\n` +
+           `**🎯 Types of Financial Goals:**\n\n` +
+           `**Short-Term (0-1 year):**\n` +
+           `- Emergency fund (1 month expenses)\n` +
+           `- Pay off small debts\n` +
+           `- Buy needed items\n` +
+           `- Build saving habit\n` +
+           `- Track all expenses\n\n` +
+           `**Medium-Term (1-5 years):**\n` +
+           `- Emergency fund (3-6 months)\n` +
+           `- Save for education\n` +
+           `- Buy vehicle\n` +
+           `- Down payment for house\n` +
+           `- Career development courses\n\n` +
+           `**Long-Term (5+ years):**\n` +
+           `- Retirement savings\n` +
+           `- Property ownership\n` +
+           `- Investment portfolio\n` +
+           `- Financial independence\n` +
+           `- Legacy planning\n\n` +
+           `**📋 SMART Financial Goals:**\n\n` +
+           `**Specific:**\n` +
+           `❌ "Save money"\n` +
+           `✅ "Save $5,000 for emergency fund"\n\n` +
+           `**Measurable:**\n` +
+           `- Track progress monthly\n` +
+           `- Know exact amount\n` +
+           `- Calculate percentage complete\n\n` +
+           `**Achievable:**\n` +
+           `- Based on your income\n` +
+           `- Realistic timeline\n` +
+           `- Consider your expenses\n\n` +
+           `**Relevant:**\n` +
+           `- Aligns with life goals\n` +
+           `- Matters to YOU\n` +
+           `- Improves your situation\n\n` +
+           `**Time-Bound:**\n` +
+           `❌ "Save for vacation someday"\n` +
+           `✅ "Save $2,000 for vacation by December"\n\n` +
+           `**💡 Goal Achievement Strategy:**\n\n` +
+           `**1. Calculate Required Savings:**\n` +
+           `Goal: $5,000 in 12 months\n` +
+           `Required: $417/month\n` +
+           `Per week: $104\n` +
+           `Per day: $14\n\n` +
+           `**2. Automate It:**\n` +
+           `- Set up auto-transfer\n` +
+           `- Pay yourself first\n` +
+           `- Separate savings account\n` +
+           `- Don't touch it!\n\n` +
+           `**3. Track Progress:**\n` +
+           `- Check monthly\n` +
+           `- Celebrate milestones (25%, 50%, 75%)\n` +
+           `- Adjust if needed\n` +
+           `- Stay motivated\n\n` +
+           `**4. Find Extra Money:**\n` +
+           `- Cut one expense\n` +
+           `- Side hustle\n` +
+           `- Sell unused items\n` +
+           `- Use windfalls (tax refund, bonus)\n\n` +
+           `**🚀 Priority Order:**\n\n` +
+           `**1. Emergency Fund:**\n` +
+           `- Start with $1,000\n` +
+           `- Build to 3-6 months expenses\n` +
+           `- BEFORE other goals\n` +
+           `- Financial safety net\n\n` +
+           `**2. High-Interest Debt:**\n` +
+           `- Pay off credit cards\n` +
+           `- Eliminate bad debt\n` +
+           `- Snowball method\n\n` +
+           `**3. Retirement (Even Small!):**\n` +
+           `- Start early (compound interest!)\n` +
+           `- Even $50/month helps\n` +
+           `- Increase over time\n\n` +
+           `**4. Other Goals:**\n` +
+           `- Education\n` +
+           `- House\n` +
+           `- Investments\n` +
+           `- Personal goals\n\n` +
+           `**📊 Track in Edumate:**\n\n` +
+           `- Set budget in Expenses\n` +
+           `- Track income vs. expenses\n` +
+           `- Monitor savings rate\n` +
+           `- Export monthly reports\n\n` +
+           `**💪 Start TODAY:**\n` +
+           `Even $1 saved today is progress!\n` +
+           `Small steps → Big results! 🎯`;
+}
+
+// Monthly Budget Analysis
+if(/budget (analys|review|check)|how.*budget|budget.*doing|over budget|under budget|budget (status|progress)/i.test(text)){
+    try {
+        const settings = await get('settings', 1);
+        const symbol = await getCurrencySymbol();
+        
+        if(!settings || !settings.budget){
+            return `📊 **Budget Not Set**\n\n` +
+                   `You haven't set a monthly budget yet!\n\n` +
+                   `**💡 Set Your Budget:**\n` +
+                   `1. Go to **Expenses page**\n` +
+                   `2. Click **piggy bank icon** 🐷\n` +
+                   `3. Enter your monthly budget\n` +
+                   `4. Click **Save**\n\n` +
+                   `**Why Set a Budget?**\n` +
+                   `- Know your spending limit\n` +
+                   `- Avoid overspending\n` +
+                   `- Track progress visually\n` +
+                   `- Get alerts when approaching limit\n` +
+                   `- Build financial discipline\n\n` +
+                   `**💰 How to Calculate:**\n` +
+                   `1. Total your monthly income\n` +
+                   `2. List essential expenses\n` +
+                   `3. Set aside savings (20%)\n` +
+                   `4. Remaining = spending budget\n\n` +
+                   `**Example:**\n` +
+                   `Income: $2,000\n` +
+                   `Savings: $400 (20%)\n` +
+                   `Essentials: $1,000 (rent, bills, food)\n` +
+                   `Budget for other expenses: $600\n\n` +
+                   `Start budgeting today! 💪`;
+        }
+        
+        const budget = settings.budget;
+        const today = new Date();
+        
+        const monthExpenses = expenses.filter(e => {
+            if(e.archived || e.type !== 'expense') return false;
+            const eDate = new Date(e.date);
+            return eDate.getMonth() === today.getMonth() && 
+                   eDate.getFullYear() === today.getFullYear();
+        });
+        
+        const spent = monthExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+        const remaining = budget - spent;
+        const percentage = (spent / budget) * 100;
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const daysLeft = daysInMonth - today.getDate();
+        const avgPerDay = daysLeft > 0 ? remaining / daysLeft : 0;
+        
+        let status, emoji, advice;
+        
+        if(percentage >= 100){
+            status = "OVER BUDGET";
+            emoji = "🚨";
+            advice = `**⚠️ URGENT: You've exceeded your budget!**\n\n` +
+                    `**Immediate Actions:**\n` +
+                    `- Stop non-essential spending NOW\n` +
+                    `- Review and cut unnecessary expenses\n` +
+                    `- Look for ways to earn extra income\n` +
+                    `- Use only cash for remaining days\n` +
+                    `- Plan better for next month\n\n` +
+                    `**Prevention for Next Month:**\n` +
+                    `- Track expenses daily\n` +
+                    `- Set alerts at 50%, 75%, 90%\n` +
+                    `- Reduce budget in high categories\n` +
+                    `- Build buffer for unexpected costs`;
+        } else if(percentage >= 90){
+            status = "CRITICAL - Almost Over";
+            emoji = "⚠️";
+            advice = `**⚡ WARNING: Approaching Budget Limit!**\n\n` +
+                    `**What To Do:**\n` +
+                    `- Limit spending to essentials only\n` +
+                    `- Avoid dining out\n` +
+                    `- Skip entertainment expenses\n` +
+                    `- Use what you have at home\n` +
+                    `- Plan carefully for remaining days\n\n` +
+                    `**You can spend ~${formatMoney(avgPerDay, symbol)}/day for ${daysLeft} days**`;
+        } else if(percentage >= 75){
+            status = "Warning Zone";
+            emoji = "🟡";
+            advice = `**📊 You're in the warning zone**\n\n` +
+                    `**Recommendations:**\n` +
+                    `- Be mindful of remaining expenses\n` +
+                    `- Stick to your budget categories\n` +
+                    `- Avoid impulse purchases\n` +
+                    `- Cook at home more\n` +
+                    `- Review spending so far\n\n` +
+                    `**Daily budget: ~${formatMoney(avgPerDay, symbol)} for ${daysLeft} days**`;
+        } else if(percentage >= 50){
+            status = "On Track";
+            emoji = "✅";
+            advice = `**👍 Good progress!**\n\n` +
+                    `**Keep It Up:**\n` +
+                    `- Continue tracking expenses\n` +
+                    `- Stay within planned spending\n` +
+                    `- Look for more savings opportunities\n` +
+                    `- Maintain this discipline\n\n` +
+                    `**Daily budget: ~${formatMoney(avgPerDay, symbol)} for ${daysLeft} days**`;
+        } else {
+            status = "Excellent!";
+            emoji = "🌟";
+            advice = `**🎉 Fantastic job!**\n\n` +
+                    `**You're doing great:**\n` +
+                    `- Well below budget\n` +
+                    `- Excellent financial discipline\n` +
+                    `- Consider saving the surplus\n` +
+                    `- Maintain this momentum!\n\n` +
+                    `**Daily budget: ~${formatMoney(avgPerDay, symbol)} for ${daysLeft} days**\n\n` +
+                    `💡 **Tip:** Move unused budget to savings at month-end!`;
+        }
+        
+        // Category breakdown
+        const categoryTotals = {};
+        monthExpenses.forEach(e => {
+            const cat = e.category || 'Other';
+            categoryTotals[cat] = (categoryTotals[cat] || 0) + parseFloat(e.amount || 0);
+        });
+        
+        const topCategories = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([cat, amt]) => {
+                const catPercent = (amt / spent) * 100;
+                return `  • ${cat}: ${formatMoney(amt, symbol)} (${catPercent.toFixed(1)}%)`;
+            })
+            .join('\n');
+        
+        return `💰 **Budget Analysis - ${today.toLocaleString('default', { month: 'long', year: 'numeric' })}**\n\n` +
+               `${emoji} **Status: ${status}**\n\n` +
+               `**📊 Budget Overview:**\n` +
+               `Monthly Budget: ${formatMoney(budget, symbol)}\n` +
+               `Spent So Far: ${formatMoney(spent, symbol)} (${percentage.toFixed(1)}%)\n` +
+               `Remaining: ${formatMoney(remaining, symbol)}\n\n` +
+               `**📅 Timeline:**\n` +
+               `Days Passed: ${today.getDate()}/${daysInMonth}\n` +
+               `Days Left: ${daysLeft}\n` +
+               `Avg. per Day Remaining: ${formatMoney(avgPerDay, symbol)}\n\n` +
+               `**🏷️ Top Spending Categories:**\n${topCategories || '  No expenses this month'}\n\n` +
+               advice + `\n\n` +
+               `**📈 Track Progress:**\n` +
+               `Go to Expenses page to see visual budget bar!\n\n` +
+               `Need help? Ask: "budget tips" or "how to save money"`;
+               
+    } catch(e) {
+        return `❌ **Error analyzing budget**\n\nPlease try again or set your budget in the Expenses page!`;
+    }
+}
+
+
+    // ===== STATISTICS & PROGRESS =====
 if(/\b(statistic|stats|progress|how am i doing|show progress|my performance|dashboard|summary)\b/i.test(text)){
     const totalTasks = (tasks||[]).length;
     const doneTasks = (tasks||[]).filter(t=>t.done).length;
@@ -2436,58 +2763,37 @@ if(/\b(statistic|stats|progress|how am i doing|show progress|my performance|dash
     const totalWatch = (watchlist||[]).length;
     const watchedItems = (watchlist||[]).filter(w=>w.status==='Watched').length;
     const watchingItems = (watchlist||[]).filter(w=>w.status==='Watching').length;
-    
-    // ADD THESE EXPENSE CALCULATIONS
-    const totalExpenses = (expenses||[]).length;
-    const totalIncome = expenses.filter(e => e.type === 'income')
-        .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const totalSpent = expenses.filter(e => e.type === 'expense')
-        .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    const balance = totalIncome - totalSpent;
-    
-    const currency = settings && settings.currency ? settings.currency : 'USD';
-    const currencySymbols = {
-        'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 'JPY': '¥'
-    };
-    const symbol = currencySymbols[currency] || '$';
-    const formatMoney = (amt) => symbol + parseFloat(amt).toFixed(2);
-    
-    const taskPercent = totalTasks > 0 ? Math.round((doneTasks/totalTasks)*100) : 0;
-    const projectPercent = totalProjects > 0 ? Math.round((doneProjects/totalProjects)*100) : 0;
-    const coursePercent = totalCourses > 0 ? Math.round((doneCourses/totalCourses)*100) : 0;
-    
-    const totalCompleted = doneTasks + doneProjects + doneCourses;
-    const motivation = totalCompleted > 20 ? "🔥 You're crushing it!" : 
-                      totalCompleted > 10 ? "💪 Great momentum!" :
-                      totalCompleted > 5 ? "✨ Keep going!" :
-                      "🚀 Let's build momentum together!";
-    
-    return `📊 **Your Progress Dashboard:**\n\n` +
-       `**✅ Tasks:**\n` +
-       `- Completed: ${doneTasks}/${totalTasks} (${taskPercent}%)\n` +
-       `- Pending: ${totalTasks - doneTasks}\n\n` +
-       `**📁 Projects:**\n` +
-       `- Completed: ${doneProjects}/${totalProjects} (${projectPercent}%)\n` +
-       `- Pending: ${totalProjects - doneProjects}\n\n` +
-       `**🎓 Courses:**\n` +
-       `- Completed: ${doneCourses}/${totalCourses} (${coursePercent}%)\n` +
-       `- Pending: ${totalCourses - doneCourses}\n\n` +
-       `**🎬 Watchlist:**\n` +
-       `- Total Items: ${totalWatch}\n` +
-       `- Watched: ${watchedItems}\n` +
-       `- Currently Watching: ${watchingItems}\n\n` +
-       `**💰 Finances:**\n` +                                              // ADD THIS SECTION
-       `- Total Transactions: ${totalExpenses}\n` +                        // ADD THIS
-       `- Income: ${formatMoney(totalIncome)}\n` +                         // ADD THIS
-       `- Expenses: ${formatMoney(totalSpent)}\n` +                        // ADD THIS
-       `- Balance: ${formatMoney(balance)} ${balance >= 0 ? '✅' : '⚠️'}\n\n` +  // ADD THIS
-       `**📝 Notes:** ${notes.length} total\n\n` +
-       `${motivation}\n\n` +                                                // ADD THIS
-       `**💡 Quick Actions:**\n` +                                          // ADD THIS
-       `- Ask "what should I do first" for priorities\n` +                 // ADD THIS
-       `- Ask "show my expenses" for detailed finances\n` +                // ADD THIS
-       `- Type "help" to see all capabilities`;                            // ADD THIS
-}
+        const taskPercent = totalTasks > 0 ? Math.round((doneTasks/totalTasks)*100) : 0;
+        const projectPercent = totalProjects > 0 ? Math.round((doneProjects/totalProjects)*100) : 0;
+        const coursePercent = totalCourses > 0 ? Math.round((doneCourses/totalCourses)*100) : 0;
+        
+        const totalCompleted = doneTasks + doneProjects + doneCourses;
+        const motivation = totalCompleted > 20 ? "🔥 You're crushing it!" : 
+                          totalCompleted > 10 ? "💪 Great momentum!" :
+                          totalCompleted > 5 ? "✨ Keep going!" :
+                          "🚀 Let's build momentum together!";
+        
+            return `📊 **Your Progress Dashboard:**\n\n` +
+           `**✅ Tasks:**\n` +
+           `- Completed: ${doneTasks}/${totalTasks} (${taskPercent}%)\n` +
+           `- Pending: ${totalTasks - doneTasks}\n\n` +
+           `**📁 Projects:**\n` +
+           `- Completed: ${doneProjects}/${totalProjects} (${projectPercent}%)\n` +
+           `- Pending: ${totalProjects - doneProjects}\n\n` +
+           `**🎓 Courses:**\n` +
+           `- Completed: ${doneCourses}/${totalCourses} (${coursePercent}%)\n` +
+           `- Pending: ${totalCourses - doneCourses}\n\n` +
+           `**🎬 Watchlist:**\n` +
+           `- Total Items: ${totalWatch}\n` +
+           `- Watched: ${watchedItems}\n` +
+           `- Currently Watching: ${watchingItems}\n\n` +
+           `**💰 Expenses:**\n` +
+           `- Total Transactions: ${expenses.filter(e => !e.archived).length}\n` +
+           `- Income: ${expenses.filter(e => e.type === 'income' && !e.archived).length}\n` +
+           `- Expenses: ${expenses.filter(e => e.type === 'expense' && !e.archived).length}\n\n` +
+           `**📝 Notes:** ${notes.length} total\n\n` 
+    }
+
     // ===== CLEAR CHAT =====
     if(/clear chat|delete chat|reset chat|clear conversation|new chat/i.test(text)){
         await clearChats();
@@ -2662,93 +2968,102 @@ if(/\b(statistic|stats|progress|how am i doing|show progress|my performance|dash
             `💡 **Remember:** Group study supplements, not replaces, individual study!`;
     }
 
-    // ===== DEFAULT RESPONSE (ENHANCED WITH MORE VARIATIONS) =====
-    const responseVariations = [
-        `💬 I heard: **"${userText}"**\n\n` +
-        `I'm not sure about that specific query, but I'm here to help!\n\n` +
-        `**🤖 I can assist with:**\n` +
-        `- Study strategies and learning techniques\n` +
-        `- Task and project management\n` +
-        `- Finding past papers and research\n` +
-        `- Motivation and productivity advice\n` +
-        `- Subject-specific study tips\n` +
-        `- Exam preparation and test anxiety\n` +
-        `- Financial tracking and budgeting\n` +
-        `- Platform features and how-to guides\n\n` +
-        `**Try asking:**\n` +
-        `- "Study tips for [subject]"\n` +
-        `- "Show my tasks"\n` +
-        `- "How to stay motivated"\n` +
-        `- "Show my expenses"\n` +                                  
-        `- "Budget advice"\n` +  
-        `- "Past paper [subject] [year]"\n` +
-        `- "Research [topic]"\n` +
-        `- Type **"help"** for full capabilities!`
-                `- "Show my watchlist"\n` +
-        `- "Random pick" / "What should I watch"\n` +
-        `- "Watchlist tips"\n`,
-        
-        `🤔 Interesting question!\n\n` +
-        `While I may not have a specific answer for **"${userText}"**, I'm constantly learning!\n\n` +
-        `**Here's what I'm great at:**\n\n` +
-        `📚 **Academic Support:**\n` +
-        `- Subject study guides\n` +
-        `- Exam strategies\n` +
-        `- Research paper searches\n` +
-        `- Past paper access\n\n` +
-        `✅ **Productivity:**\n` +
-        `- Task prioritization\n` +
-        `- Time management\n` +
-        `- Goal setting\n` +
-        `- Focus techniques\n\n` +
-        `💪 **Motivation:**\n` +
-        `- Encouragement and support\n` +
-        `- Overcoming procrastination\n` +
-        `- Managing stress\n` +
-        `- Building confidence\n\n` +
-        `What would you like help with today?`,
-        
-        `👋 Thanks for your message!\n\n` +
-        `I'm still learning to understand all types of questions. If **"${userText}"** is something specific, try rephrasing it!\n\n` +
-        `**🎯 I excel at:**\n\n` +
-        `- Answering "what should I do first?"\n` +
-        `- Providing study tips for any subject\n` +
-        `- Finding educational resources\n` +
-        `- Helping with time management\n` +
-        `- Boosting motivation\n` +
-        `- Explaining how to use Edumate features\n\n` +
-        `**💡 Quick Start:**\n` +
-        `- Type **"help"** to see all my capabilities\n` +
-        `- Ask for **"study tips"**\n` +
-        `- Request **"show my tasks"**\n` +
-        `- Say **"motivate me"**\n\n` +
-        `How can I support your learning journey? 🚀`,
 
-        `🌟 **Let me help you!**\n\n` +
-        `I want to make sure I understand correctly. You asked about: **"${userText}"**\n\n` +
-        `**If you're looking for:**\n\n` +
-        `📖 **Study Help** → Try:\n` +
-        `- "Study tips for [subject]"\n` +
-        `- "How to prepare for exams"\n` +
-        `- "Memory improvement tips"\n\n` +
-        `📋 **Task Management** → Try:\n` +
-        `- "Show my tasks"\n` +
-        `- "What should I do first?"\n` +
-        `- "Time management advice"\n\n` +
-        `🔍 **Resources** → Try:\n` +
-        `- "Research [topic]"\n` +
-        `- "Past paper [subject] [year]"\n` +
-        `- "Find resources on [topic]"\n\n` +
-        `💪 **Motivation** → Try:\n` +
-        `- "Motivate me"\n` +
-        `- "I'm feeling overwhelmed"\n` +
-        `- "How to stay focused"\n\n` +
-        `❓ **Platform Help** → Try:\n` +
-        `- "How to add notes"\n` +
-        `- "Using the planner"\n` +
-        `- Type "help"\n\n` +
-        `What would you like to explore? 😊`
-    ];
+   // ===== DEFAULT RESPONSE (ENHANCED WITH MORE VARIATIONS) =====
+const responseVariations = [
+    `💬 I heard: **"${userText}"**\n\n` +
+    `I'm not sure about that specific query, but I'm here to help!\n\n` +
+    `**🤖 I can assist with:**\n` +
+    `- Study strategies and learning techniques\n` +
+    `- Task and project management\n` +
+    `- Finding past papers and research\n` +
+    `- Motivation and productivity advice\n` +
+    `- Subject-specific study tips\n` +
+    `- Exam preparation and test anxiety\n` +
+    `- Platform features and how-to guides\n` +
+    `- Watchlist management and suggestions\n\n` +
+    `**Try asking:**\n` +
+    `- "Study tips for [subject]"\n` +
+    `- "Show my tasks"\n` +
+    `- "How to stay motivated"\n` +
+    `- "Past paper [subject] [year]"\n` +
+    `- "Research [topic]"\n` +
+    `- "Show my watchlist"\n` +
+    `- "Random pick" / "What should I watch"\n` +
+    `- "Watchlist tips"\n` +
+    `- Type **"help"** for full capabilities!`,
+    
+    `🤔 Interesting question!\n\n` +
+    `While I may not have a specific answer for **"${userText}"**, I'm constantly learning!\n\n` +
+    `**Here's what I'm great at:**\n\n` +
+    `📚 **Academic Support:**\n` +
+    `- Subject study guides\n` +
+    `- Exam strategies\n` +
+    `- Research paper searches\n` +
+    `- Past paper access\n\n` +
+    `✅ **Productivity:**\n` +
+    `- Task prioritization\n` +
+    `- Time management\n` +
+    `- Goal setting\n` +
+    `- Focus techniques\n\n` +
+    `💪 **Motivation:**\n` +
+    `- Encouragement and support\n` +
+    `- Overcoming procrastination\n` +
+    `- Managing stress\n` +
+    `- Building confidence\n\n` +
+    `🎬 **Watchlist:**\n` +
+    `- Track movies and series\n` +
+    `- Random pick suggestions\n` +
+    `- Progress tracking\n\n` +
+    `What would you like help with today?`,
+    
+    `👋 Thanks for your message!\n\n` +
+    `I'm still learning to understand all types of questions. If **"${userText}"** is something specific, try rephrasing it!\n\n` +
+    `**🎯 I excel at:**\n\n` +
+    `- Answering "what should I do first?"\n` +
+    `- Providing study tips for any subject\n` +
+    `- Finding educational resources\n` +
+    `- Helping with time management\n` +
+    `- Boosting motivation\n` +
+    `- Explaining how to use Edumate features\n` +
+    `- Managing your watchlist\n\n` +
+    `**💡 Quick Start:**\n` +
+    `- Type **"help"** to see all my capabilities\n` +
+    `- Ask for **"study tips"**\n` +
+    `- Request **"show my tasks"**\n` +
+    `- Say **"motivate me"**\n` +
+    `- Try **"random pick"** for watch suggestions\n\n` +
+    `How can I support your learning journey? 🚀`,
+
+    `🌟 **Let me help you!**\n\n` +
+    `I want to make sure I understand correctly. You asked about: **"${userText}"**\n\n` +
+    `**If you're looking for:**\n\n` +
+    `📖 **Study Help** → Try:\n` +
+    `- "Study tips for [subject]"\n` +
+    `- "How to prepare for exams"\n` +
+    `- "Memory improvement tips"\n\n` +
+    `📋 **Task Management** → Try:\n` +
+    `- "Show my tasks"\n` +
+    `- "What should I do first?"\n` +
+    `- "Time management advice"\n\n` +
+    `🔍 **Resources** → Try:\n` +
+    `- "Research [topic]"\n` +
+    `- "Past paper [subject] [year]"\n` +
+    `- "Find resources on [topic]"\n\n` +
+    `💪 **Motivation** → Try:\n` +
+    `- "Motivate me"\n` +
+    `- "I'm feeling overwhelmed"\n` +
+    `- "How to stay focused"\n\n` +
+    `🎬 **Watchlist** → Try:\n` +
+    `- "Show my watchlist"\n` +
+    `- "Random pick"\n` +
+    `- "What should I watch"\n\n` +
+    `❓ **Platform Help** → Try:\n` +
+    `- "How to add notes"\n` +
+    `- "Using the planner"\n` +
+    `- Type "help"\n\n` +
+    `What would you like to explore? 😊`
+];
     
     return responseVariations[Math.floor(Math.random() * responseVariations.length)];
 }
