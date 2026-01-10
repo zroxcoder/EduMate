@@ -166,6 +166,7 @@
     <a class="nav-link" href="projects.html">📁 Projects</a>
     <a class="nav-link" href="courses.html">🎓 Courses</a>
     <a class="nav-link" href="expenses.html">💰 Expenses</a>
+    <a class="nav-link" href="passwords.html">🔐 Passwords</a>
     <a class="nav-link" href="aichatbot.html">🤖 Chat Bot</a>
     <a class="nav-link" href="profile.html">⚙️ Profile</a>
 </div>
@@ -513,7 +514,7 @@ function openDB() {
         const req = indexedDB.open("MateDB", 3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings"].forEach(store => {
+            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings", "passwords"].forEach(store => {
                 if (!db.objectStoreNames.contains(store)) {
                     db.createObjectStore(store, {keyPath: "id", autoIncrement: true});
                 }

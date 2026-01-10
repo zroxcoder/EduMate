@@ -153,6 +153,7 @@
     <a class="nav-link" href="projects.html">📁 Projects</a>
     <a class="nav-link" href="courses.html">🎓 Courses</a>
     <a class="nav-link" href="expenses.html">💰 Expenses</a>
+    <a class="nav-link" href="passwords.html">🔐 Passwords</a>
     <a class="nav-link" href="aichatbot.html">🤖 Chat Bot</a>
     <a class="nav-link active" href="profile.html">⚙️ Profile</a>
 </div>
@@ -354,6 +355,18 @@
                     <label><i class="bi bi-book"></i> Total Courses</label>
                     <h3 id="statCourses">0</h3>
                 </div>
+                <div class="info-card">
+                  <label><i class="bi bi-wallet2"></i> Total Expenses</label>
+                <h3 id="statExpenses">0</h3>
+                </div>
+                <div class="info-card">
+                 <label><i class="bi bi-camera-reels"></i> Total Watchlist</label>
+                 <h3 id="statWatchlist">0</h3>
+                </div>
+                <div class="info-card">
+                <label><i class="bi bi-key-fill"></i> Total Passwords</label>
+                <h3 id="statPasswords">0</h3>
+            </div>
             </div>
         </div>
 
@@ -486,7 +499,7 @@ function openDB() {
         const req = indexedDB.open("MateDB", 3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings"].forEach(store => {
+            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings", "passwords"].forEach(store => {
                 if (!db.objectStoreNames.contains(store)) {
                     db.createObjectStore(store, {keyPath: "id", autoIncrement: true});
                 }
@@ -925,11 +938,17 @@ async function updateDatabaseStats(){
     const tasks = await getAll("tasks");
     const projects = await getAll("projects");
     const courses = await getAll("courses");
+    const expenses = await getAll("expenses");
+    const watchlist = await getAll("watchlist");
+    const passwords = await getAll("passwords");
     
     document.getElementById("statNotes").textContent = notes.length;
     document.getElementById("statTasks").textContent = tasks.length;
     document.getElementById("statProjects").textContent = projects.length;
     document.getElementById("statCourses").textContent = courses.length;
+    document.getElementById("statExpenses").textContent = expenses.length;
+    document.getElementById("statWatchlist").textContent = watchlist.length;
+    document.getElementById("statPasswords").textContent = passwords.length;
 }
 
 window.addEventListener('storage', (e)=>{
@@ -945,7 +964,7 @@ window.addEventListener('storage', (e)=>{
 });
 
 async function exportData(){
-    const stores=["notes","tasks","projects","courses","profile","activity","certificates"];
+    const stores=["notes","tasks","projects","courses","profile","activity","expenses","certificates","watchlist","passwords"];
     const allData={};
     for(const s of stores){ allData[s] = await getAll(s); }
     const blob = new Blob([JSON.stringify(allData,null,2)],{type:"application/json"});
@@ -963,11 +982,17 @@ async function exportDataCSV(){
     const tasks = await getAll("tasks");
     const projects = await getAll("projects");
     const courses = await getAll("courses");
+    const expenses = await getAll("expenses");
+    const watchlist = await getAll("watchlist");
+    const passwords = await getAll("passwords");
     
     notes.forEach(n => csv += `Note,"${n.title}","${n.content || ''}","","${n.time}"\n`);
     tasks.forEach(t => csv += `Task,"${t.title}","${t.desc || ''}","${t.done ? 'Done' : 'Pending'}","${t.time}"\n`);
     projects.forEach(p => csv += `Project,"${p.title}","${p.description || ''}","${p.status || ''}","${p.time}"\n`);
     courses.forEach(c => csv += `Course,"${c.title}","${c.description || ''}","${c.done ? 'Done' : 'Ongoing'}","${c.time}"\n`);
+    expenses.forEach(e => csv += `Expense,"${e.title}","${e.description || ''}","${e.type || ''}","${e.date}","${e.amount}"\n`);
+    watchlist.forEach(w => csv += `Watchlist,"${w.title}","${w.desc || ''}","${w.status || ''}","${w.time}","","${w.rating || 0}"\n`);
+    passwords.forEach(pw => csv += `Password,"${pw.title}","${pw.username || ''}","${pw.category || ''}","${pw.time}"\n`);
     
     const blob = new Blob([csv], {type: 'text/csv'});
     const url = URL.createObjectURL(blob);
@@ -981,7 +1006,7 @@ async function exportDataCSV(){
 async function exportDataText(){
     let text = "EDUMATE DATA EXPORT\n" + "=".repeat(70) + "\n\n";
     
-    const stores = ["notes","tasks","projects","courses"];
+    const stores = ["notes","tasks","projects","courses","expenses","watchlist","passwords"];
     for(const store of stores){
         const items = await getAll(store);
         text += `\n${store.toUpperCase()} (${items.length})\n` + "-".repeat(70) + "\n";
@@ -1014,7 +1039,7 @@ async function importData(e){
         if(!confirm(`Import data? This will replace existing data.`)) return;
         
         for(const store in json){
-            if(!["notes","tasks","projects","courses","profile","activity","certificates"].includes(store)) continue;
+            if(!["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords"].includes(store)) continue;
             const tx = db.transaction(store,"readwrite");
             const storeObj = tx.objectStore(store);
             await storeObj.clear();
@@ -1034,7 +1059,7 @@ async function clearAllData(){
     if(!confirm("⚠️ DELETE ALL DATA? This cannot be undone!")) return;
     if(!confirm("Are you absolutely sure? All your notes, tasks, projects, courses, and certificates will be permanently deleted!")) return;
     
-    for(const store of ["notes","tasks","projects","courses","profile","activity","certificates"]){
+    for(const store of ["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords"]){
         const tx=db.transaction(store,"readwrite");
         tx.objectStore(store).clear();
     }
