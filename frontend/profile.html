@@ -154,6 +154,7 @@
     <a class="nav-link" href="courses.html">🎓 Courses</a>
     <a class="nav-link" href="expenses.html">💰 Expenses</a>
     <a class="nav-link" href="passwords.html">🔐 Passwords</a>
+    <a class="nav-link" href="cloudhub.html">☁️ Cloud Hub</a>
     <a class="nav-link" href="aichatbot.html">🤖 Chat Bot</a>
     <a class="nav-link active" href="profile.html">⚙️ Profile</a>
 </div>
@@ -366,6 +367,10 @@
                 <div class="info-card">
                 <label><i class="bi bi-key-fill"></i> Total Passwords</label>
                 <h3 id="statPasswords">0</h3>
+                 </div>
+                  <div class="info-card">
+                <label><i class="bi bi-cloud"></i> Total Cloud Items</label>
+               <h3 id="statCloudHub">0</h3>
             </div>
             </div>
         </div>
@@ -499,7 +504,7 @@ function openDB() {
         const req = indexedDB.open("MateDB", 3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings", "passwords"].forEach(store => {
+            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings", "passwords", "cloudhub"].forEach(store => {
                 if (!db.objectStoreNames.contains(store)) {
                     db.createObjectStore(store, {keyPath: "id", autoIncrement: true});
                 }
@@ -941,6 +946,7 @@ async function updateDatabaseStats(){
     const expenses = await getAll("expenses");
     const watchlist = await getAll("watchlist");
     const passwords = await getAll("passwords");
+    const cloudhub = await getAll("cloudhub");
     
     document.getElementById("statNotes").textContent = notes.length;
     document.getElementById("statTasks").textContent = tasks.length;
@@ -949,6 +955,7 @@ async function updateDatabaseStats(){
     document.getElementById("statExpenses").textContent = expenses.length;
     document.getElementById("statWatchlist").textContent = watchlist.length;
     document.getElementById("statPasswords").textContent = passwords.length;
+    document.getElementById("statCloudHub").textContent = cloudhub.length;
 }
 
 window.addEventListener('storage', (e)=>{
@@ -964,7 +971,7 @@ window.addEventListener('storage', (e)=>{
 });
 
 async function exportData(){
-    const stores=["notes","tasks","projects","courses","profile","activity","expenses","certificates","watchlist","passwords"];
+    const stores=["notes","tasks","projects","courses","profile","activity","expenses","certificates","watchlist","passwords","cloudhub"];
     const allData={};
     for(const s of stores){ allData[s] = await getAll(s); }
     const blob = new Blob([JSON.stringify(allData,null,2)],{type:"application/json"});
@@ -985,6 +992,7 @@ async function exportDataCSV(){
     const expenses = await getAll("expenses");
     const watchlist = await getAll("watchlist");
     const passwords = await getAll("passwords");
+    const cloudhub = await getAll("cloudhub");
     
     notes.forEach(n => csv += `Note,"${n.title}","${n.content || ''}","","${n.time}"\n`);
     tasks.forEach(t => csv += `Task,"${t.title}","${t.desc || ''}","${t.done ? 'Done' : 'Pending'}","${t.time}"\n`);
@@ -993,6 +1001,7 @@ async function exportDataCSV(){
     expenses.forEach(e => csv += `Expense,"${e.title}","${e.description || ''}","${e.type || ''}","${e.date}","${e.amount}"\n`);
     watchlist.forEach(w => csv += `Watchlist,"${w.title}","${w.desc || ''}","${w.status || ''}","${w.time}","","${w.rating || 0}"\n`);
     passwords.forEach(pw => csv += `Password,"${pw.title}","${pw.username || ''}","${pw.category || ''}","${pw.time}"\n`);
+    cloudhub.forEach(c => csv += `CloudHub,"${c.title}","${c.description || ''}","${c.serviceType || ''}","${c.time}","${c.link}"\n`);
     
     const blob = new Blob([csv], {type: 'text/csv'});
     const url = URL.createObjectURL(blob);
@@ -1006,7 +1015,7 @@ async function exportDataCSV(){
 async function exportDataText(){
     let text = "EDUMATE DATA EXPORT\n" + "=".repeat(70) + "\n\n";
     
-    const stores = ["notes","tasks","projects","courses","expenses","watchlist","passwords"];
+    const stores = ["notes","tasks","projects","courses","expenses","watchlist","passwords","cloudhub"];
     for(const store of stores){
         const items = await getAll(store);
         text += `\n${store.toUpperCase()} (${items.length})\n` + "-".repeat(70) + "\n";
@@ -1039,7 +1048,7 @@ async function importData(e){
         if(!confirm(`Import data? This will replace existing data.`)) return;
         
         for(const store in json){
-            if(!["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords"].includes(store)) continue;
+            if(!["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords","cloudhub"].includes(store)) continue;
             const tx = db.transaction(store,"readwrite");
             const storeObj = tx.objectStore(store);
             await storeObj.clear();
@@ -1059,7 +1068,7 @@ async function clearAllData(){
     if(!confirm("⚠️ DELETE ALL DATA? This cannot be undone!")) return;
     if(!confirm("Are you absolutely sure? All your notes, tasks, projects, courses, and certificates will be permanently deleted!")) return;
     
-    for(const store of ["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords"]){
+    for(const store of ["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords","cloudhub"]){
         const tx=db.transaction(store,"readwrite");
         tx.objectStore(store).clear();
     }
