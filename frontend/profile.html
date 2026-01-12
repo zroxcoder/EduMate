@@ -518,7 +518,7 @@ function openDB() {
         const req = indexedDB.open("MateDB", 3);
         req.onupgradeneeded = e => {
             db = e.target.result;
-            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings", "passwords", "cloudhub"].forEach(store => {
+            ["notes", "tasks", "projects", "courses", "profile", "activity", "certificates", "chats", "searches", "watchlist", "expenses", "settings", "passwords", "cloudhub", "timersessions", "productivity"].forEach(store => {
                 if (!db.objectStoreNames.contains(store)) {
                     db.createObjectStore(store, {keyPath: "id", autoIncrement: true});
                 }
@@ -985,7 +985,7 @@ window.addEventListener('storage', (e)=>{
 });
 
 async function exportData(){
-    const stores=["notes","tasks","projects","courses","profile","activity","expenses","certificates","watchlist","passwords","cloudhub"];
+    const stores=["notes","tasks","projects","courses","profile","activity","expenses","certificates","watchlist","passwords","cloudhub","timersessions","productivity"];
     const allData={};
     for(const s of stores){ allData[s] = await getAll(s); }
     const blob = new Blob([JSON.stringify(allData,null,2)],{type:"application/json"});
@@ -1017,6 +1017,7 @@ async function exportDataCSV(){
     passwords.forEach(pw => csv += `Password,"${pw.title}","${pw.username || ''}","${pw.category || ''}","${pw.time}"\n`);
     cloudhub.forEach(c => csv += `CloudHub,"${c.title}","${c.description || ''}","${c.serviceType || ''}","${c.time}","${c.link}"\n`);
     
+    
     const blob = new Blob([csv], {type: 'text/csv'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1029,7 +1030,7 @@ async function exportDataCSV(){
 async function exportDataText(){
     let text = "EDUMATE DATA EXPORT\n" + "=".repeat(70) + "\n\n";
     
-    const stores = ["notes","tasks","projects","courses","expenses","watchlist","passwords","cloudhub"];
+    const stores = ["notes","tasks","projects","courses","expenses","watchlist","passwords","cloudhub","timersessions","productivity"];
     for(const store of stores){
         const items = await getAll(store);
         text += `\n${store.toUpperCase()} (${items.length})\n` + "-".repeat(70) + "\n";
@@ -1062,7 +1063,7 @@ async function importData(e){
         if(!confirm(`Import data? This will replace existing data.`)) return;
         
         for(const store in json){
-            if(!["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords","cloudhub"].includes(store)) continue;
+            if(!["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords","cloudhub","timersessions","productivity"].includes(store)) continue;
             const tx = db.transaction(store,"readwrite");
             const storeObj = tx.objectStore(store);
             await storeObj.clear();
@@ -1082,7 +1083,7 @@ async function clearAllData(){
     if(!confirm("⚠️ DELETE ALL DATA? This cannot be undone!")) return;
     if(!confirm("Are you absolutely sure? All your notes, tasks, projects, courses, and certificates will be permanently deleted!")) return;
     
-    for(const store of ["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords","cloudhub"]){
+    for(const store of ["notes","tasks","projects","courses","profile","activity","certificates","expenses","watchlist","passwords","cloudhub","timersessions","productivity"]){
         const tx=db.transaction(store,"readwrite");
         tx.objectStore(store).clear();
     }
